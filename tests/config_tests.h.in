@@ -1,0 +1,33 @@
+/*
+ * This file is part of Iris 2.
+ * 
+ * Copyright (C) 2009 The Provost, Fellows and Scholars of the 
+ * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin. 
+ * All rights reserved.
+ * 
+ */
+
+/**
+ * \file config_tests.h.in
+ * Input file used to generate config_tests.h
+ *
+ *  Created on: 23-Nov-2011
+ *  Created by: suttonp
+ *  $Revision:  $
+ *  $LastChangedDate:  $
+ *  $LastChangedBy:  $
+ */
+ 
+#ifndef CONFIG_TESTS_H
+#define CONFIG_TESTS_H
+
+//Used to find the test library needed for SharedLibrary_test
+#define XPND(s) s
+
+#ifdef CMAKE_INTDIR
+	#define TESTLIB_DIR "@CMAKE_CURRENT_BINARY_DIR@/" XPND(CMAKE_INTDIR)
+#else 
+	#define TESTLIB_DIR "@CMAKE_CURRENT_BINARY_DIR@"
+#endif
+
+#endif /* CONFIG_TESTS_H */

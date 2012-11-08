@@ -1,0 +1,188 @@
+/*
+ * This file is part of Iris 2.
+ * 
+ * Copyright (C) 2009 The Provost, Fellows and Scholars of the 
+ * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin. 
+ * All rights reserved.
+ * 
+ */
+
+// State Machine for IRIS launcher using the boost statechart library
+//
+// Machine graph:
+//
+//  ---------------------------------------
+// |                                       |
+// |        o         Active               |
+// |        |                              |
+// |        v                              |
+// |  -------------------------------      |
+// | |         Unloaded              |     |
+// |  -------------------------------      |
+// |    |                 ^                |
+// |    |  EvLoadUnload   | EvLoadUnload   |
+// |    v                 |                |
+// |  -----------------------------------  |
+// | |                                   | |
+// | |        o       Loaded             | |
+// | |        |                          | |
+// | |        v                          | |
+// | |   -------------------------       | |
+// | |  |    Stopped              |      | |
+// | |   -------------------------       | |
+// | |    |                ^             | |
+// | |    | EvStartStop    | EvStartStop | |
+// | |    v                |             | |
+// | |   -------------------------       | |
+// | |  |    Running              |      | |
+// | |   -------------------------       | |
+// |  -----------------------------------  |
+//  ---------------------------------------
+//
+
+
+#ifndef IRIS_STATE_MACHINE_H
+#define IRIS_STATE_MACHINE_H 1
+
+#include <boost/statechart/event.hpp>
+#include <boost/statechart/state_machine.hpp>
+#include <boost/statechart/simple_state.hpp>
+#include <boost/statechart/state.hpp>
+#include <boost/statechart/transition.hpp>
+#include <boost/statechart/custom_reaction.hpp>
+
+//! Exception which can be thrown by this class
+class LauncherException : public std::exception
+{
+private:
+    std::string d_message;
+public:
+    LauncherException(const std::string &message) throw()
+        :exception(), d_message(message)
+    {};
+    virtual const char* what() const throw()
+    {
+        return d_message.c_str();
+    };
+    virtual ~LauncherException() throw()
+    {};
+};
+
+//! Event to start/stop the radio
+struct EvStartStop : boost::statechart::event< EvStartStop > {};
+//! Event to load/unload the radio
+struct EvLoadUnload : boost::statechart::event< EvLoadUnload > {};
+
+// forward declarations of the states
+struct Active;    //!< active state, Iris engine is initialized
+struct Unloaded;  //!< no radio loaded, initial state within Active
+struct Loaded;    //!< radio loaded, within Active
+struct Stopped;   //!< radio is stopped, initial state within Loaded
+struct Running;   //!< radio is running, state within Loaded
+
+
+//! The state machine itself, start state is Active
+struct IrisStateMachine : boost::statechart::state_machine< IrisStateMachine, Active >
+{
+    //! set XML radio configuration
+    void setRadioConfig(std::string radioConfig) { d_radioConfig = radioConfig; }
+    //! return XML radio configuration
+    std::string getRadioConfig() const { return d_radioConfig; }
+	//! set radio Stack component repository
+    void setStackRadioRepository(std::string radioRepository) { d_stackRadioRepository = radioRepository; }
+	//! return radio Stack component repository
+    std::string getStackRadioRepository() const { return d_stackRadioRepository; }
+    //! set radio PN component repository
+    void setPnRadioRepository(std::string radioRepository) { d_pnRadioRepository = radioRepository; }
+    //! return radio PN component repository
+    std::string getPnRadioRepository() const { return d_pnRadioRepository; }
+    //! set radio SDF component repository
+    void setSdfRadioRepository(std::string radioRepository) { d_sdfRadioRepository = radioRepository; }
+    //! return radio SDF component repository
+    std::string getSdfRadioRepository() const { return d_sdfRadioRepository; }
+	//! set radio Controller repository
+    void setContRadioRepository(std::string radioRepository) { d_contRadioRepository = radioRepository; }
+    //! return radio Controller repository
+    std::string getContRadioRepository() const { return d_contRadioRepository; }
+    //! set log level
+	void setLogLevel(std::string level) { d_logLevel = level; }
+	//! return log level
+	std::string getLogLevel() const { return d_logLevel; }
+    //! Reconfigure the radio
+    void reconfigureRadio();
+private:
+    //! stores the XML radio configuration
+    std::string d_radioConfig;
+	//! stores the radio Stack component repository
+    std::string d_stackRadioRepository;
+    //! stores the radio PN component repository
+    std::string d_pnRadioRepository;
+    //! stores the radio SDF component repository
+    std::string d_sdfRadioRepository;
+	//! stores the radio Controller repository
+    std::string d_contRadioRepository;
+    //! stores the log level
+    std::string d_logLevel;
+};
+
+//! Active is the parent of all other states, destruction means termination
+//! When entering this state, the Iris System is initialised and the FSM goes to
+//! the internal state Unloaded.
+//
+// Note: boost::statechart::simple_state takes 2 or 3 template parameters:
+// 1. The struct itself (for template magic handle by statechart lib)
+// 2. The parent (either state machine or other state in hierarchical FSMs)
+// 3. (optional) The initial internal state in hierarchical FSMs
+struct Active : boost::statechart::state< Active, IrisStateMachine, Unloaded >
+{
+    Active(my_context ctx);    //!< Constructor. Initialises the Iris System
+};
+
+//! In the Loaded state, a transition is made to Unloaded on EvLoadUnload
+//! When entering this state, a radio is loaded into memory and made ready
+//! for execution.
+struct Loaded : boost::statechart::state< Loaded, Active, Stopped >
+{
+    //! On event EvLoadUnload, change to  Unloaded
+    typedef boost::statechart::transition< EvLoadUnload, Unloaded > reactions;
+
+    Loaded(my_context ctx) throw (LauncherException);  //!< Constructor. Loads the radio.
+
+    //! unloads the radio
+    void exit() throw (LauncherException);
+};
+
+//! In the Unloaded state, a transition is made to Loaded on EvLoadUnload
+//! Nothing is done when entering or exiting this state
+struct Unloaded :  boost::statechart::simple_state< Unloaded, Active >
+{
+    //! On event EvLoadUnload, call method react with that event as parameter
+    typedef boost::statechart::transition< EvLoadUnload, Loaded > reactions;
+
+};
+
+//! In the Stopped state, a transition is made to Running on EvStartStop
+//! When entering/exiting this state, no actions are performed.
+struct Stopped : boost::statechart::simple_state< Stopped, Loaded >
+{
+    //! On event EvStartStop, transit to Running
+    typedef boost::statechart::transition< EvStartStop, Running > reactions;
+};
+
+//! In the Running state, a transition is made to Stopped on EvStartStop
+//! When entering this state, the radio execution is started. On exit, the
+//! radio execution is stopped.
+struct Running : boost::statechart::simple_state< Running, Loaded >
+{
+    //! On event EvStartStop, transit to Stopped
+    typedef boost::statechart::transition< EvStartStop, Stopped > reactions;
+
+    //! starts the radio
+    Running() throw (LauncherException);
+
+    //! stops the radio
+    void exit() throw (LauncherException);
+};
+
+#endif
+
