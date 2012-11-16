@@ -1,22 +1,35 @@
-/*
- * This file is part of Iris 2.
- * 
- * Copyright (C) 2009 The Provost, Fellows and Scholars of the 
- * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin. 
- * All rights reserved.
- * 
- */
-
 /**
- * \file StackComponentManager.h
- * The Stack Component Manager
+ * @file StackComponentManager.h
+ * @version 1.0
  *
- *  Created on: 2-Mar-2010
- *  Created by: suttonp
- *  $Revision: 851 $
- *  $LastChangedDate: 2010-03-05 12:37:47 +0000 (Fri, 05 Mar 2010) $
- *  $LastChangedBy: suttonp $
+ * @section COPYRIGHT
  *
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * @section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ * 
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * @section DESCRIPTION
+ *
+ * The Stack Component Manager - loads/unloads all stack components for the
+ * StackEngine.
  */
 
 #ifndef STACKCOMPONENTMANAGER_H_
@@ -65,7 +78,7 @@ struct Repository
 
 /** The StackComponentManager class implements a component manager for the StackEngine.
 *
-*	The StackEngine uses the StackComponentManager to manage the lifecycle of its components
+*    The StackEngine uses the StackComponentManager to manage the lifecycle of its components
 */
 class StackComponentManager
 {
@@ -100,8 +113,8 @@ public:
     //! Get all the repositories which are available
     std::vector<boost::filesystem::path> getRepositories();
 
-	//! Get the name of this element
-	std::string getName(){return "PNComponentManager";};
+    //! Get the name of this element
+    std::string getName(){return "PNComponentManager";};
 };
 
 } /* namespace iris */

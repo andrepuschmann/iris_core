@@ -1,21 +1,34 @@
-/*
- * This file is part of Iris 2.
- * 
- * Copyright (C) 2009 The Provost, Fellows and Scholars of the 
- * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin. 
- * All rights reserved.
- * 
- */
-
 /**
- * \file Controller.h
- * Contains base class for all controllers.
+ * @file Controller.h
+ * @version 1.0
  *
- *  Created on: 19-May-2008
- *  Created by: suttonp
- *  $Revision: 1308 $
- *  $LastChangedDate: 2011-09-12 13:19:19 +0100 (Mon, 12 Sep 2011) $
- *  $LastChangedBy: suttonp $
+ * @section COPYRIGHT
+ *
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * @section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * @section DESCRIPTION
+ *
+ * Contains base class for all Iris controllers.
  */
 
 #ifndef CONTROLLER_H_
@@ -75,34 +88,34 @@ namespace iris
 class Controller
 {
 private:
-	std::string d_name;
-	std::string d_description;
-	std::string d_author;
-	std::string d_version;
+    std::string d_name;
+    std::string d_description;
+    std::string d_author;
+    std::string d_version;
 
-	//! MessageQueue of Event objects
-	MessageQueue< Event > d_eventQueue;
+    //! MessageQueue of Event objects
+    MessageQueue< Event > d_eventQueue;
 
-	//! Interface to the owner of this controller
-	ControllerCallbackInterface* d_controllerManager;
+    //! Interface to the owner of this controller
+    ControllerCallbackInterface* d_controllerManager;
 
-	//! Handle for this controller's thread of execution
+    //! Handle for this controller's thread of execution
     boost::scoped_ptr< boost::thread > d_thread;
 
-	bool d_started;
-	bool d_loaded;
-	mutable boost::mutex theMutex;
-	boost::condition_variable theConditionVariable;
+    bool d_started;
+    bool d_loaded;
+    mutable boost::mutex theMutex;
+    boost::condition_variable theConditionVariable;
 
 protected:
-	//! Called when this controller is created to allow it to subscribe to events - called by controller thread
-	virtual void subscribeToEvents() = 0;
+    //! Called when this controller is created to allow it to subscribe to events - called by controller thread
+    virtual void subscribeToEvents() = 0;
 
-	//! Initialize this controller - called by controller thread
-	virtual void initialize() = 0;
+    //! Initialize this controller - called by controller thread
+    virtual void initialize() = 0;
 
-	//! Destroy this controller - called by controller thread
-	virtual void destroy() = 0;
+    //! Destroy this controller - called by controller thread
+    virtual void destroy() = 0;
 
 public:
 
@@ -117,169 +130,169 @@ public:
      * \param version       component version
      */
     Controller(std::string name, std::string description, std::string author, std::string version )
-		: d_name(name), d_description(description), d_author(author), d_version(version)
-		,d_controllerManager(NULL)
-		,d_thread(NULL)
-		,d_started(false)
-		,d_loaded(false)
-	{
-	}
+        : d_name(name), d_description(description), d_author(author), d_version(version)
+        ,d_controllerManager(NULL)
+        ,d_thread(NULL)
+        ,d_started(false)
+        ,d_loaded(false)
+    {
+    }
 
-	//! Process an event - should be overwritten in the controller subclass
-	virtual void processEvent(Event &e)
-	{
-		LOG(LERROR) << "Function processEvent has not been implemented in controller " << d_name;
-	}
+    //! Process an event - should be overwritten in the controller subclass
+    virtual void processEvent(Event &e)
+    {
+        LOG(LERROR) << "Function processEvent has not been implemented in controller " << d_name;
+    }
 
-	void reconfigureRadio(ReconfigSet reconfigs)
-	{
-		if(d_controllerManager == NULL)
-			return;
+    void reconfigureRadio(ReconfigSet reconfigs)
+    {
+        if(d_controllerManager == NULL)
+            return;
 
-		d_controllerManager->reconfigureRadio(reconfigs);
-	}
+        d_controllerManager->reconfigureRadio(reconfigs);
+    }
 
-	void postCommand(Command command)
-	{
-		if(d_controllerManager == NULL)
-			return;
+    void postCommand(Command command)
+    {
+        if(d_controllerManager == NULL)
+            return;
 
-		d_controllerManager->postCommand(command);
-	}
+        d_controllerManager->postCommand(command);
+    }
 
-	std::string getParameterValue(std::string paramName, std::string componentName)
-	{
-		if(d_controllerManager == NULL)
-			return "";
+    std::string getParameterValue(std::string paramName, std::string componentName)
+    {
+        if(d_controllerManager == NULL)
+            return "";
 
-		boost::to_lower(paramName);
-		boost::to_lower(componentName);
-		return d_controllerManager->getParameterValue(paramName, componentName);
-	}
+        boost::to_lower(paramName);
+        boost::to_lower(componentName);
+        return d_controllerManager->getParameterValue(paramName, componentName);
+    }
 
-	void subscribeToEvent(std::string eventName, std::string componentName)
-	{
-		if(d_controllerManager == NULL)
-			return;
+    void subscribeToEvent(std::string eventName, std::string componentName)
+    {
+        if(d_controllerManager == NULL)
+            return;
 
-		boost::to_lower(eventName);
-		boost::to_lower(componentName);
-		d_controllerManager->subscribeToEvent(eventName, componentName, this);
-	}
+        boost::to_lower(eventName);
+        boost::to_lower(componentName);
+        d_controllerManager->subscribeToEvent(eventName, componentName, this);
+    }
 
-	//! Set an interface to the ControllerManager
-	void setCallbackInterface(ControllerCallbackInterface* c)
-	{
-		d_controllerManager = c;
-	}
+    //! Set an interface to the ControllerManager
+    void setCallbackInterface(ControllerCallbackInterface* c)
+    {
+        d_controllerManager = c;
+    }
 
-	//! Pass an event to this Controller
-	void postEvent(Event &e)
-	{
-		d_eventQueue.push(e);
-	}
+    //! Pass an event to this Controller
+    void postEvent(Event &e)
+    {
+        d_eventQueue.push(e);
+    }
 
-	//! Load the controller thread
-	void load()
-	{
-		//Load the controller thread (if it hasn't already been loaded)
-		if( d_thread == NULL)
-		{
-			d_loaded = true;
-			d_thread.reset( new boost::thread( boost::bind( &Controller::eventLoop, this ) ) );
-		}
-	}
+    //! Load the controller thread
+    void load()
+    {
+        //Load the controller thread (if it hasn't already been loaded)
+        if( d_thread == NULL)
+        {
+            d_loaded = true;
+            d_thread.reset( new boost::thread( boost::bind( &Controller::eventLoop, this ) ) );
+        }
+    }
 
-	//! Start this controller
-	void start()
-	{
-		boost::mutex::scoped_lock lock(theMutex);
-		d_started = true;
-		lock.unlock();
-		theConditionVariable.notify_one();
-	}
+    //! Start this controller
+    void start()
+    {
+        boost::mutex::scoped_lock lock(theMutex);
+        d_started = true;
+        lock.unlock();
+        theConditionVariable.notify_one();
+    }
 
-	//! Stop this controller
-	void stop()
-	{
-		boost::mutex::scoped_lock lock(theMutex);
-		d_started = false;
-		lock.unlock();
-		theConditionVariable.notify_one();
+    //! Stop this controller
+    void stop()
+    {
+        boost::mutex::scoped_lock lock(theMutex);
+        d_started = false;
+        lock.unlock();
+        theConditionVariable.notify_one();
 
-		d_thread->interrupt();
-	}
+        d_thread->interrupt();
+    }
 
-	//! Unload the controller thread
-	void unload()
-	{
-		//unload the controller thread
-		d_loaded = false;
-		d_thread->interrupt();
+    //! Unload the controller thread
+    void unload()
+    {
+        //unload the controller thread
+        d_loaded = false;
+        d_thread->interrupt();
         d_thread->join();
-	}
+    }
 
-	//! The main loop for the Controller thread
-	void eventLoop()
-	{
-		//Initialize the controller and subscribe to events
-		initialize();
-		subscribeToEvents();
+    //! The main loop for the Controller thread
+    void eventLoop()
+    {
+        //Initialize the controller and subscribe to events
+        initialize();
+        subscribeToEvents();
 
         try{
             while(d_loaded)
             {
-				try{
-					//Hold here if !d_started
-					boost::mutex::scoped_lock lock(theMutex);
-					while(!d_started)
-					{
-						theConditionVariable.wait(lock);
-					}
-					lock.unlock();
+                try{
+                    //Hold here if !d_started
+                    boost::mutex::scoped_lock lock(theMutex);
+                    while(!d_started)
+                    {
+                        theConditionVariable.wait(lock);
+                    }
+                    lock.unlock();
 
-					//Interrupt thread here if necessary
-					boost::this_thread::interruption_point();
+                    //Interrupt thread here if necessary
+                    boost::this_thread::interruption_point();
 
-					//Check message queue for Events
-					Event currentEvent;
-					d_eventQueue.waitAndPop(currentEvent);	//Blocks if queue is empty
-					processEvent(currentEvent);
-				}
-				catch(boost::thread_interrupted)
-				{
-					LOG(LINFO) << "Controller thread in " << d_name << " interrupted";
-				}
+                    //Check message queue for Events
+                    Event currentEvent;
+                    d_eventQueue.waitAndPop(currentEvent);    //Blocks if queue is empty
+                    processEvent(currentEvent);
+                }
+                catch(boost::thread_interrupted)
+                {
+                    LOG(LINFO) << "Controller thread in " << d_name << " interrupted";
+                }
             }
         }
         catch(IrisException& ex)
         {
-			LOG(LERROR) << "Error in controller " << d_name << ": " << ex.what() << std::endl << "Controller thread exiting.";
+            LOG(LERROR) << "Error in controller " << d_name << ": " << ex.what() << std::endl << "Controller thread exiting.";
         }
 
-		//Destroy the controller
-		destroy();
-	}
+        //Destroy the controller
+        destroy();
+    }
 
-	std::string getName() const
-	{
-		return d_name;
-	}
+    std::string getName() const
+    {
+        return d_name;
+    }
 
-	std::string getDescription() const
-	{
-		return d_description;
-	}
+    std::string getDescription() const
+    {
+        return d_description;
+    }
 
-	std::string getAuthor() const
-	{
-		return d_author;
-	}
+    std::string getAuthor() const
+    {
+        return d_author;
+    }
 
-	std::string getVersion() const
-	{
-		return d_version;
-	}
+    std::string getVersion() const
+    {
+        return d_version;
+    }
 
     /** Set the logging policy for this controller
     *

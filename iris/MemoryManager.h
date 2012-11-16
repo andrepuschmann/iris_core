@@ -1,25 +1,35 @@
-/*
- * This file is part of Iris 2.
- * 
- * Copyright (C) 2009 The Provost, Fellows and Scholars of the 
- * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin. 
- * All rights reserved.
- * 
- */
-
 /**
- * \file MemoryManager.h
- * MemoryManager keeping two linked lists of memory nodes
- * (both referencing the same chunks of memory), one list ordered
- * by chunk size, the other ordered by pointer address. Uses boost::intrusive lists,
- * which basically add the list hooks into the nodes, instead of copying the nodes
- * into a container.
+ * @file MemoryManager.h
+ * @version 1.0
  *
- *  Created on: 22-Sep-2008
- *  Created by: jlotze
- *  $Revision: 712 $
- *  $LastChangedDate: 2009-10-20 19:28:06 +0100 (Tue, 20 Oct 2009) $
- *  $LastChangedBy: lotzej $
+ * @section COPYRIGHT
+ *
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * @section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ * 
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * @section DESCRIPTION
+ *
+ * The MemoryManager provides a single point for allocation and
+ * deallocation of memory for the DataBuffers within the Iris system.
  */
 
 #ifndef MEMORYMANAGER_H_
@@ -55,12 +65,12 @@ struct MemoryNode : public basehook1, public basehook2
     MemoryNode(std::size_t size) : memory(NULL), size(size)
     {
 #ifdef WIN32
-		memory = _aligned_malloc(size, Alignment);
-		if (memory == NULL)
+        memory = _aligned_malloc(size, Alignment);
+        if (memory == NULL)
 #else
         if (posix_memalign(&memory, Alignment, size) != 0)
 #endif
-		{
+        {
             size = 0;
         }
     }
@@ -71,11 +81,11 @@ struct MemoryNode : public basehook1, public basehook2
     //! Destructor
     ~MemoryNode() {
 #ifdef WIN32
-		if (size != 0) _aligned_free(memory);
+        if (size != 0) _aligned_free(memory);
 #else
-		if (size != 0) free(memory);
+        if (size != 0) free(memory);
 #endif
-	}
+    }
 
 private:
     // No default constructor
@@ -83,10 +93,15 @@ private:
 
 };
 
-/*! \class MemoryManager  
- *  \brief The MemoryManager provides a single point for allocation and deallocation of memory for the 
- *  DataBuffers within the IRIS system. In this way, we can ensure correct memory alignment for optimized 
- *  instructions and can reduce the danger of memory leaks.
+/** \class MemoryManager
+ *  \brief The MemoryManager provides a single point for allocation and
+ *  deallocation of memory for the DataBuffers within the IRIS system.
+ *  In this way, we can ensure correct memory alignment for optimized
+ *  instructions and can reduce the danger of memory leaks. MemoryManager
+ *  keeps two linked lists of memory nodes (both referencing the same chunks
+ *  of memory), one list ordered by chunk size, the other ordered by pointer
+ *  address. Uses boost::intrusive lists, which basically add the list hooks
+ *  into the nodes, instead of copying the nodes into a container.
  */
 class MemoryManager
 {

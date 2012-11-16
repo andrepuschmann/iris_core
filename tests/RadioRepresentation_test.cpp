@@ -1,23 +1,35 @@
-/*
- * This file is part of Iris 2.
- * 
- * Copyright (C) 2009 The Provost, Fellows and Scholars of the 
- * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin. 
- * All rights reserved.
- * 
- */
-
-/*
- * file RadioRepresentationTest.cpp
- * Main test file for RadioRepresentation element
+/**
+ * @file RadioRepresentation_test.cpp
+ * @version 1.0
  *
- *  Created on: 18-Dec-2008
- *  Created by: suttonp
- *  $Revision: 1346 $
- *  $LastChangedDate: 2011-09-19 18:24:26 +0100 (Mon, 19 Sep 2011) $
- *  $LastChangedBy: suttonp $
+ * @section COPYRIGHT
+ *
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * @section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * @section DESCRIPTION
+ *
+ * Main test file for RadioRepresentation class.
  */
-
 
 #define BOOST_TEST_MODULE RadioRepresentationTest
 
@@ -102,8 +114,8 @@ BOOST_AUTO_TEST_CASE(RadioRepresentationCleanBuild)
     OutEdgeIterator ei, eiend;
     for(tie(i, iend) = vertices(theRGraph); i != iend; ++i)
     {
-	    for(tie(ei,eiend) = out_edges(*i,theRGraph); ei != eiend; ++ei)
-	    {
+        for(tie(ei,eiend) = out_edges(*i,theRGraph); ei != eiend; ++ei)
+        {
             BOOST_CHECK_EQUAL(theRGraph[*ei].sourcePort, "output1");
             BOOST_CHECK_EQUAL(theRGraph[*ei].sinkPort, "input1");
             BOOST_CHECK_EQUAL(theRGraph[*ei].sourceComponent, "comp1");
@@ -114,7 +126,7 @@ BOOST_AUTO_TEST_CASE(RadioRepresentationCleanBuild)
             BOOST_CHECK_EQUAL(theRGraph[v].name, "comp1");
             v = target(*ei, theRGraph);
             BOOST_CHECK_EQUAL(theRGraph[v].name, "comp2");
-	    }
+        }
     }
 
     //Check the engine graph structure

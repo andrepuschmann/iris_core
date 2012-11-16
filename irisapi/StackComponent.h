@@ -1,22 +1,34 @@
-/*
- * This file is part of Iris 2.
- * 
- * Copyright (C) 2009 The Provost, Fellows and Scholars of the 
- * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin. 
- * All rights reserved.
- * 
- */
-
 /**
- * \file StackComponent.h
- * The Stack Component base class
+ * @file StackComponent.h
+ * @version 1.0
  *
- *  Created on: 1-Mar-2010
- *  Created by: suttonp
- *  $Revision: 1308 $
- *  $LastChangedDate: 2011-09-12 13:19:19 +0100 (Mon, 12 Sep 2011) $
- *  $LastChangedBy: suttonp $
+ * @section COPYRIGHT
  *
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * @section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * @section DESCRIPTION
+ *
+ * The Stack Component base class.
  */
 
 #ifndef STACKCOMPONENT_H_
@@ -45,63 +57,63 @@ namespace iris
 class StackComponent: public ComponentBase
 {
 private:
-	std::map<std::string, StackDataBuffer*> d_aboveBuffers;
-	std::map<std::string, StackDataBuffer*> d_belowBuffers;
+    std::map<std::string, StackDataBuffer*> d_aboveBuffers;
+    std::map<std::string, StackDataBuffer*> d_belowBuffers;
 
-	//! Handle for this StackComponent's thread of execution
+    //! Handle for this StackComponent's thread of execution
     boost::scoped_ptr< boost::thread > d_thread;
 
-	//! The reconfiguration message queue for this StackComponent
+    //! The reconfiguration message queue for this StackComponent
     MessageQueue< ParametricReconfig > d_reconfigQueue;
 
     //! The command prison for this StackComponent
     CommandPrison d_prison;
 
-	//! The StackDataBuffer for this StackComponent
-	StackDataBuffer d_buffer;
+    //! The StackDataBuffer for this StackComponent
+    StackDataBuffer d_buffer;
 
 
-	//! The main thread loop for this stack component
+    //! The main thread loop for this stack component
     virtual void threadLoop()
     {
-		//The main loop of this thread
+        //The main loop of this thread
         try{
             while(true)
             {
-				boost::this_thread::interruption_point();
+                boost::this_thread::interruption_point();
 
-				//Get a DataSet
-				boost::shared_ptr<StackDataSet> p = d_buffer.popDataSet();
+                //Get a DataSet
+                boost::shared_ptr<StackDataSet> p = d_buffer.popDataSet();
 
                 //Check message queue for ParametricReconfigs
                 ParametricReconfig currentReconfig;
                 while(d_reconfigQueue.tryPop(currentReconfig))
                 {
-					boost::mutex::scoped_lock lock(d_parameterMutex);
-					setValue(currentReconfig.parameterName, currentReconfig.parameterValue);
-					parameterHasChanged(currentReconfig.parameterName);
-					LOG(LINFO) << "Reconfigured parameter " << currentReconfig.parameterName << " : " << currentReconfig.parameterValue;
+                    boost::mutex::scoped_lock lock(d_parameterMutex);
+                    setValue(currentReconfig.parameterName, currentReconfig.parameterValue);
+                    parameterHasChanged(currentReconfig.parameterName);
+                    LOG(LINFO) << "Reconfigured parameter " << currentReconfig.parameterName << " : " << currentReconfig.parameterValue;
                 }
 
-				//Call the appropriate function for the DataSet
-				switch(p->source)
-				{
-				case ABOVE:
-					processMessageFromAbove(p);
-					break;
-				case BELOW:
-					processMessageFromBelow(p);
-					break;
-				default:
-					break;
-				}
+                //Call the appropriate function for the DataSet
+                switch(p->source)
+                {
+                case ABOVE:
+                    processMessageFromAbove(p);
+                    break;
+                case BELOW:
+                    processMessageFromBelow(p);
+                    break;
+                default:
+                    break;
+                }
             }
         }
         catch(IrisException& ex)
         {
             LOG(LFATAL) << "Error in stack component: " << ex.what() << " - Component thread exiting.";
         }
-		catch(boost::thread_interrupted)
+        catch(boost::thread_interrupted&)
         {
             LOG(LINFO) << "Thread in stack component " << getName() << " interrupted";
         }
@@ -109,70 +121,70 @@ private:
 
 protected:
 
-	//! A mutex to protect the parameters of this component when using multiple threads
-	mutable boost::mutex d_parameterMutex;
+    //! A mutex to protect the parameters of this component when using multiple threads
+    mutable boost::mutex d_parameterMutex;
 
-	//! Pass a message down the stack using the first port
-	virtual void sendDownwards(boost::shared_ptr<StackDataSet> set)
-	{
-		if(!d_belowBuffers.empty())
-		{
-			set->source = ABOVE;
-			d_belowBuffers.begin()->second->pushDataSet(set);
-		}
-		else
-		{
-			LOG(LDEBUG) << "sendDownwards() failed. No buffers below.";
-		}
-	};
+    //! Pass a message down the stack using the first port
+    virtual void sendDownwards(boost::shared_ptr<StackDataSet> set)
+    {
+        if(!d_belowBuffers.empty())
+        {
+            set->source = ABOVE;
+            d_belowBuffers.begin()->second->pushDataSet(set);
+        }
+        else
+        {
+            LOG(LDEBUG) << "sendDownwards() failed. No buffers below.";
+        }
+    };
 
-	//Pass a message up the stack using the first port
-	virtual void sendUpwards(boost::shared_ptr<StackDataSet> set)
-	{
-		if(!d_aboveBuffers.empty())
-		{
-			set->source = BELOW;
-			d_aboveBuffers.begin()->second->pushDataSet(set);
-		}
-		else
-		{
-			LOG(LDEBUG) << "sendUpwards() failed. No buffers above.";
-		}
-	};
+    //Pass a message up the stack using the first port
+    virtual void sendUpwards(boost::shared_ptr<StackDataSet> set)
+    {
+        if(!d_aboveBuffers.empty())
+        {
+            set->source = BELOW;
+            d_aboveBuffers.begin()->second->pushDataSet(set);
+        }
+        else
+        {
+            LOG(LDEBUG) << "sendUpwards() failed. No buffers above.";
+        }
+    };
 
-	//! Pass a message down the stack using a named port
-	virtual void sendDownwards(std::string portName, boost::shared_ptr<StackDataSet> set)
-	{
-		if(d_belowBuffers.find(portName) != d_belowBuffers.end())
-		{
-			set->source = ABOVE;
-			d_belowBuffers[portName]->pushDataSet(set);
-		}
-		else
-		{
-			LOG(LDEBUG) << "sendDownwards() failed. No buffer below called " << portName;
-		}
-	};
+    //! Pass a message down the stack using a named port
+    virtual void sendDownwards(std::string portName, boost::shared_ptr<StackDataSet> set)
+    {
+        if(d_belowBuffers.find(portName) != d_belowBuffers.end())
+        {
+            set->source = ABOVE;
+            d_belowBuffers[portName]->pushDataSet(set);
+        }
+        else
+        {
+            LOG(LDEBUG) << "sendDownwards() failed. No buffer below called " << portName;
+        }
+    };
 
-	//Pass a message up the stack using a named port
-	virtual void sendUpwards(std::string portName, boost::shared_ptr<StackDataSet> set)
-	{
-		if(d_aboveBuffers.find(portName) != d_aboveBuffers.end())
-		{
-			set->source = BELOW;
-			d_aboveBuffers[portName]->pushDataSet(set);
-		}
-		else
-		{
-			LOG(LDEBUG) << "sendUpwards() failed. No buffer above called " << portName;
-		}
-	};
+    //Pass a message up the stack using a named port
+    virtual void sendUpwards(std::string portName, boost::shared_ptr<StackDataSet> set)
+    {
+        if(d_aboveBuffers.find(portName) != d_aboveBuffers.end())
+        {
+            set->source = BELOW;
+            d_aboveBuffers[portName]->pushDataSet(set);
+        }
+        else
+        {
+            LOG(LDEBUG) << "sendUpwards() failed. No buffer above called " << portName;
+        }
+    };
 
-	//Wait for a command
-	Command waitForCommand(std::string command)
-	{
-		return d_prison.trap(command);
-	}
+    //Wait for a command
+    Command waitForCommand(std::string command)
+    {
+        return d_prison.trap(command);
+    }
 
 public:
     /** Constructor
@@ -187,90 +199,90 @@ public:
         :ComponentBase(name, type, description, author, version)
     {};
 
-	//! Destructor
+    //! Destructor
     virtual ~StackComponent() {}
 
     /** Add a buffer above this component
     *
-    *	\param portName		Name of the port to add the buffer to
-	*   \param above		Buffers for components above
+    *    \param portName        Name of the port to add the buffer to
+    *   \param above        Buffers for components above
     */
-	virtual void addBufferAbove(std::string portName, StackDataBuffer* above)
+    virtual void addBufferAbove(std::string portName, StackDataBuffer* above)
     {
-		d_aboveBuffers[portName] = above;
+        d_aboveBuffers[portName] = above;
     };
 
-	/** Add a buffer below this component
+    /** Add a buffer below this component
     *
-    *	\param portName		Name of the port to add the buffer to
-    *   \param below		Buffers for components below
+    *    \param portName        Name of the port to add the buffer to
+    *   \param below        Buffers for components below
     */
     virtual void addBufferBelow(std::string portName, StackDataBuffer* below)
     {
         d_belowBuffers[portName] = below;
     };
 
-	/** Get the buffer for this component
+    /** Get the buffer for this component
     *
-	*   \return		Pointer to this component's buffer
+    *   \return        Pointer to this component's buffer
     */
-	virtual StackDataBuffer* getBuffer()
-	{
-		return &d_buffer;
-	};
+    virtual StackDataBuffer* getBuffer()
+    {
+        return &d_buffer;
+    };
 
-	/** Add reconfigurations to the queue
+    /** Add reconfigurations to the queue
     *
-	*   \param	reconfig	The parametric reconfiguration to be carried out
+    *   \param    reconfig    The parametric reconfiguration to be carried out
     */
-	void addReconfiguration(ParametricReconfig reconfig)
+    void addReconfiguration(ParametricReconfig reconfig)
     {
         d_reconfigQueue.push(reconfig);
     };
 
-	/** Post a command to this component
-	*
-	*   \param	command	The command to post
-	*/
-	void postCommand(Command command)
-	{
-		d_prison.release(command);
-	};
+    /** Post a command to this component
+    *
+    *   \param    command    The command to post
+    */
+    void postCommand(Command command)
+    {
+        d_prison.release(command);
+    };
 
-	//! Create and start the thread for this stack component
-	virtual void startComponent()
-	{
-		//Start the main component thread
-		d_thread.reset( new boost::thread( boost::bind( &StackComponent::threadLoop, this ) ) );
-	};
+    //! Create and start the thread for this stack component
+    virtual void startComponent()
+    {
+        //Start the main component thread
+        d_thread.reset( new boost::thread( boost::bind( &StackComponent::threadLoop, this ) ) );
+    };
 
-	//! Stop the thread for this stack component
-	virtual void stopComponent()
-	{
-		d_thread->interrupt();
+    //! Stop the thread for this stack component
+    virtual void stopComponent()
+    {
+        d_thread->interrupt();
         d_thread->join();
-	};
+    };
 
-	//Register the port of this component (Can be overridden to implement multiplex components)
-	virtual void registerPorts()
-	{
-		std::vector<int> types;
-		types.push_back( int(TypeInfo< uint8_t >::identifier) );
+    //Register the port of this component (Can be overridden to implement multiplex components)
+    virtual void registerPorts()
+    {
+        std::vector<int> types;
+        types.push_back( int(TypeInfo< uint8_t >::identifier) );
 
-		//The port on top of the componen
-		registerInputPort("topport1", types);
+        //The port on top of the componen
+        registerInputPort("topport1", types);
 
-		//The port below the component
-		registerInputPort("bottomport1", types);
-	};
+        //The port below the component
+        registerInputPort("bottomport1", types);
+    };
 
-	virtual void initialize() = 0;
-	virtual void processMessageFromAbove(boost::shared_ptr<StackDataSet> set) = 0;
-	virtual void processMessageFromBelow(boost::shared_ptr<StackDataSet> set) = 0;
+    virtual void initialize() = 0;
+    virtual void processMessageFromAbove(boost::shared_ptr<StackDataSet> set) = 0;
+    virtual void processMessageFromBelow(boost::shared_ptr<StackDataSet> set) = 0;
 
-	//May be implemented in derived classes if required
-	virtual void start(){};
-	virtual void stop(){};
+    //May be implemented in derived classes if required
+    virtual void start(){};
+    virtual void stop(){};
 };
 
 } /* namespace iris */

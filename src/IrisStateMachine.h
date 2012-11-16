@@ -1,14 +1,36 @@
-/*
- * This file is part of Iris 2.
+/**
+ * @file IrisStateMachine.h
+ * @version 1.0
+ *
+ * @section COPYRIGHT
+ *
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * @section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
  * 
- * Copyright (C) 2009 The Provost, Fellows and Scholars of the 
- * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin. 
- * All rights reserved.
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
  * 
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * @section DESCRIPTION
+ *
+ * State Machine for Iris Launcher using the boost statechart library.
  */
 
-// State Machine for IRIS launcher using the boost statechart library
-//
 // Machine graph:
 //
 //  ---------------------------------------
@@ -88,9 +110,9 @@ struct IrisStateMachine : boost::statechart::state_machine< IrisStateMachine, Ac
     void setRadioConfig(std::string radioConfig) { d_radioConfig = radioConfig; }
     //! return XML radio configuration
     std::string getRadioConfig() const { return d_radioConfig; }
-	//! set radio Stack component repository
+    //! set radio Stack component repository
     void setStackRadioRepository(std::string radioRepository) { d_stackRadioRepository = radioRepository; }
-	//! return radio Stack component repository
+    //! return radio Stack component repository
     std::string getStackRadioRepository() const { return d_stackRadioRepository; }
     //! set radio PN component repository
     void setPnRadioRepository(std::string radioRepository) { d_pnRadioRepository = radioRepository; }
@@ -100,26 +122,26 @@ struct IrisStateMachine : boost::statechart::state_machine< IrisStateMachine, Ac
     void setSdfRadioRepository(std::string radioRepository) { d_sdfRadioRepository = radioRepository; }
     //! return radio SDF component repository
     std::string getSdfRadioRepository() const { return d_sdfRadioRepository; }
-	//! set radio Controller repository
+    //! set radio Controller repository
     void setContRadioRepository(std::string radioRepository) { d_contRadioRepository = radioRepository; }
     //! return radio Controller repository
     std::string getContRadioRepository() const { return d_contRadioRepository; }
     //! set log level
-	void setLogLevel(std::string level) { d_logLevel = level; }
-	//! return log level
-	std::string getLogLevel() const { return d_logLevel; }
+    void setLogLevel(std::string level) { d_logLevel = level; }
+    //! return log level
+    std::string getLogLevel() const { return d_logLevel; }
     //! Reconfigure the radio
     void reconfigureRadio();
 private:
     //! stores the XML radio configuration
     std::string d_radioConfig;
-	//! stores the radio Stack component repository
+    //! stores the radio Stack component repository
     std::string d_stackRadioRepository;
     //! stores the radio PN component repository
     std::string d_pnRadioRepository;
     //! stores the radio SDF component repository
     std::string d_sdfRadioRepository;
-	//! stores the radio Controller repository
+    //! stores the radio Controller repository
     std::string d_contRadioRepository;
     //! stores the log level
     std::string d_logLevel;

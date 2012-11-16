@@ -1,22 +1,34 @@
-/*
- * This file is part of Iris 2.
- * 
- * Copyright (C) 2009 The Provost, Fellows and Scholars of the 
- * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin. 
- * All rights reserved.
- * 
- */
-
 /**
- * \file StackEngine.h
- * The Stack engine
+ * @file StackEngine.h
+ * @version 1.0
  *
- *  Created on: 1-Mar-2010
- *  Created by: suttonp
- *  $Revision: 1308 $
- *  $LastChangedDate: 2011-09-12 13:19:19 +0100 (Mon, 12 Sep 2011) $
- *  $LastChangedBy: suttonp $
+ * @section COPYRIGHT
  *
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * @section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ * 
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * @section DESCRIPTION
+ *
+ * The StackEngine class implements a network stack engine for the Iris framework.
  */
 
 #ifndef STACKENGINE_H_
@@ -56,11 +68,11 @@ private:
     //! The StackComponents running within this engine
     std::vector< boost::shared_ptr<StackComponent> > d_components;
 
-	//! The StackInTranslators running within this engine
-	std::vector< boost::shared_ptr<StackInTranslator> > d_inTranslators;
+    //! The StackInTranslators running within this engine
+    std::vector< boost::shared_ptr<StackInTranslator> > d_inTranslators;
 
-	//! The StackOutTranslators running within this engine
-	std::vector< boost::shared_ptr<StackOutTranslator> > d_outTranslators;
+    //! The StackOutTranslators running within this engine
+    std::vector< boost::shared_ptr<StackOutTranslator> > d_outTranslators;
 
     //! The DataBuffers for the external links into and out of this engine
     std::vector< boost::shared_ptr< DataBufferBase > > d_engInputBuffers;
@@ -70,15 +82,15 @@ private:
     std::string d_engineName;
 
     //! The component manager for this engine
-	boost::scoped_ptr< StackComponentManager > d_compManager;
+    boost::scoped_ptr< StackComponentManager > d_compManager;
 
-	//! The interface to the owner of this engine
-	EngineCallbackInterface *d_engineManager;
+    //! The interface to the owner of this engine
+    EngineCallbackInterface *d_engineManager;
 
     // Helper functions
-	void createExternalLink(LinkDescription& l);
+    void createExternalLink(LinkDescription& l);
     bool sameLink(LinkDescription first, LinkDescription second) const;
-	boost::shared_ptr< StackComponent > findComponent(std::string name);
+    boost::shared_ptr< StackComponent > findComponent(std::string name);
 
     //! Check that a given graph complies with the policies of this engine
     void checkGraph(RadioGraph& graph);
@@ -97,7 +109,7 @@ public:
     //! dtor
     ~StackEngine();
 
-	void setEngineManager(EngineCallbackInterface *e);
+    void setEngineManager(EngineCallbackInterface *e);
 
     /** Load the engine
     *   \param eng          Description of the engine
@@ -112,7 +124,7 @@ public:
     std::string getName() const;
     void addReconfiguration(ReconfigSet reconfigs);
     void postCommand(Command command);
-	void activateEvent(Event &e);
+    void activateEvent(Event &e);
 
 };
 

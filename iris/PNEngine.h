@@ -1,22 +1,34 @@
-/*
- * This file is part of Iris 2.
- * 
- * Copyright (C) 2009 The Provost, Fellows and Scholars of the 
- * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin. 
- * All rights reserved.
- * 
- */
-
 /**
- * \file PNEngine.h
- * The Process Network engine
+ * @file PNEngine.h
+ * @version 1.0
  *
- *  Created on: 2-Jan-2009
- *  Created by: suttonp
- *  $Revision: 1308 $
- *  $LastChangedDate: 2011-09-12 13:19:19 +0100 (Mon, 12 Sep 2011) $
- *  $LastChangedBy: suttonp $
+ * @section COPYRIGHT
  *
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * @section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ * 
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * @section DESCRIPTION
+ *
+ * The PNEngine implements a process network engine for the Iris framework.
  */
 
 #ifndef PNENGINE_H_
@@ -44,13 +56,13 @@ class PNComponentManager;
 
 /** The PNEngine class implements a process network engine for the IRIS framework.
 *
-*	Each PNEngine runs its own thread of execution and serves one or more PNComponents.
+*    Each PNEngine runs its own thread of execution and serves one or more PNComponents.
 */
 class PNEngine:public EngineInterface, public ComponentCallbackInterface
 {
 private:
-	//! The component manager for this engine
-	boost::scoped_ptr< PNComponentManager > d_compManager;
+    //! The component manager for this engine
+    boost::scoped_ptr< PNComponentManager > d_compManager;
 
     //! Handle for this engine's thread of execution
     boost::scoped_ptr< boost::thread > d_thread;
@@ -62,7 +74,7 @@ private:
     std::vector< boost::shared_ptr<PNComponent> > d_components;
 
     //! The DataBuffers for the internal links between components of this engine
-	std::vector< boost::shared_ptr< DataBufferBase > > d_internalBuffers;
+    std::vector< boost::shared_ptr< DataBufferBase > > d_internalBuffers;
 
     //! The DataBuffers for the external links into and out of this engine
     std::vector< boost::shared_ptr< DataBufferBase > > d_engInputBuffers;
@@ -74,13 +86,13 @@ private:
     //! The reconfiguration message queue for this engine
     MessageQueue< ReconfigSet > d_reconfigQueue;
 
-	//! The interface to the owner of this engine
-	EngineCallbackInterface *d_engineManager;
+    //! The interface to the owner of this engine
+    EngineCallbackInterface *d_engineManager;
 
 
     //! Helper functions
      boost::shared_ptr< DataBufferBase >  createDataBuffer(int type) const;
-	 boost::shared_ptr< DataBufferBase >  createPNDataBuffer(int type) const;
+     boost::shared_ptr< DataBufferBase >  createPNDataBuffer(int type) const;
     bool sameLink(LinkDescription first, LinkDescription second) const;
 
     //! The internal loop which this engine's thread executes
@@ -102,7 +114,7 @@ public:
     //! dtor
     ~PNEngine();
 
-	void setEngineManager(EngineCallbackInterface *e);
+    void setEngineManager(EngineCallbackInterface *e);
 
     /** Load the engine
     *   \param eng          Description of the engine
@@ -117,7 +129,7 @@ public:
     std::string getName() const;
     void addReconfiguration(ReconfigSet reconfigs);
     void postCommand(Command command);
-	void activateEvent(Event &e);
+    void activateEvent(Event &e);
 
 };
 

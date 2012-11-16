@@ -1,22 +1,35 @@
-/*
- * This file is part of Iris 2.
- * 
- * Copyright (C) 2009 The Provost, Fellows and Scholars of the 
- * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin. 
- * All rights reserved.
- * 
- */
-
 /**
- * \file StackDataBuffer.h
- * The StackDataBuffer which exists on all links between components in an iris StackEngine.
+ * @file StackDataBuffer.h
+ * @version 1.0
  *
- *  Created on: 1-Mar-2010
- *  Created by: suttonp
- *  $Revision: 1308 $
- *  $LastChangedDate: 2011-09-12 13:19:19 +0100 (Mon, 12 Sep 2011) $
- *  $LastChangedBy: suttonp $
+ * @section COPYRIGHT
  *
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * @section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * @section DESCRIPTION
+ *
+ * The StackDataBuffer which exists on all links between components in an
+ * Iris StackEngine.
  */
 
 #ifndef STACKDATABUFFER_H_
@@ -40,16 +53,16 @@ enum Source { ABOVE, BELOW };
 /*!
 *   \brief The StackDataSet class implements a set of data which is passed between StackComponents.
 *
-*	A dequeue of uint8_t is used to store data - this provides efficient addition of data at the front and back.
+*    A dequeue of uint8_t is used to store data - this provides efficient addition of data at the front and back.
 */
 struct StackDataSet
 {
-	Source source;
-	std::deque<uint8_t> data;
-	double timeStamp;
-	std::string lastComponent;
-	
-	//! Constructor initializes our variables
+    Source source;
+    std::deque<uint8_t> data;
+    double timeStamp;
+    std::string lastComponent;
+    
+    //! Constructor initializes our variables
     StackDataSet(double t=0)
         :timeStamp(t){}
 };
@@ -57,36 +70,36 @@ struct StackDataSet
 /*!
 *   \brief The StackDataBuffer class implements a buffer which exists between two IRIS components in a StackEngine.
 *
-*	The buffer consists of a queue of pointers to StackDataSets.
-*	Components can push a StackDataSet to the buffer by calling pushDataSet().
-*	Components can get a DataSet from the buffer by calling popDataSet().
-*	The DataBuffer is thread-safe. In the event that the buffer is full, PushDataSet() will block.
-*	In the event that the buffer is empty, PopDataSet() will block.
+*    The buffer consists of a queue of pointers to StackDataSets.
+*    Components can push a StackDataSet to the buffer by calling pushDataSet().
+*    Components can get a DataSet from the buffer by calling popDataSet().
+*    The DataBuffer is thread-safe. In the event that the buffer is full, PushDataSet() will block.
+*    In the event that the buffer is empty, PopDataSet() will block.
 */
 class StackDataBuffer
 {
 
 private:
     //! The queue of StackDataSet pointers
-	std::queue< boost::shared_ptr<StackDataSet> > d_buffer;
+    std::queue< boost::shared_ptr<StackDataSet> > d_buffer;
 
-	//! Max number of items in the queue
-	unsigned d_maxBufferSize;
+    //! Max number of items in the queue
+    unsigned d_maxBufferSize;
 
     mutable boost::mutex d_mutex;
-	boost::condition_variable notEmptyVariable;
-	boost::condition_variable notFullVariable;
+    boost::condition_variable notEmptyVariable;
+    boost::condition_variable notFullVariable;
 
 public:
 
     /*!
     *   \brief Constructor
-	*
-	*   \param maxSize		Max number of elements in queue
+    *
+    *   \param maxSize        Max number of elements in queue
     */
     explicit StackDataBuffer(unsigned maxSize = 10)
-		:d_maxBufferSize(maxSize)
-	{};
+        :d_maxBufferSize(maxSize)
+    {};
 
     virtual ~StackDataBuffer(){};
 
@@ -94,50 +107,50 @@ public:
     bool hasData() const
     {
         boost::mutex::scoped_lock lock(d_mutex);
-		return d_buffer.empty();
+        return d_buffer.empty();
     }
 
     //! Is the buffer full?
     bool isFull() const
     {
-	boost::mutex::scoped_lock(d_mutex);
-	return (d_buffer.size() >= d_maxBufferSize);
+    boost::mutex::scoped_lock(d_mutex);
+    return (d_buffer.size() >= d_maxBufferSize);
     }
-	
+    
     /*!
     *   \brief Get a StackDataSet from the queue
     *
-	*	\return A boost::shared_ptr to a StackDataSet
+    *    \return A boost::shared_ptr to a StackDataSet
     */
-	boost::shared_ptr<StackDataSet> popDataSet() throw(boost::thread_interrupted)
+    boost::shared_ptr<StackDataSet> popDataSet() throw(boost::thread_interrupted)
     {
         boost::mutex::scoped_lock lock(d_mutex);
         while(d_buffer.empty())
         {
             notEmptyVariable.wait(lock);
         }
-		boost::shared_ptr<StackDataSet> p = d_buffer.front();
-		d_buffer.pop();
-		lock.unlock();
-		notFullVariable.notify_one();
-		return p;
+        boost::shared_ptr<StackDataSet> p = d_buffer.front();
+        d_buffer.pop();
+        lock.unlock();
+        notFullVariable.notify_one();
+        return p;
     };
 
     /*!
     *   \brief Add a StackDataSet to a queue
     *
-    *   \param set	A boost::shared_ptr to a StackDataSet
+    *   \param set    A boost::shared_ptr to a StackDataSet
     */
-	void pushDataSet( boost::shared_ptr<StackDataSet> set) throw(boost::thread_interrupted)
+    void pushDataSet( boost::shared_ptr<StackDataSet> set) throw(boost::thread_interrupted)
     {
         boost::mutex::scoped_lock lock(d_mutex);
-		while(d_buffer.size() >= d_maxBufferSize)
+        while(d_buffer.size() >= d_maxBufferSize)
         {
             notFullVariable.wait(lock);
         }
-		d_buffer.push(set);
-		lock.unlock();
-		notEmptyVariable.notify_one();
+        d_buffer.push(set);
+        lock.unlock();
+        notEmptyVariable.notify_one();
     };
 };
 

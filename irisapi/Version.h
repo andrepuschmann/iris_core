@@ -1,21 +1,35 @@
-/*
- * This file is part of Iris 2.
- *
- * Copyright (C) 2009 The Provost, Fellows and Scholars of the
- * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin.
- * All rights reserved.
- *
- */
-
 /**
- * \file Version.h
- * A simple version number system to ensure core and modules are built with the same API
+ * @file Version.h
+ * @version 1.0
  *
- *  Created on: 07-Aug-2009
- *  Created by: suttonp
- *  $Revision: 1308 $
- *  $LastChangedDate: 2011-09-12 13:19:19 +0100 (Mon, 12 Sep 2011) $
- *  $LastChangedBy: suttonp $
+ * @section COPYRIGHT
+ *
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * @section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * @section DESCRIPTION
+ *
+ * A simple version number system to ensure core and modules are built
+ * against the same API.
  */
 
 #ifndef VERSION_H_
@@ -23,15 +37,15 @@
 
 namespace iris
 {
-	class Version
-	{
-	public:
-		static const char* getApiVersion()
-		{
-			return "0.0.16";
-		};
+    class Version
+    {
+    public:
+        static const char* getApiVersion()
+        {
+            return "0.0.16";
+        };
 
-	};
+    };
 
 } /* namespace iris */
 

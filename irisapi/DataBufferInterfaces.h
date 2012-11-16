@@ -1,22 +1,34 @@
-/*
- * This file is part of Iris 2.
- * 
- * Copyright (C) 2009 The Provost, Fellows and Scholars of the 
- * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin. 
- * All rights reserved.
- * 
- */
-
 /**
- * \file DataBufferInterfaces.h
+ * @file DataBufferInterfaces.h
+ * @version 1.0
+ *
+ * @section COPYRIGHT
+ *
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * @section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * @section DESCRIPTION
+ *
  * Interfaces to the DataBuffer class for reading and writing clients.
- *
- *  Created on: 12-Dec-2008
- *  Created by: suttonp
- *  $Revision: 1308 $
- *  $LastChangedDate: 2011-09-12 13:19:19 +0100 (Mon, 12 Sep 2011) $
- *  $LastChangedBy: suttonp $
- *
  */
 
 #ifndef DATABUFFERINTERFACES_H_
@@ -31,8 +43,8 @@ namespace iris
 
 /** The DataSet struct wraps a block of data being used within the IRIS system.
 *
-*	Each DataBuffer between two components will contain a vector of DataSets which can be written and read
-*	by those components.
+*    Each DataBuffer between two components will contain a vector of DataSets which can be written and read
+*    by those components.
 */
 template <typename T>
 struct DataSet{
@@ -48,7 +60,7 @@ struct DataSet{
 
 /** The DataBufferBase class allows us to store vectors of DataBuffers of different types
 *
-*	The DataBuffer class inherits from this base class. The typeIdentifier specifies
+*    The DataBuffer class inherits from this base class. The typeIdentifier specifies
 *   the type of the derived class.
 */
 class DataBufferBase : boost::noncopyable
@@ -63,7 +75,7 @@ public:
 
 /** The ReadBufferBase class allows us to store vectors of ReadBuffers of different types
 *
-*	The ReadBuffer and DataBuffer inherit from this base class. The typeIdentifier specifies
+*    The ReadBuffer and DataBuffer inherit from this base class. The typeIdentifier specifies
 *   the type of the derived classes.
 */
 class ReadBufferBase:public virtual DataBufferBase
@@ -71,7 +83,7 @@ class ReadBufferBase:public virtual DataBufferBase
 
 /** The WriteBufferBase class allows us to store vectors of WriteBuffers of different types
 *
-*	The WriteBuffer and DataBuffer inherit from this base class. The typeIdentifier specifies
+*    The WriteBuffer and DataBuffer inherit from this base class. The typeIdentifier specifies
 *   the type of the derived classes.
 */
 class WriteBufferBase:public virtual DataBufferBase

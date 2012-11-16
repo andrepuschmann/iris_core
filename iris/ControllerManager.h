@@ -1,21 +1,34 @@
-/*
- * This file is part of Iris 2.
- * 
- * Copyright (C) 2009 The Provost, Fellows and Scholars of the 
- * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin. 
- * All rights reserved.
- * 
- */
-
 /**
- * \file ControllerManager.h
+ * @file ControllerManager.h
+ * @version 1.0
  *
- *  Created on: 19-May-2009
- *  Created by: sutttonp
- *  $Revision: 1308 $
- *  $LastChangedDate: 2011-09-12 13:19:19 +0100 (Mon, 12 Sep 2011) $
- *  $LastChangedBy: suttonp $
+ * @section COPYRIGHT
  *
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * @section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ * 
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * @section DESCRIPTION
+ *
+ * The ControllerManager manages all controllers running within the Iris architecture.
  */
 
 #ifndef CONTROLLERMANAGER_H_
@@ -47,10 +60,10 @@ typedef void (*DESTROYCONTROLLERFUNCTION)(Controller*);
 //! A loaded controller object
 struct LoadedController
 {
-	std::string name;
-	boost::shared_ptr< Controller > contPtr;
+    std::string name;
+    boost::shared_ptr< Controller > contPtr;
 
-	LoadedController(std::string name, boost::shared_ptr< Controller > contPtr)
+    LoadedController(std::string name, boost::shared_ptr< Controller > contPtr)
         :name(name), contPtr(contPtr){}
 };
 
@@ -79,44 +92,44 @@ struct ControllerRepository
 class ControllerManager: public ControllerCallbackInterface
 {
 private:
-	std::vector< LoadedController > d_loadedControllers;
-	std::vector<ControllerRepository> d_repositories;
-	ControllerManagerCallbackInterface* d_engineManager;
+    std::vector< LoadedController > d_loadedControllers;
+    std::vector<ControllerRepository> d_repositories;
+    ControllerManagerCallbackInterface* d_engineManager;
 
-	/** Map of events to subscribed controllers
-	*
-	*	The keys for the map are formed by concatonating the component name with the event name.
-	*	Each key is associated with a vector of Controller* - these are the controllers that have
-	*	subscribed to that event.
-	*/
-	std::map< std::string, std::vector<Controller*> > d_eventMap;
+    /** Map of events to subscribed controllers
+    *
+    *    The keys for the map are formed by concatonating the component name with the event name.
+    *    Each key is associated with a vector of Controller* - these are the controllers that have
+    *    subscribed to that event.
+    */
+    std::map< std::string, std::vector<Controller*> > d_eventMap;
 
 public:
 
     ControllerManager();
 
-	//! Set a pointer to the EngineManager which owns this ControllerManager
-	void setCallbackInterface(ControllerManagerCallbackInterface* e);
+    //! Set a pointer to the EngineManager which owns this ControllerManager
+    void setCallbackInterface(ControllerManagerCallbackInterface* e);
 
-	/** Add a repository
+    /** Add a repository
     *   Multiple repositories can be specified by separating paths with ";"
     *   \param repoPath     Path to the controller repository
     */
     void addRepository(std::string repoPath) throw (ResourceNotFoundException);
 
     /** Load a Controller
-    *   \param	name     Name of Controller to be loaded
+    *   \param    name     Name of Controller to be loaded
     */
-	void loadController(std::string name) throw (IrisException);
+    void loadController(std::string name) throw (IrisException);
 
-	//! Start all Controllers
-	void startControllers() throw (IrisException);
+    //! Start all Controllers
+    void startControllers() throw (IrisException);
 
-	//! Stop all Controllers
-	void stopControllers() throw (IrisException);
+    //! Stop all Controllers
+    void stopControllers() throw (IrisException);
 
-	//! Unload all Controllers
-	void unloadControllers() throw (IrisException);
+    //! Unload all Controllers
+    void unloadControllers() throw (IrisException);
 
     /** Check whether a controller exists
     *   \param  name    The name of the component to look for
@@ -126,23 +139,23 @@ public:
     //! Get all the repositories which are available
     std::vector<boost::filesystem::path> getRepositories();
 
-	//! Activate an event
-	void activateEvent(Event &e);
+    //! Activate an event
+    void activateEvent(Event &e);
 
-	//! Reconfigure the radio
-	virtual void reconfigureRadio(ReconfigSet reconfigs);
+    //! Reconfigure the radio
+    virtual void reconfigureRadio(ReconfigSet reconfigs);
 
-	//! Post a command to a component
-	virtual void postCommand(Command command);
+    //! Post a command to a component
+    virtual void postCommand(Command command);
 
-	//! Get the value of a parameter
-	std::string getParameterValue(std::string paramName, std::string componentName);
+    //! Get the value of a parameter
+    std::string getParameterValue(std::string paramName, std::string componentName);
 
-	//! Subscribe to an event (Called by controllers)
-	virtual void subscribeToEvent(std::string eventName, std::string componentName, Controller* cont);
+    //! Subscribe to an event (Called by controllers)
+    virtual void subscribeToEvent(std::string eventName, std::string componentName, Controller* cont);
 
-	//! Utility function used for logging
-	std::string getName(){return "ControllerManager";}
+    //! Utility function used for logging
+    std::string getName(){return "ControllerManager";}
 
 };
 

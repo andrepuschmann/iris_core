@@ -1,21 +1,34 @@
-/*
- * This file is part of Iris 2.
- * 
- * Copyright (C) 2009 The Provost, Fellows and Scholars of the 
- * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin. 
- * All rights reserved.
- * 
- */
-
 /**
- * \file SharedLibrary.h
- * Class for managing shared libraries
+ * @file SharedLibrary.h
+ * @version 1.0
  *
- *  Created on: 08-Mar-2009
- *  Created by: lotzej
- *  $Revision: 1377 $
- *  $LastChangedDate: 2011-11-22 18:40:00 +0000 (Tue, 22 Nov 2011) $
- *  $LastChangedBy: suttonp $
+ * @section COPYRIGHT
+ *
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * @section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ * 
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * @section DESCRIPTION
+ *
+ * The SharedLibrary manages shared libraries in a portable fashion.
  */
 
 #ifndef _IRIS_SHAREDLIBRARY_H
@@ -107,27 +120,27 @@ namespace iris
         //! That is, in Windows, returns "dll", Linux: "so", Mac: "dylib", etc.
         static std::string getSystemExtension()
         {
-			#if defined(_WIN32) || defined(__CYGWIN__)
-				return ".dll";
-			#elif defined(__unix__)
-				return ".so";
-			#elif defined(__APPLE__)
-				return ".dylib";
-			#endif
+            #if defined(_WIN32) || defined(__CYGWIN__)
+                return ".dll";
+            #elif defined(__unix__)
+                return ".so";
+            #elif defined(__APPLE__)
+                return ".dylib";
+            #endif
         }
 
         //! Returns the standard system prefix for shared libraries.
-		//! That is, in Windows, returns "", Linux: "lib", Mac: "", etc.
-		static std::string getSystemPrefix()
-		{
-			#if defined(_WIN32) || defined(__CYGWIN__)
-				return "";
-			#elif defined(__unix__)
-				return "lib";
-			#elif defined(__APPLE__)
-				return "";
-			#endif
-		}
+        //! That is, in Windows, returns "", Linux: "lib", Mac: "", etc.
+        static std::string getSystemPrefix()
+        {
+            #if defined(_WIN32) || defined(__CYGWIN__)
+                return "";
+            #elif defined(__unix__)
+                return "lib";
+            #elif defined(__APPLE__)
+                return "";
+            #endif
+        }
 
     private:
 

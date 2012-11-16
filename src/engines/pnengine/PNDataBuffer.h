@@ -1,22 +1,34 @@
-/*
- * This file is part of Iris 2.
- * 
- * Copyright (C) 2009 The Provost, Fellows and Scholars of the 
- * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin. 
- * All rights reserved.
- * 
- */
-
 /**
- * \file PNDataBuffer.h
+ * @file PNDataBuffer.h
+ * @version 1.0
+ *
+ * @section COPYRIGHT
+ *
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * @section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ * 
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * @section DESCRIPTION
+ *
  * The PNDataBuffer which exists on links internal to a PNEngine.
- *
- *  Created on: 24-Aug-2009
- *  Created by: suttonp
- *  $Revision: 1317 $
- *  $LastChangedDate: 2011-09-13 13:01:51 +0100 (Tue, 13 Sep 2011) $
- *  $LastChangedBy: suttonp $
- *
  */
 
 #ifndef PNDATABUFFER_H_
@@ -31,15 +43,15 @@ namespace iris
 
 /*!
 *   \brief The PNDataBuffer class implements a buffer which exists between two IRIS components within a single 
-*	PNEngine.
+*    PNEngine.
 *
-*	The buffer consists of a number of DataSet objects which can be written and read by the components.
-*	Components can get a DataSet to write to by calling GetWriteSet(). When finished writing, the component
-*	releases the DataSet by calling ReleaseWriteSet().
-*	Components can get a DataSet to read from by calling GetReadSet(). When finished reading, the component
-*	releases the DataSet by calling ReleaseReadSet().
-*	The PNDataBuffer is NOT thread-safe. It should only be used within a single PNEngine. It is non-blocking.
-*	If a component wishes to write more data sets than are available, the PNDataBuffer will grow.
+*    The buffer consists of a number of DataSet objects which can be written and read by the components.
+*    Components can get a DataSet to write to by calling GetWriteSet(). When finished writing, the component
+*    releases the DataSet by calling ReleaseWriteSet().
+*    Components can get a DataSet to read from by calling GetReadSet(). When finished reading, the component
+*    releases the DataSet by calling ReleaseReadSet().
+*    The PNDataBuffer is NOT thread-safe. It should only be used within a single PNEngine. It is non-blocking.
+*    If a component wishes to write more data sets than are available, the PNDataBuffer will grow.
 */
 template <typename T>
 class PNDataBuffer : public ReadBuffer<T>, public WriteBuffer<T>
@@ -116,17 +128,17 @@ public:
     void getWriteData(DataSet<T>*& setPtr, std::size_t size) throw(DataBufferReleaseException, boost::thread_interrupted)
     {
         if(d_isWriteLocked)
-			throw DataBufferReleaseException("getWriteData() called before previous DataSet was released");
-		if(!d_notFull)
-		{
-			//If buffer is full, add a new DataSet
-			d_buffer.push_back(DataSet<T>());
-			d_writeIndex = d_buffer.size()-1;
-		}
+            throw DataBufferReleaseException("getWriteData() called before previous DataSet was released");
+        if(!d_notFull)
+        {
+            //If buffer is full, add a new DataSet
+            d_buffer.push_back(DataSet<T>());
+            d_writeIndex = d_buffer.size()-1;
+        }
         d_isWriteLocked = true;
         if(d_buffer[d_writeIndex].data.size() != size)
             d_buffer[d_writeIndex].data.resize(size);
-		d_buffer[d_writeIndex].timeStamp = 0;
+        d_buffer[d_writeIndex].timeStamp = 0;
         setPtr = &d_buffer[d_writeIndex];
     };
 

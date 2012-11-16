@@ -8,13 +8,13 @@ notice_m4=$(cat copyright_notice | awk 'BEGIN {print "#"} {print "# " $0}')
 # awk script to extract the copyright notice of a C/C++ file
 extract_notice_cpp_awk='
 BEGIN {
-	start=0;
-	copy=0;
-	ready=0;
-	startline=0
-	endline=0
-	str="";
-	content=""
+    start=0;
+    copy=0;
+    ready=0;
+    startline=0
+    endline=0
+    str="";
+    content=""
 }
 
 $0 ~ /.*\/\*.*/ && !ready && !start { start=1 ; str="" ; startline=NR} 
@@ -23,25 +23,25 @@ start {str = str $0 "\n" }
 $0 ~/.*\*\/.*/ && start { start=0 ; if (copy) {ready=1 ; endline=NR } } 
 
 END {
-	if (str != "") {
-		printf "%s", str;
-		printf "Lines %d:%d\n", startline, endline+1;
-	}
-	else
-		exit 1
+    if (str != "") {
+        printf "%s", str;
+        printf "Lines %d:%d\n", startline, endline+1;
+    }
+    else
+        exit 1
 }
 '
 
 # awk script to extract the copyright notice of a m4/Makefile file
 extract_notice_m4_awk='
 BEGIN {
-	start=0;
-	copy=0;
-	ready=0;
-	startline=0
-	endline=0
-	str="";
-	content=""
+    start=0;
+    copy=0;
+    ready=0;
+    startline=0
+    endline=0
+    str="";
+    content=""
 }
 
 $0 ~ /^#/ && !ready && !start { start=1 ; str="" ; startline=NR} 
@@ -50,12 +50,12 @@ start {str = str $0 "\n" }
 $0 !~/^#/ && start { start=0 ; if (copy) {ready=1 ; endline=NR } } 
 
 END {
-	if (str != "") {
-		printf "%s", str;
-		printf "Lines %d:%d\n", startline, endline;
-	}
-	else
-		exit 1
+    if (str != "") {
+        printf "%s", str;
+        printf "Lines %d:%d\n", startline, endline;
+    }
+    else
+        exit 1
 }
 '
 
@@ -70,33 +70,33 @@ printed = 0;
 NR > end { done=1}
 
 {
-	if (NR >=start && NR <= end && !done) 
-	{
-		if (!printed)
-		{
-			print notice ;
-		        printf "\n";	
-			printed=1;
-		}
-	}
-	else print
+    if (NR >=start && NR <= end && !done) 
+    {
+        if (!printed)
+        {
+            print notice ;
+                printf "\n";    
+            printed=1;
+        }
+    }
+    else print
 }
 '
 
 set +f
 
 if [ "x$notice_cpp" = "x" ] ; then
-	echo "could not find the copyright notice" 
-	exit 1
+    echo "could not find the copyright notice" 
+    exit 1
 fi
 
 # make sure we are in the right directory
 if [ ! \( -e "configure.in" \) ] ; then
-	cd ..
-	if [ ! \( -e "configure.in" \) ] ; then
-		echo "could not find configure.in - are you in the right directory?"
-		exit 1
-	fi
+    cd ..
+    if [ ! \( -e "configure.in" \) ] ; then
+        echo "could not find configure.in - are you in the right directory?"
+        exit 1
+    fi
 fi
 
 # find all .cpp, .c and .h files (use svn list to make sure files are on svn)
@@ -110,38 +110,38 @@ files=$(echo -e "$files1\n$files2\n$files3" | grep -v ticpp | grep -vi "/fftw" |
 
 # make a backup of all files
 for file in $files ; do
-	cp $file $file~
+    cp $file $file~
 done
 
 # update the copyrights
 pattern="^.*\*.*[C|c]opyright"
 for file in $files ; do
-	if grep -i "$pattern" $file &> /dev/null ; then 
-		# there is a copyright already, confirm and replace it
-		current=$(awk "$extract_notice_cpp_awk" $file | grep -v "^Lines")
-		if echo "$current" | grep -q "Undivided Trinity" ; then
-			echo "replacing copyright in $file"
-		else
-			echo "copyright exists in $file:"
-			echo "$current"
-			echo -n "Replace? [y/N] "
-			read ans
-		
-			if [ "x$ans" != "xy" ] &&  [ "x$ans" != "xY" ] ; then
-				continue
-			fi
-		fi
-		
-		lines=$(awk "$extract_notice_cpp_awk" $file | grep Lines | sed "s/Lines //")
-		start=$(echo $lines | sed "s/:[0-9]*$//")
-		end=$(echo $lines | sed "s/^[0-9]*://")
-		awk -v start="$start" -v end="$end" -v notice="$notice_cpp" "$replace_notice_awk" $file > $file.cpy
-		mv $file.cpy $file
-	else
-		echo "insert copyright: $file"
-		(echo "$notice_cpp" ; echo -e "\n\n" ; cat $file ) > $file.cpy
-		mv $file.cpy $file
-	fi
+    if grep -i "$pattern" $file &> /dev/null ; then 
+        # there is a copyright already, confirm and replace it
+        current=$(awk "$extract_notice_cpp_awk" $file | grep -v "^Lines")
+        if echo "$current" | grep -q "Undivided Trinity" ; then
+            echo "replacing copyright in $file"
+        else
+            echo "copyright exists in $file:"
+            echo "$current"
+            echo -n "Replace? [y/N] "
+            read ans
+        
+            if [ "x$ans" != "xy" ] &&  [ "x$ans" != "xY" ] ; then
+                continue
+            fi
+        fi
+        
+        lines=$(awk "$extract_notice_cpp_awk" $file | grep Lines | sed "s/Lines //")
+        start=$(echo $lines | sed "s/:[0-9]*$//")
+        end=$(echo $lines | sed "s/^[0-9]*://")
+        awk -v start="$start" -v end="$end" -v notice="$notice_cpp" "$replace_notice_awk" $file > $file.cpy
+        mv $file.cpy $file
+    else
+        echo "insert copyright: $file"
+        (echo "$notice_cpp" ; echo -e "\n\n" ; cat $file ) > $file.cpy
+        mv $file.cpy $file
+    fi
 done
 
 # find all .m4 and Makefile.am files
@@ -157,37 +157,37 @@ files=$(echo -e "$files1\n$files3" | grep -v ticpp | grep -vi "/fftw" \
 
 # make a backup of all files
 for file in $files ; do
-	cp $file $file~
+    cp $file $file~
 done
 
 # update the copyrights
 pattern="^#.*[C|c]opyright"
 for file in $files ; do
-	if grep -i "$pattern" $file &> /dev/null ; then 
-		# there is a copyright already, confirm and replace it
-		current=$(awk "$extract_notice_m4_awk" $file | grep -v "^Lines")
-		if echo "$current" | grep -q "Undivided Trinity"  ; then
-			echo "replacing copyright in $file"
-		else
-			echo "copyright exists in $file:"
-			echo "$current"
-			echo -n "Replace? [y/N] "
-			read ans
-		
-			if [ "x$ans" != "xy" ] &&  [ "x$ans" != "xY" ] ; then
-				continue
-			fi
-		fi
-		
-		lines=$(awk "$extract_notice_m4_awk" $file | grep Lines | sed "s/Lines //")
-		start=$(echo $lines | sed "s/:[0-9]*$//")
-		end=$(echo $lines | sed "s/^[0-9]*://")
-		awk -v start="$start" -v end="$end" -v notice="$notice_m4" "$replace_notice_awk"  $file > $file.cpy
-		mv $file.cpy $file
-	else
-		echo "insert copyright: $file"
-		(echo "$notice_m4" ; echo -e "\n\n" ; cat $file ) > $file.cpy
-		mv $file.cpy $file
-	fi
+    if grep -i "$pattern" $file &> /dev/null ; then 
+        # there is a copyright already, confirm and replace it
+        current=$(awk "$extract_notice_m4_awk" $file | grep -v "^Lines")
+        if echo "$current" | grep -q "Undivided Trinity"  ; then
+            echo "replacing copyright in $file"
+        else
+            echo "copyright exists in $file:"
+            echo "$current"
+            echo -n "Replace? [y/N] "
+            read ans
+        
+            if [ "x$ans" != "xy" ] &&  [ "x$ans" != "xY" ] ; then
+                continue
+            fi
+        fi
+        
+        lines=$(awk "$extract_notice_m4_awk" $file | grep Lines | sed "s/Lines //")
+        start=$(echo $lines | sed "s/:[0-9]*$//")
+        end=$(echo $lines | sed "s/^[0-9]*://")
+        awk -v start="$start" -v end="$end" -v notice="$notice_m4" "$replace_notice_awk"  $file > $file.cpy
+        mv $file.cpy $file
+    else
+        echo "insert copyright: $file"
+        (echo "$notice_m4" ; echo -e "\n\n" ; cat $file ) > $file.cpy
+        mv $file.cpy $file
+    fi
 done
 

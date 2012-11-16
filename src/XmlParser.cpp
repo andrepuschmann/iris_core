@@ -1,21 +1,34 @@
-/*
- * This file is part of Iris 2.
- * 
- * Copyright (C) 2009 The Provost, Fellows and Scholars of the 
- * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin. 
- * All rights reserved.
- * 
- */
-
 /**
- * \file XmlParser.cpp
- * Implementation of XmlParser class.
+ * @file XmlParser.cpp
+ * @version 1.0
  *
- *  Created on: 18-Dec-2008
- *  Created by: suttonp
- *  $Revision: 1316 $
- *  $LastChangedDate: 2011-09-13 12:41:16 +0100 (Tue, 13 Sep 2011) $
- *  $LastChangedBy: suttonp $
+ * @section COPYRIGHT
+ *
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * @section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ * 
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * @section DESCRIPTION
+ *
+ * Implementation of XmlParser class used to parse xml radio configurations.
  */
 
 #define TIXML_USE_TICPP
@@ -40,16 +53,16 @@ std::string getName()
 
 LinkDescription readLink(Element &linkElem)
 {
-	//Check for illegal nodes here
-	Iterator< Node > c;
+    //Check for illegal nodes here
+    Iterator< Node > c;
     for ( c = c.begin(&linkElem); c != c.end(); c++ )
     {
-		if(c->Type() == TiXmlNode::ELEMENT)
-		{
-			string s = c->Value();
-			LOG(LFATAL) << "Illegal element in xml file: " << s;
-			throw XmlParsingException("Illegal element in xml file: " + s);
-		}
+        if(c->Type() == TiXmlNode::ELEMENT)
+        {
+            string s = c->Value();
+            LOG(LFATAL) << "Illegal element in xml file: " << s;
+            throw XmlParsingException("Illegal element in xml file: " + s);
+        }
     }
 
     LinkDescription theLink;
@@ -79,23 +92,23 @@ LinkDescription readLink(Element &linkElem)
     boost::to_lower(theLink.sinkPort);
 
     LOG(LINFO) << "Parsed link: " << theLink.sourceComponent << " . " << theLink.sourcePort \
-	    << " -> " << theLink.sinkComponent << " . " << theLink.sinkPort;
+        << " -> " << theLink.sinkComponent << " . " << theLink.sinkPort;
 
     return theLink;
 }
 
 ControllerDescription readController(Element &controllerElem)
 {
-	//Check for illegal nodes here
-	Iterator< Node > c;
+    //Check for illegal nodes here
+    Iterator< Node > c;
     for ( c = c.begin(&controllerElem); c != c.end(); c++ )
     {
-		if(c->Type() == TiXmlNode::ELEMENT)
-		{
-			string s = c->Value();
-			LOG(LFATAL) << "Illegal element in xml file: " << s;
-			throw XmlParsingException("Illegal element in xml file: " + s);
-		}
+        if(c->Type() == TiXmlNode::ELEMENT)
+        {
+            string s = c->Value();
+            LOG(LFATAL) << "Illegal element in xml file: " << s;
+            throw XmlParsingException("Illegal element in xml file: " + s);
+        }
     }
 
     ControllerDescription theController;
@@ -111,19 +124,19 @@ ControllerDescription readController(Element &controllerElem)
 
 ComponentDescription readComponent(Element &componentElem)
 {
-	//Check for illegal nodes here
-	Iterator< Node > c;
+    //Check for illegal nodes here
+    Iterator< Node > c;
     for ( c = c.begin(&componentElem); c != c.end(); c++ )
     {
-		if(c->Type() == TiXmlNode::ELEMENT)
-		{
-			string s = c->Value();
-			if(s != "port" && s != "parameter")
-			{
-				LOG(LFATAL) << "Illegal element in xml file: " << s;
-				throw XmlParsingException("Illegal element in xml file: " + s);
-			}
-		}
+        if(c->Type() == TiXmlNode::ELEMENT)
+        {
+            string s = c->Value();
+            if(s != "port" && s != "parameter")
+            {
+                LOG(LFATAL) << "Illegal element in xml file: " << s;
+                throw XmlParsingException("Illegal element in xml file: " + s);
+            }
+        }
     }
 
     ComponentDescription theComponent;
@@ -139,24 +152,24 @@ ComponentDescription readComponent(Element &componentElem)
     Iterator< Element > child("parameter");
     for ( child = child.begin(&componentElem); child != child.end(); child++ )
     {
-	    ParameterDescription param;
-	    param.name = child->GetAttribute("name");
-	    param.value = child->GetAttribute("value");
+        ParameterDescription param;
+        param.name = child->GetAttribute("name");
+        param.value = child->GetAttribute("value");
         boost::to_lower(param.name);
         boost::to_lower(param.value);
-	    theComponent.parameters.push_back(param);
+        theComponent.parameters.push_back(param);
     }
 
     //Parse all the ports and add to the component description
     Iterator< Element > child2("port");
     for ( child2 = child2.begin(&componentElem); child2 != child2.end(); child2++ )
     {
-	    PortDescription port;
-	    port.name = child2->GetAttribute("name");
-	    port.type = child2->GetAttribute("class");
+        PortDescription port;
+        port.name = child2->GetAttribute("name");
+        port.type = child2->GetAttribute("class");
         boost::to_lower(port.name);
         boost::to_lower(port.type);
-	    theComponent.ports.push_back(port);
+        theComponent.ports.push_back(port);
     }
 
     return theComponent;
@@ -164,19 +177,19 @@ ComponentDescription readComponent(Element &componentElem)
 
 EngineDescription readEngine(Element &engineElem)
 {
-	//Check for illegal elements here
-	Iterator< Node > c;
+    //Check for illegal elements here
+    Iterator< Node > c;
     for ( c = c.begin(&engineElem); c != c.end(); c++ )
     {
-		if(c->Type() == TiXmlNode::ELEMENT)
-		{
-			string s = c->Value();
-			if(s != "component")
-			{
-				LOG(LFATAL) << "Illegal element in xml file: " << s;
-				throw XmlParsingException("Illegal element in xml file: " + s);
-			}
-		}
+        if(c->Type() == TiXmlNode::ELEMENT)
+        {
+            string s = c->Value();
+            if(s != "component")
+            {
+                LOG(LFATAL) << "Illegal element in xml file: " << s;
+                throw XmlParsingException("Illegal element in xml file: " + s);
+            }
+        }
     }
 
     EngineDescription theEngine;
@@ -190,9 +203,9 @@ EngineDescription readEngine(Element &engineElem)
     Iterator< Element > child("component");
     for ( child = child.begin(&engineElem); child != child.end(); child++ )
     {
-	    ComponentDescription comp = readComponent(*child);
-	    comp.engineName = theEngine.name;
-	    theEngine.components.push_back(comp);
+        ComponentDescription comp = readComponent(*child);
+        comp.engineName = theEngine.name;
+        theEngine.components.push_back(comp);
     }
 
     return theEngine;
@@ -200,43 +213,43 @@ EngineDescription readEngine(Element &engineElem)
 
 void readSoftwareRadio(Element &headElem, RadioRepresentation& theRadio)
 {
-	//Check for illegal nodes here
-	Iterator< Node > c;
+    //Check for illegal nodes here
+    Iterator< Node > c;
     for ( c = c.begin(&headElem); c != c.end(); c++ )
     {
-		if(c->Type() == TiXmlNode::ELEMENT)
-		{
-			string s = c->Value();
-			if(s != "controller" && s != "engine" && s!= "link")
-			{
-				LOG(LFATAL) << "Illegal element in xml file: " << s;
-				throw XmlParsingException("Illegal element in xml file: " + s);
-			}
-		}
+        if(c->Type() == TiXmlNode::ELEMENT)
+        {
+            string s = c->Value();
+            if(s != "controller" && s != "engine" && s!= "link")
+            {
+                LOG(LFATAL) << "Illegal element in xml file: " << s;
+                throw XmlParsingException("Illegal element in xml file: " + s);
+            }
+        }
     }
 
-	//Parse all the controllers
+    //Parse all the controllers
     Iterator< Element > child("controller");
     for ( child = child.begin(&headElem); child != child.end(); child++ )
     {
-	    ControllerDescription con = readController(*child);
-	    theRadio.addControllerDescription(con);
+        ControllerDescription con = readController(*child);
+        theRadio.addControllerDescription(con);
     }
 
     //Parse all the engines
     Iterator< Element > child1("engine");
     for ( child1 = child1.begin(&headElem); child1 != child1.end(); child1++ )
     {
-	    EngineDescription eng = readEngine(*child1);
-	    theRadio.addEngineDescription(eng);
+        EngineDescription eng = readEngine(*child1);
+        theRadio.addEngineDescription(eng);
     }
 
     //Parse all the links
     Iterator< Element > child2("link");
     for ( child2 = child2.begin(&headElem); child2 != child2.end(); child2++ )
     {
-	    LinkDescription link = readLink(*child2);
-	    theRadio.addLinkDescription(link);
+        LinkDescription link = readLink(*child2);
+        theRadio.addLinkDescription(link);
     }
 }
 
@@ -251,10 +264,10 @@ Element writeComponent( ComponentDescription &compDesc)
     vector<ParameterDescription>::iterator paramIt;
     for(paramIt=params.begin(); paramIt!=params.end(); paramIt++)
     {
-	    Element currentParam("parameter");
-	    currentParam.SetAttribute("name", paramIt->name);
-	    currentParam.SetAttribute("value", paramIt->value);
-	    e.InsertEndChild(currentParam);
+        Element currentParam("parameter");
+        currentParam.SetAttribute("name", paramIt->name);
+        currentParam.SetAttribute("value", paramIt->value);
+        e.InsertEndChild(currentParam);
     }
 
     //Add all the ports
@@ -262,10 +275,10 @@ Element writeComponent( ComponentDescription &compDesc)
     vector<PortDescription>::iterator portIt;
     for(portIt=ports.begin(); portIt!=ports.end(); portIt++)
     {
-	    Element currentPort("port");
-	    currentPort.SetAttribute("name", portIt->name);
-	    currentPort.SetAttribute("class", portIt->type);
-	    e.InsertEndChild(currentPort);
+        Element currentPort("port");
+        currentPort.SetAttribute("name", portIt->name);
+        currentPort.SetAttribute("class", portIt->type);
+        e.InsertEndChild(currentPort);
     }
 
     return e;
@@ -292,8 +305,8 @@ Element writeEngine( EngineDescription &engDesc)
     vector<ComponentDescription>::iterator compIt;
     for(compIt=components.begin();compIt!=components.end();compIt++)
     {
-	    Element currentComp = writeComponent(*compIt);
-	    e.InsertEndChild(currentComp);
+        Element currentComp = writeComponent(*compIt);
+        e.InsertEndChild(currentComp);
     }
 
     return e;
@@ -311,13 +324,13 @@ Element writeSoftwareRadio( RadioRepresentation &swrDesc)
 {
     Element e("softwareradio");
 
-	//Write all the controllers
+    //Write all the controllers
     vector<ControllerDescription> controllers = swrDesc.getControllers();
     vector<ControllerDescription>::iterator conIt;
     for(conIt=controllers.begin();conIt!=controllers.end();conIt++)
     {
-	    Element currentController = writeController(*conIt);
-	    e.InsertEndChild(currentController);
+        Element currentController = writeController(*conIt);
+        e.InsertEndChild(currentController);
     }
 
     //Write all the engines
@@ -325,8 +338,8 @@ Element writeSoftwareRadio( RadioRepresentation &swrDesc)
     vector<EngineDescription>::iterator engIt;
     for(engIt=engines.begin();engIt!=engines.end();engIt++)
     {
-	    Element currentEngine = writeEngine(*engIt);
-	    e.InsertEndChild(currentEngine);
+        Element currentEngine = writeEngine(*engIt);
+        e.InsertEndChild(currentEngine);
     }
 
     //Write all the links
@@ -334,8 +347,8 @@ Element writeSoftwareRadio( RadioRepresentation &swrDesc)
     vector<LinkDescription>::iterator linkIt;
     for(linkIt=links.begin();linkIt!=links.end();linkIt++)
     {
-	    Element currentLink = writeLink(*linkIt);
-	    e.InsertEndChild(currentLink);
+        Element currentLink = writeLink(*linkIt);
+        e.InsertEndChild(currentLink);
     }
 
     return e;
@@ -348,94 +361,94 @@ Element writeSoftwareRadio( RadioRepresentation &swrDesc)
 void XmlParser::parseXmlFile(std::string filename, RadioRepresentation &radio) throw (XmlParsingException, GraphStructureErrorException)
 {
     try{
-	    Document doc(filename);
-	    doc.LoadFile();
+        Document doc(filename);
+        doc.LoadFile();
 
-	    //Pull out the root element
-	    Element* head = doc.FirstChildElement();
-	    string headValue = head->Value();
-	    if( headValue == "softwareradio")
-	    {
-		    readSoftwareRadio(*head, radio);
-	    }else{
-		    throw XmlParsingException("The root element of the xml configuration must be \"softwareradio\".");
-	    }
+        //Pull out the root element
+        Element* head = doc.FirstChildElement();
+        string headValue = head->Value();
+        if( headValue == "softwareradio")
+        {
+            readSoftwareRadio(*head, radio);
+        }else{
+            throw XmlParsingException("The root element of the xml configuration must be \"softwareradio\".");
+        }
 
-	    //Instruct the radio description to build a graph of the radio
-	    radio.buildGraphs();
+        //Instruct the radio description to build a graph of the radio
+        radio.buildGraphs();
     }
     catch( Exception& ex )
     {
-	    throw XmlParsingException(ex.what());
+        throw XmlParsingException(ex.what());
     }
 }
 
 void XmlParser::parseXmlString( std::string &xml, RadioRepresentation &radio) throw (XmlParsingException, GraphStructureErrorException)
 {
     try{
-	    Document doc;
-	    doc.Parse(xml);
+        Document doc;
+        doc.Parse(xml);
 
-	    //Pull out the root element
-	    Element* head = doc.FirstChildElement();
-	    string headValue = head->Value();
-	    if( headValue == "softwareradio")
-	    {
-		    readSoftwareRadio(*head, radio);
-	    }else{
-		    throw XmlParsingException("The top element of the xml configuration must be softwareradio.");
-	    }
+        //Pull out the root element
+        Element* head = doc.FirstChildElement();
+        string headValue = head->Value();
+        if( headValue == "softwareradio")
+        {
+            readSoftwareRadio(*head, radio);
+        }else{
+            throw XmlParsingException("The top element of the xml configuration must be softwareradio.");
+        }
 
-	    //Instruct the radio description to build a graph of the radio
-	    radio.buildGraphs();
+        //Instruct the radio description to build a graph of the radio
+        radio.buildGraphs();
     }
     catch( Exception& ex )
     {
-	    throw XmlParsingException(ex.what());
+        throw XmlParsingException(ex.what());
     }
 }
 
 void XmlParser::generateXmlFile( RadioRepresentation& radio, std::string filename)
 {
     try{
-	    Document doc(filename);
+        Document doc(filename);
 
-	    //Create a declaration and insert it
-	    Declaration decl("1.0", "utf-8", "yes");
-	    doc.InsertEndChild(decl);
+        //Create a declaration and insert it
+        Declaration decl("1.0", "utf-8", "yes");
+        doc.InsertEndChild(decl);
 
-	    //Create the root softwareradio node and insert it
-	    Element softRad = writeSoftwareRadio(radio);
-	    doc.InsertEndChild(softRad);
+        //Create the root softwareradio node and insert it
+        Element softRad = writeSoftwareRadio(radio);
+        doc.InsertEndChild(softRad);
 
-	    doc.SaveFile();
+        doc.SaveFile();
     }
     catch( Exception& ex )
     {
-	    LOG(LERROR) << ex.what();
+        LOG(LERROR) << ex.what();
     }
 }
 
 void XmlParser::generateXmlString( RadioRepresentation &radio, std::string &xml)
 {
     try{
-	    Document doc;
+        Document doc;
 
-	    //Create a declaration and insert it
-	    Declaration decl("1.0", "utf-8", "yes");
-	    doc.InsertEndChild(decl);
+        //Create a declaration and insert it
+        Declaration decl("1.0", "utf-8", "yes");
+        doc.InsertEndChild(decl);
 
-	    //Create the root softwareradio node and insert it
-	    Element softRad = writeSoftwareRadio(radio);
-	    doc.InsertEndChild(softRad);
+        //Create the root softwareradio node and insert it
+        Element softRad = writeSoftwareRadio(radio);
+        doc.InsertEndChild(softRad);
 
-	    stringstream ss;
-	    ss << doc;
-	    xml = ss.str();
+        stringstream ss;
+        ss << doc;
+        xml = ss.str();
     }
     catch( Exception& ex )
     {
-	    LOG(LERROR) << ex.what();
+        LOG(LERROR) << ex.what();
     }
 }
 

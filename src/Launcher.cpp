@@ -1,22 +1,37 @@
-/*
- * This file is part of Iris 2.
+/**
+ * @file Launcher.cpp
+ * @version 1.0
+ *
+ * @section COPYRIGHT
+ *
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * @section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
  * 
- * Copyright (C) 2009 The Provost, Fellows and Scholars of the 
- * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin. 
- * All rights reserved.
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
  * 
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * @section DESCRIPTION
+ *
+ * The Launcher command line application which can be used to run
+ * Iris. Uses the C interface defined in Iris.h.
  */
 
-/**
- * \file Launcher.cpp
- * The launcher application which runs the IRISV2 system
- *
- *  Created on: 12-Jan-2009
- *  Created by: suttonp, lotzej
- *  $Revision: 1316 $
- *  $LastChangedDate: 2011-09-13 12:41:16 +0100 (Tue, 13 Sep 2011) $
- *  $LastChangedBy: suttonp $
- */
 #include "IrisStateMachine.h"
 
 #include <iostream>
@@ -44,8 +59,8 @@ public:
     //! destructor
     ~Launcher();
 
-	//! pause the console
-	static void pauseConsole();
+    //! pause the console
+    static void pauseConsole();
     //! parses the command line options
     void parseOptions(int argc, char* argv[]) throw (po::error, LauncherException);
     //! prints status info (repository dir, radio config, etc.)
@@ -60,13 +75,13 @@ public:
 private:
     //! XML radio configuration
     string d_radioConfig;
-	//! path to the Stack component repository
+    //! path to the Stack component repository
     string d_stackRepoPath;
     //! path to the PN component repository
     string d_pnRepoPath;
     //! path to the SDF component repository
     string d_sdfRepoPath;
-	//! path to the controller repository
+    //! path to the controller repository
     string d_contRepoPath;
     //! log level
     string d_logLevel;
@@ -94,20 +109,20 @@ int main(int argc, char* argv[])
     }
     catch (po::error& err)
     {
-		cerr << "Launcher: Program options error: " << err.what() << endl;
-		Launcher::pauseConsole();
+        cerr << "Launcher: Program options error: " << err.what() << endl;
+        Launcher::pauseConsole();
         return EXIT_FAILURE;
     }
-    catch (LauncherException ex)
+    catch (LauncherException& ex)
     {
-		cerr << "Launcher: Error: " << ex.what() << endl;
-		Launcher::pauseConsole();
+        cerr << "Launcher: Error: " << ex.what() << endl;
+        Launcher::pauseConsole();
         return EXIT_FAILURE;
     }
     catch (...)
     {
-		cerr << "Launcher: Unexpected error - exiting" << endl;
-		Launcher::pauseConsole();
+        cerr << "Launcher: Unexpected error - exiting" << endl;
+        Launcher::pauseConsole();
         return EXIT_FAILURE;
     }
 
@@ -117,8 +132,8 @@ int main(int argc, char* argv[])
 
 Launcher::Launcher()
     :d_radioConfig(""), d_pnRepoPath(""), d_sdfRepoPath(""), d_contRepoPath(""), 
-	d_logLevel("debug"), d_autoLoad(true), d_autoStart(true), d_stateMachine(),
-	d_isRunning(true)
+    d_logLevel("debug"), d_autoLoad(true), d_autoStart(true), d_stateMachine(),
+    d_isRunning(true)
 {
     printBanner();
 }
@@ -147,11 +162,11 @@ void Launcher::parseOptions(int argc, char* argv[]) throw (po::error, LauncherEx
 
     po::options_description desc("Configuration options");
     desc.add_options()
-		("stackrepository,t", po::value<string>(&d_stackRepoPath), "Repository of IRISv2 Stack components")
+        ("stackrepository,t", po::value<string>(&d_stackRepoPath), "Repository of IRISv2 Stack components")
         ("pnrepository,p", po::value<string>(&d_pnRepoPath), "Repository of IRISv2 PN components")
         ("sdfrepository,s", po::value<string>(&d_sdfRepoPath), "Repository of IRISv2 SDF components")
-		("controllerrepository,c", po::value<string>(&d_contRepoPath), "Repository of IRISv2 controllers")
-		("loglevel,l", po::value<string>(&d_logLevel), "Log level (options are debug, info, warning, error & fatal)")
+        ("controllerrepository,c", po::value<string>(&d_contRepoPath), "Repository of IRISv2 controllers")
+        ("loglevel,l", po::value<string>(&d_logLevel), "Log level (options are debug, info, warning, error & fatal)")
         ("no-load",  "Do not automatically load radio (implies --no-start)")
         ("no-start", "Do not automatically start radio")
     ;
@@ -228,11 +243,11 @@ void Launcher::menuLoop() throw (LauncherException)
         return;
 
     d_stateMachine.setRadioConfig(d_radioConfig);
-	d_stateMachine.setStackRadioRepository(d_stackRepoPath);
+    d_stateMachine.setStackRadioRepository(d_stackRepoPath);
     d_stateMachine.setPnRadioRepository(d_pnRepoPath);
     d_stateMachine.setSdfRadioRepository(d_sdfRepoPath);
-	d_stateMachine.setContRadioRepository(d_contRepoPath);
-	d_stateMachine.setLogLevel(d_logLevel);
+    d_stateMachine.setContRadioRepository(d_contRepoPath);
+    d_stateMachine.setLogLevel(d_logLevel);
     d_stateMachine.initiate();
 
     if (d_autoLoad)
@@ -246,8 +261,8 @@ void Launcher::menuLoop() throw (LauncherException)
 
     while (toupper(key) != 'Q')
     {
-		printStatus();
-		printMenu();
+        printStatus();
+        printMenu();
 
         cin >> key;
 
@@ -278,11 +293,11 @@ void Launcher::menuLoop() throw (LauncherException)
 void Launcher::printStatus()
 {
     cout << endl;
-	cout << "Stack Repository  :  " << d_stackRepoPath << endl;
+    cout << "Stack Repository  :  " << d_stackRepoPath << endl;
     cout << "PN Repository  :  " << d_pnRepoPath << endl;
     cout << "SDF Repository  : " << d_sdfRepoPath << endl;
-	cout << "Controller Repository  : " << d_contRepoPath << endl;
-	cout << "Log level : " << d_logLevel << endl;
+    cout << "Controller Repository  : " << d_contRepoPath << endl;
+    cout << "Log level : " << d_logLevel << endl;
     cout << "Radio Config: " << d_radioConfig << endl;
 }
 

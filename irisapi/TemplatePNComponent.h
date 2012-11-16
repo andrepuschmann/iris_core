@@ -1,22 +1,34 @@
-/*
- * This file is part of Iris 2.
- * 
- * Copyright (C) 2009 The Provost, Fellows and Scholars of the 
- * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin. 
- * All rights reserved.
- * 
- */
-
 /**
- * \file TemplatePNComponent.h
- * Base class for templated Process Network Components + template helper functions
+ * @file TemplatePNComponent.h
+ * @version 1.0
  *
- *  Created on: 19-Mar-2009
- *  Created by: lotzej
- *  $Revision: 1035 $
- *  $LastChangedDate: 2010-08-30 11:38:42 +0100 (Mon, 30 Aug 2010) $
- *  $LastChangedBy: suttonp $
+ * @section COPYRIGHT
  *
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * @section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * @section DESCRIPTION
+ *
+ * Base class for templated PN Components + template helper functions.
  */
 
 #ifndef TEMPLATEPNCOMPONENT_H_
@@ -218,23 +230,23 @@ namespace detail
             typedef typename mpl::front<iIn>::type curType;
             typedef typename mpl::pop_front<iIn>::type newiIn;
 
-			if (!inTypes.empty())
-			{
-				if (TypeInfo<curType>::identifier == inTypes.front() )
-				{
-					inTypes.erase(inTypes.begin() );
-					typedef typename mpl::push_back<inAcc, curType>::type newinAcc;
-					return TemplateHelper<Derived, In, Out, mpl::vector<>, iOut, newinAcc, outAcc>::EXEC(inTypes, outTypes, comp);
-				}
-				else
-				{
-					return TemplateHelper<Derived, In, Out, newiIn, iOut, inAcc, outAcc>::EXEC(inTypes, outTypes, comp);
-				}
-			}
-			else
-			{
-				return TemplateHelper<Derived, In, Out, newiIn, iOut, inAcc, outAcc>::EXEC(inTypes, outTypes, comp);
-			}
+            if (!inTypes.empty())
+            {
+                if (TypeInfo<curType>::identifier == inTypes.front() )
+                {
+                    inTypes.erase(inTypes.begin() );
+                    typedef typename mpl::push_back<inAcc, curType>::type newinAcc;
+                    return TemplateHelper<Derived, In, Out, mpl::vector<>, iOut, newinAcc, outAcc>::EXEC(inTypes, outTypes, comp);
+                }
+                else
+                {
+                    return TemplateHelper<Derived, In, Out, newiIn, iOut, inAcc, outAcc>::EXEC(inTypes, outTypes, comp);
+                }
+            }
+            else
+            {
+                return TemplateHelper<Derived, In, Out, newiIn, iOut, inAcc, outAcc>::EXEC(inTypes, outTypes, comp);
+            }
 
         }
     };
@@ -281,23 +293,23 @@ namespace detail
             typedef typename mpl::front<iOut>::type curType;
             typedef typename mpl::pop_front<iOut>::type newiOut;
 
-			if (!outTypes.empty())
-			{
-				if (TypeInfo<curType>::identifier == outTypes.front())
-				{
-					outTypes.erase(outTypes.begin() );
-					typedef typename mpl::push_back<outAcc, curType>::type newoutAcc;
-					return TemplateHelper<Derived, In, Out, iIn, mpl::vector<>, inAcc, newoutAcc>::EXEC(inTypes, outTypes, comp);
-				}
-				else
-				{
-					return TemplateHelper<Derived, In, Out, iIn, newiOut, inAcc, outAcc>::EXEC(inTypes, outTypes, comp);
-				}
-			}
-			else
-			{
-				return TemplateHelper<Derived, In, Out, iIn, newiOut, inAcc, outAcc>::EXEC(inTypes, outTypes, comp);
-			}
+            if (!outTypes.empty())
+            {
+                if (TypeInfo<curType>::identifier == outTypes.front())
+                {
+                    outTypes.erase(outTypes.begin() );
+                    typedef typename mpl::push_back<outAcc, curType>::type newoutAcc;
+                    return TemplateHelper<Derived, In, Out, iIn, mpl::vector<>, inAcc, newoutAcc>::EXEC(inTypes, outTypes, comp);
+                }
+                else
+                {
+                    return TemplateHelper<Derived, In, Out, iIn, newiOut, inAcc, outAcc>::EXEC(inTypes, outTypes, comp);
+                }
+            }
+            else
+            {
+                return TemplateHelper<Derived, In, Out, iIn, newiOut, inAcc, outAcc>::EXEC(inTypes, outTypes, comp);
+            }
 
         }
     };

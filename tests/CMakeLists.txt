@@ -1,3 +1,25 @@
+#
+# Copyright 2012 The Iris Project Developers. See the
+# COPYRIGHT file at the top-level directory of this distribution
+# and at http://www.softwareradiosystems.com/iris/copyright.html.
+#
+# This file is part of the Iris Project.
+#
+# Iris is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of
+# the License, or (at your option) any later version.
+#
+# Iris is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# A copy of the GNU Lesser General Public License can be found in
+# the LICENSE file in the top-level directory of this distribution
+# and at http://www.gnu.org/licenses/.
+#
+
 ########################################################################
 # unit test suite
 ########################################################################
@@ -21,22 +43,22 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 ########################################################################
 # Build each test and link to libraries
 SET(test_sources
-	CommandPrison_test.cpp
-	Component_test.cpp
-	ControllerManager_test.cpp
-	Controller_test.cpp
-	DataBuffer_test.cpp
-	DataTypes_test.cpp
-	EngineManager_test.cpp
-	Logging_test.cpp
-	MemoryManager_test.cpp
-	PNEngine_test.cpp
-	RadioRepresentation_test.cpp
-	ReconfigurationManager_test.cpp
-	SharedLibrary_test.cpp
-	StackEngine_test.cpp
-	System_test.cpp
-	XmlParser_test.cpp
+    CommandPrison_test.cpp
+    Component_test.cpp
+    ControllerManager_test.cpp
+    Controller_test.cpp
+    DataBuffer_test.cpp
+    DataTypes_test.cpp
+    EngineManager_test.cpp
+    Logging_test.cpp
+    MemoryManager_test.cpp
+    PNEngine_test.cpp
+    RadioRepresentation_test.cpp
+    ReconfigurationManager_test.cpp
+    SharedLibrary_test.cpp
+    StackEngine_test.cpp
+    System_test.cpp
+    XmlParser_test.cpp
 )
 
 #turn each test cpp file into an executable with an int main() function

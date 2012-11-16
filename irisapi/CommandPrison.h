@@ -1,22 +1,35 @@
-/*
- * This file is part of Iris 2.
- *
- * Copyright (C) 2009 The Provost, Fellows and Scholars of the
- * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin.
- * All rights reserved.
- *
- */
-
 /**
- * \file CommandPrison.h
- * A CommandPrison holds one or more threads while they wait for named commands
+ * @file CommandPrison.h
+ * @version 1.0
  *
- *  Created on: 17-May-2011
- *  Created by: suttonp
- *  $Revision: 1308 $
- *  $LastChangedDate: 2011-09-12 13:19:19 +0100 (Mon, 12 Sep 2011) $
- *  $LastChangedBy: suttonp $
+ * @section COPYRIGHT
  *
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * @section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * @section DESCRIPTION
+ *
+ * A CommandPrison holds one or more threads while they wait for
+ * named Commands.
  */
 
 #ifndef COMMANDPRISON_H_
@@ -57,21 +70,21 @@ public:
     }
 
     void release(Command c)
-	{
-		boost::mutex::scoped_lock lock(cageMutex);
-		locked = false;
-		command = c;
-		lock.unlock();
-		theConditionVariable.notify_one();
-	}
+    {
+        boost::mutex::scoped_lock lock(cageMutex);
+        locked = false;
+        command = c;
+        lock.unlock();
+        theConditionVariable.notify_one();
+    }
 
 };
 
 class CommandPrison
 {
 private:
-	typedef std::multimap<std::string, boost::shared_ptr< Cage > > CageMM;
-	typedef std::pair<std::string, boost::shared_ptr< Cage > > CagePair;
+    typedef std::multimap<std::string, boost::shared_ptr< Cage > > CageMM;
+    typedef std::pair<std::string, boost::shared_ptr< Cage > > CagePair;
     mutable boost::mutex theMutex;
     CageMM theCages;
 
@@ -88,22 +101,22 @@ public:
     }
 
     void release(Command c)
-	{
-		boost::mutex::scoped_lock lock(theMutex);
-		std::pair<CageMM::iterator, CageMM::iterator> found;
-		CageMM::iterator it;
-		found = theCages.equal_range(c.commandName);
-		for (it=found.first; it!=found.second; ++it)
-		{
-			it->second->release(c);
-		}
-		theCages.erase(found.first, found.second);
-	}
+    {
+        boost::mutex::scoped_lock lock(theMutex);
+        std::pair<CageMM::iterator, CageMM::iterator> found;
+        CageMM::iterator it;
+        found = theCages.equal_range(c.commandName);
+        for (it=found.first; it!=found.second; ++it)
+        {
+            it->second->release(c);
+        }
+        theCages.erase(found.first, found.second);
+    }
 
     int size()
     {
-    	boost::mutex::scoped_lock lock(theMutex);
-    	return theCages.size();
+        boost::mutex::scoped_lock lock(theMutex);
+        return theCages.size();
     }
 
 };

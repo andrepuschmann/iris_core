@@ -1,21 +1,35 @@
-/*
- * This file is part of Iris 2.
- * 
- * Copyright (C) 2009 The Provost, Fellows and Scholars of the 
- * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin. 
- * All rights reserved.
- * 
- */
-
 /**
- * \file PNComponentManager.cpp
- * Implementation of PNComponentManager class.
+ * @file PNComponentManager.cpp
+ * @version 1.0
  *
- *  Created on: 4-Jan-2009
- *  Created by: suttonp
- *  $Revision: 1381 $
- *  $LastChangedDate: 2011-11-23 13:37:07 +0000 (Wed, 23 Nov 2011) $
- *  $LastChangedBy: suttonp $
+ * @section COPYRIGHT
+ *
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * @section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ * 
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * @section DESCRIPTION
+ *
+ * Implementation of PNComponentManager class - loads/unloads PNComponents
+ * for the PNEngine.
  */
 
 #include <sstream>
@@ -34,7 +48,7 @@ namespace iris
     {
     }
 
-	void PNComponentManager::addRepository(std::string repoPath) throw (ResourceNotFoundException)
+    void PNComponentManager::addRepository(std::string repoPath) throw (ResourceNotFoundException)
     {
         while(!repoPath.empty())
         {
@@ -51,7 +65,7 @@ namespace iris
             //Check that the path exists and is a directory
             if(!bfs::exists(currentPath) || !bfs::is_directory(currentPath))
             {
-				LOG(LFATAL) << "Could not add repository " << str << " path does not exist or is not a directory.";
+                LOG(LFATAL) << "Could not add repository " << str << " path does not exist or is not a directory.";
                 throw ResourceNotFoundException("Could not add repository " + str + " path does not exist or is not a directory.");
             }
 
@@ -71,7 +85,7 @@ namespace iris
                     string extension = filename.substr(pos);
                     if(extension == SharedLibrary::getSystemExtension())
                     {
-                    	size_t pre = SharedLibrary::getSystemPrefix().length();
+                        size_t pre = SharedLibrary::getSystemPrefix().length();
                         string stem = filename.substr(pre,pos-pre); //Remove library prefix and postfix
                         ComponentLibrary current;
                         current.path = dir_iter->path();
@@ -126,10 +140,10 @@ namespace iris
 
         //Check that we found the library
         if(temp.name == "")
-		{
-			LOG(LFATAL) << "Could not find component " << desc.type << " in repositories.";
+        {
+            LOG(LFATAL) << "Could not find component " << desc.type << " in repositories.";
             throw ResourceNotFoundException("Could not find component " + desc.type + " in repositories.");
-		}
+        }
 
         //Load it if necessary
         if(temp.libPtr == NULL)
@@ -142,20 +156,20 @@ namespace iris
         //Pull a PNComponent class out of the library
         CREATEFUNCTION createFunction = (CREATEFUNCTION)temp.libPtr->getSymbol("CreateComponent");
         DESTROYFUNCTION destroyFunction = (DESTROYFUNCTION)temp.libPtr->getSymbol("ReleaseComponent");
-		GETAPIVERSIONFUNCTION getApiFunction = (GETAPIVERSIONFUNCTION)temp.libPtr->getSymbol("GetApiVersion"); 
+        GETAPIVERSIONFUNCTION getApiFunction = (GETAPIVERSIONFUNCTION)temp.libPtr->getSymbol("GetApiVersion"); 
 
-		//Check API version numbers match
-		string coreVer, moduleVer;
-		coreVer = Version::getApiVersion();
-		moduleVer = getApiFunction();
-		if(coreVer != moduleVer)
-		{	
-			stringstream message;
-			message << "API version mismatch between core and component " << desc.name << \
-				". Core API version = " << coreVer << ". Module API version = " << moduleVer << ".";
-			LOG(LFATAL) << message.str();
-			throw ApiVersionException(message.str());
-		}
+        //Check API version numbers match
+        string coreVer, moduleVer;
+        coreVer = Version::getApiVersion();
+        moduleVer = getApiFunction();
+        if(coreVer != moduleVer)
+        {    
+            stringstream message;
+            message << "API version mismatch between core and component " << desc.name << \
+                ". Core API version = " << coreVer << ". Module API version = " << moduleVer << ".";
+            LOG(LFATAL) << message.str();
+            throw ApiVersionException(message.str());
+        }
 
         //Create a shared_ptr and use a custom deallocator so the component is destroyed from the library
         boost::shared_ptr<PNComponent> comp(createFunction(desc.name), destroyFunction);

@@ -1,3 +1,25 @@
+#
+# Copyright 2012 The Iris Project Developers. See the
+# COPYRIGHT file at the top-level directory of this distribution
+# and at http://www.softwareradiosystems.com/iris/copyright.html.
+#
+# This file is part of the Iris Project.
+#
+# Iris is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of
+# the License, or (at your option) any later version.
+#
+# Iris is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# A copy of the GNU Lesser General Public License can be found in
+# the LICENSE file in the top-level directory of this distribution
+# and at http://www.gnu.org/licenses/.
+#
+
 ########################################################################
 # Add the subdirectories
 ########################################################################
@@ -18,13 +40,13 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/src/ticpp/include)
 # Build the library from source files
 ########################################################################
 SET(iris_core_sources
-	XmlParser.cpp
+    XmlParser.cpp
     MemoryManager.cpp
-	ControllerManager.cpp
-	RadioRepresentation.cpp
-	EngineManager.cpp
-	ReconfigurationManager.cpp
-	System.cpp
+    ControllerManager.cpp
+    RadioRepresentation.cpp
+    EngineManager.cpp
+    ReconfigurationManager.cpp
+    System.cpp
 )
 
 # Static library (test code can link against this)
@@ -35,7 +57,7 @@ IF( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
 ENDIF( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
 
 # Shared library (gets installed)
-ADD_LIBRARY(iris_core SHARED IRISV2.cpp)
+ADD_LIBRARY(iris_core SHARED Iris.cpp)
 TARGET_LINK_LIBRARIES(iris_core iris_lib)
 
 INSTALL(TARGETS iris_core

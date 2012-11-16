@@ -1,21 +1,35 @@
-/*
- * This file is part of Iris 2.
- * 
- * Copyright (C) 2009 The Provost, Fellows and Scholars of the 
- * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin. 
- * All rights reserved.
- * 
- */
-
 /**
- * \file EngineManager.cpp
- * Implementation of EngineManager class.
+ * @file EngineManager.cpp
+ * @version 1.0
  *
- *  Created on: 12-jan-2008
- *  Created by: suttonp
- *  $Revision: 1316 $
- *  $LastChangedDate: 2011-09-13 12:41:16 +0100 (Tue, 13 Sep 2011) $
- *  $LastChangedBy: suttonp $
+ * @section COPYRIGHT
+ *
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * @section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ * 
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * @section DESCRIPTION
+ *
+ * Implementation of EngineManager class - manages all engines running
+ * in Iris.
  */
 
 #include "iris/EngineManager.h"
@@ -30,24 +44,24 @@ namespace iris
 
     EngineManager::EngineManager()
     {
-		d_controllerManager.setCallbackInterface(this);
+        d_controllerManager.setCallbackInterface(this);
     }
 
     void EngineManager::loadRadio(RadioRepresentation rad)
     {
-    	//Set the current radio representation
-    	d_radioRep = rad;
+        //Set the current radio representation
+        d_radioRep = rad;
 
-		//Set the controller repositories in the ControllerManager
-		d_controllerManager.addRepository(d_reps.contRepository);
+        //Set the controller repositories in the ControllerManager
+        d_controllerManager.addRepository(d_reps.contRepository);
 
-		//Load the controllers
-		vector<ControllerDescription> conts = rad.getControllers();
-		vector<ControllerDescription>::iterator contIt;
-		for(contIt=conts.begin(); contIt!=conts.end(); ++contIt)
-		{
-			d_controllerManager.loadController(contIt->type);
-		}
+        //Load the controllers
+        vector<ControllerDescription> conts = rad.getControllers();
+        vector<ControllerDescription>::iterator contIt;
+        for(contIt=conts.begin(); contIt!=conts.end(); ++contIt)
+        {
+            d_controllerManager.loadController(contIt->type);
+        }
 
         d_engineGraph = rad.getEngineGraph();
 
@@ -68,7 +82,7 @@ namespace iris
 
         //Go through graph in topological order and set buffers
         for(deque<unsigned>::iterator i = topoOrder.begin(); i != topoOrder.end(); ++i)
-	    {
+        {
             //Get input buffers
             vector< shared_ptr< DataBufferBase > > inputBuffers, outputBuffers;
             EngInEdgeIterator edgeIt, edgeItEnd;
@@ -100,8 +114,8 @@ namespace iris
 
     void EngineManager::startRadio()
     {
-		//Start all the controllers
-		d_controllerManager.startControllers();
+        //Start all the controllers
+        d_controllerManager.startControllers();
 
         //Start all the engines, one by one
         for( ptr_vector<EngineInterface>::iterator i = d_engines.begin(); i != d_engines.end(); ++i)
@@ -112,8 +126,8 @@ namespace iris
 
     void EngineManager::stopRadio()
     {
-		//Stop all the controllers
-		d_controllerManager.stopControllers();
+        //Stop all the controllers
+        d_controllerManager.stopControllers();
 
         //Stop all the engines, one by one
         for( ptr_vector<EngineInterface>::iterator i = d_engines.begin(); i != d_engines.end(); ++i)
@@ -124,8 +138,8 @@ namespace iris
 
     void EngineManager::unloadRadio()
     {
-		//Unload all controllers
-		d_controllerManager.unloadControllers();
+        //Unload all controllers
+        d_controllerManager.unloadControllers();
 
         //Unload all the engines and remove them from the vector
         for( ptr_vector<EngineInterface>::iterator i = d_engines.begin(); i != d_engines.end(); ++i)
@@ -164,38 +178,38 @@ namespace iris
                     currentReconfigs.d_structReconfigs.push_back(*structIt);
             }
 
-			//Apply reconfigurations to the relevent engine if non-empty
-			if(!(currentReconfigs.d_paramReconfigs.empty() && currentReconfigs.d_structReconfigs.empty()))
-				engIt->addReconfiguration(currentReconfigs);
+            //Apply reconfigurations to the relevent engine if non-empty
+            if(!(currentReconfigs.d_paramReconfigs.empty() && currentReconfigs.d_structReconfigs.empty()))
+                engIt->addReconfiguration(currentReconfigs);
 
-			//Apply reconfigurations to the radio representation
-			d_radioRep.reconfigureRepresentation(currentReconfigs);
+            //Apply reconfigurations to the radio representation
+            d_radioRep.reconfigureRepresentation(currentReconfigs);
         }
     }
 
     void EngineManager::postCommand(Command command)
-	{
-		//Post the command to the relevant engine
-		boost::ptr_vector<EngineInterface>::iterator engIt;
-		for(engIt = d_engines.begin(); engIt != d_engines.end(); ++engIt)
-		{
-			if(command.engineName == engIt->getName())
-			{
-				engIt->postCommand(command);
-			}
-		}
-	}
+    {
+        //Post the command to the relevant engine
+        boost::ptr_vector<EngineInterface>::iterator engIt;
+        for(engIt = d_engines.begin(); engIt != d_engines.end(); ++engIt)
+        {
+            if(command.engineName == engIt->getName())
+            {
+                engIt->postCommand(command);
+            }
+        }
+    }
 
     std::string EngineManager::getParameterValue(std::string paramName, std::string componentName)
     {
-    	return d_radioRep.getParameterValue(paramName, componentName);
+        return d_radioRep.getParameterValue(paramName, componentName);
     }
 
-	void EngineManager::activateEvent(Event &e)
-	{
-		//Pass the event to the controller manager
-		d_controllerManager.activateEvent(e);
-	}
+    void EngineManager::activateEvent(Event &e)
+    {
+        //Pass the event to the controller manager
+        d_controllerManager.activateEvent(e);
+    }
 
     EngineInterface* EngineManager::createEngine(EngineDescription& d) throw (ResourceNotFoundException)
     {
@@ -205,7 +219,7 @@ namespace iris
         {
             current = new PNEngine(d.name, d_reps.pnRepository); 
         }
-		else if(d.type == "stackengine")
+        else if(d.type == "stackengine")
         {
             current = new StackEngine(d.name, d_reps.stackRepository); 
         }
@@ -214,8 +228,8 @@ namespace iris
             throw ResourceNotFoundException("Engine type \"" + d.type + "\" does not exist.");
         }
 
-		// Give the engine an interface to this EngineManager
-		current->setEngineManager(this);
+        // Give the engine an interface to this EngineManager
+        current->setEngineManager(this);
         return current;
     }
 

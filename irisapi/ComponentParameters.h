@@ -1,22 +1,35 @@
-/*
- * This file is part of Iris 2.
- * 
- * Copyright (C) 2009 The Provost, Fellows and Scholars of the 
- * College of the Holy and Undivided Trinity of Queen Elizabeth near Dublin. 
- * All rights reserved.
- * 
- */
-
 /**
- * \file ComponentParameters.h
- * Contains classes for the parameter interface of a component (parameters
- * adjustable from XML or controller)
+ * @file ComponentParameters.h
+ * @version 1.0
  *
- *  Created on: 20-Nov-2008
- *  Created by: jlotze
- *  $Revision: 1308 $
- *  $LastChangedDate: 2011-09-12 13:19:19 +0100 (Mon, 12 Sep 2011) $
- *  $LastChangedBy: suttonp $
+ * @section COPYRIGHT
+ *
+ * Copyright 2012 The Iris Project Developers. See the
+ * COPYRIGHT file at the top-level directory of this distribution
+ * and at http://www.softwareradiosystems.com/iris/copyright.html.
+ *
+ * @section LICENSE
+ *
+ * This file is part of the Iris Project.
+ *
+ * Iris is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * Iris is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * A copy of the GNU Lesser General Public License can be found in
+ * the LICENSE file in the top-level directory of this distribution
+ * and at http://www.gnu.org/licenses/.
+ *
+ * @section DESCRIPTION
+ *
+ * Contains classes for the parameter interface of a component (parameters
+ * adjustable from XML or controller).
  */
 
 #ifndef COMPONENTPARAMETERS_H_
@@ -264,8 +277,8 @@ public:
     std::string getParameterDescription(std::string name) const
         throw (ParameterNotFoundException)
     {
-		//Convert parameter name to lower case
-		boost::to_lower(name);
+        //Convert parameter name to lower case
+        boost::to_lower(name);
         return getParameterReference(name).description;
     }
 
@@ -275,8 +288,8 @@ public:
     std::string getParameterDefaultValue(std::string name) const
         throw (ParameterNotFoundException)
     {
-		//Convert parameter name to lower case
-		boost::to_lower(name);
+        //Convert parameter name to lower case
+        boost::to_lower(name);
         return getParameterReference(name).defaultValue;
     }
 
@@ -285,8 +298,8 @@ public:
     std::string getParameterDataType(std::string name) const
         throw(ParameterNotFoundException)
     {
-		//Convert parameter name to lower case
-		boost::to_lower(name);
+        //Convert parameter name to lower case
+        boost::to_lower(name);
         return getParameterReference(name).typeName;
     }
 
@@ -296,16 +309,16 @@ public:
     bool isParameterDynamic(std::string name) const
         throw (ParameterNotFoundException)
     {
-		//Convert parameter name to lower case
-		boost::to_lower(name);
+        //Convert parameter name to lower case
+        boost::to_lower(name);
         return getParameterReference(name).isDynamic;
     }
 
     /** Called to tell a component that one of its parameters has been reconfigured
-	 *
-	 * @param name Name of the parameter
-	 */
-	virtual void parameterHasChanged(std::string name){}
+     *
+     * @param name Name of the parameter
+     */
+    virtual void parameterHasChanged(std::string name){}
 };
 
 // have to implement the template methods here
@@ -314,8 +327,8 @@ template <typename T>
 inline void ComponentParameters::getValue(std::string name, T* value) const
         throw(ParameterNotFoundException,InvalidDataTypeException)
 {
-	//Convert parameter name to lower case
-	boost::to_lower(name);
+    //Convert parameter name to lower case
+    boost::to_lower(name);
 
     const Parameter& par = getParameterReference(name);
 
@@ -334,8 +347,8 @@ inline void ComponentParameters::setValue(std::string name, T value)
 {
     BOOST_STATIC_ASSERT( ParameterTypeInfo<T>::isAllowed );
 
-	//Convert parameter name to lower case
-	boost::to_lower(name);
+    //Convert parameter name to lower case
+    boost::to_lower(name);
 
     Parameter& par = getParameterReference(name);
     //! \todo check if parameter is convertible to the parameter type with boost::is_convertible<from,to>
@@ -483,8 +496,8 @@ inline std::string getStringParameter(const boost::any& val) throw (InvalidDataT
 inline std::string ComponentParameters::getValue(std::string name) const
         throw (ParameterNotFoundException, InvalidDataTypeException)
 {
-	//Convert parameter name to lower case
-	boost::to_lower(name);
+    //Convert parameter name to lower case
+    boost::to_lower(name);
 
     const Parameter& par = getParameterReference(name);
 
@@ -497,8 +510,8 @@ template <>
 inline void ComponentParameters::setValue< std::string >(std::string name, std::string value)
         throw(ParameterNotFoundException, InvalidDataTypeException, ParameterOutOfRangeException)
 {
-	//Convert parameter name to lower case
-	boost::to_lower(name);
+    //Convert parameter name to lower case
+    boost::to_lower(name);
 
     // throw if parameter does not exist
     Parameter& par = getParameterReference(name);
@@ -535,8 +548,8 @@ template <>
 inline void ComponentParameters::setValue< const char* >(std::string name, const char* value)
      throw (InvalidDataTypeException, ParameterNotFoundException, ParameterOutOfRangeException)
 {
-	//Convert parameter name to lower case
-	boost::to_lower(name);
+    //Convert parameter name to lower case
+    boost::to_lower(name);
 
     setValue(name, std::string(value));
 }
@@ -570,8 +583,8 @@ inline void ComponentParameters::registerParameter(std::string name, std::string
                 + ": In given interval, min should be less or equal than max");
     }
 
-	//Convert parameter name to lower case
-	boost::to_lower(name);
+    //Convert parameter name to lower case
+    boost::to_lower(name);
 
     registerParameterHelper(name, description, defaultValue, isDynamic, parameter);
     d_parameterMap[name].isList = false;
@@ -596,10 +609,10 @@ inline void ComponentParameters::registerParameter(std::string name, std::string
 template <>
 inline void ComponentParameters::registerParameter(std::string name, std::string description,
         std::string defaultValue, bool isDynamic, std::string& parameter)
-//      throw (InvalidDataTypeException)
+        throw (InvalidDataTypeException)
 {
-	//Convert parameter name to lower case
-	boost::to_lower(name);
+    //Convert parameter name to lower case
+    boost::to_lower(name);
 
     registerParameterHelper(name, description, defaultValue, isDynamic, parameter);
 
@@ -618,8 +631,8 @@ inline void ComponentParameters::registerParameter(std::string name, std::string
                 + ": In given interval, min should be less or equal than max");
     }
 
-	//Convert parameter name to lower case
-	boost::to_lower(name);
+    //Convert parameter name to lower case
+    boost::to_lower(name);
 
     registerParameterHelper(name, description, defaultValue, isDynamic, parameter);
     d_parameterMap[name].isList = false;
@@ -640,8 +653,8 @@ inline void ComponentParameters::registerParameter(std::string name, std::string
                 ": allowed_values should contain at least one element.");
     }
 
-	//Convert parameter name to lower case
-	boost::to_lower(name);
+    //Convert parameter name to lower case
+    boost::to_lower(name);
 
     registerParameterHelper(name, description, defaultValue, isDynamic, parameter);
     d_parameterMap[name].isList = true;
