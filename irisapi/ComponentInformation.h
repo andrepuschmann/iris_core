@@ -1,14 +1,14 @@
 /**
- * @file ComponentInformation.h
- * @version 1.0
+ * \file ComponentInformation.h
+ * \version 1.0
  *
- * @section COPYRIGHT
+ * \section COPYRIGHT
  *
  * Copyright 2012 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
- * @section LICENSE
+ * \section LICENSE
  *
  * This file is part of the Iris Project.
  *
@@ -26,7 +26,7 @@
  * the LICENSE file in the top-level directory of this distribution
  * and at http://www.gnu.org/licenses/.
  *
- * @section DESCRIPTION
+ * \section DESCRIPTION
  *
  * Holds information about an Iris Component.
  */
@@ -61,11 +61,11 @@ public:
 
     /** Constructs a ComponentInformation object.
      *
-     * @param name Name of the component
-     * @param type Type of this component
-     * @param description What does the component do
-     * @param author Author of the component
-     * @param version Version number of the component
+     * \param name Name of the component
+     * \param type Type of this component
+     * \param description What does the component do
+     * \param author Author of the component
+     * \param version Version number of the component
      */
     ComponentInformation(std::string name, std::string type, std::string description, std::string author,
             std::string version) :

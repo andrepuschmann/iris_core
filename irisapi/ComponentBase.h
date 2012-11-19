@@ -1,14 +1,14 @@
 /**
- * @file ComponentBase.h
- * @version 1.0
+ * \file ComponentBase.h
+ * \version 1.0
  *
- * @section COPYRIGHT
+ * \section COPYRIGHT
  *
  * Copyright 2012 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
- * @section LICENSE
+ * \section LICENSE
  *
  * This file is part of the Iris Project.
  *
@@ -26,7 +26,7 @@
  * the LICENSE file in the top-level directory of this distribution
  * and at http://www.gnu.org/licenses/.
  *
- * @section DESCRIPTION
+ * \section DESCRIPTION
  *
  * The base class for all Iris Components.
  */
@@ -45,8 +45,8 @@
 #include <boost/algorithm/string.hpp>
 
 /** Macro for IRIS boilerplate code in each component.
- *  @param ComponentType Type of the component (PNComponent, SdfComponent, ...)
- *  @param ComponentClass Class of the component class to be exported by the library
+ *  \param ComponentType Type of the component (PNComponent, SdfComponent, ...)
+ *  \param ComponentClass Class of the component class to be exported by the library
  *
  *  This macro defines the GetApiVersion(), CreateComponent(), and ReleaseComponent()
  *  functions with the correct C-style library export specifiers. It must be called
@@ -119,8 +119,8 @@ public:
 
     /** Assign all parameters and events from another class
      *  to this one
-     * @param other The instance to copy the data from
-     * @return A reference to *this.
+     * \param other The instance to copy the data from
+     * \return A reference to *this.
      */
     ComponentBase& assign(const ComponentBase& other)
         throw (ParameterNotFoundException, InvalidDataTypeException)

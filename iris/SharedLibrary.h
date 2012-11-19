@@ -1,14 +1,14 @@
 /**
- * @file SharedLibrary.h
- * @version 1.0
+ * \file SharedLibrary.h
+ * \version 1.0
  *
- * @section COPYRIGHT
+ * \section COPYRIGHT
  *
  * Copyright 2012 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
- * @section LICENSE
+ * \section LICENSE
  *
  * This file is part of the Iris Project.
  *
@@ -26,7 +26,7 @@
  * the LICENSE file in the top-level directory of this distribution
  * and at http://www.gnu.org/licenses/.
  *
- * @section DESCRIPTION
+ * \section DESCRIPTION
  *
  * The SharedLibrary manages shared libraries in a portable fashion.
  */
@@ -48,114 +48,114 @@
 namespace iris
 {
 
-    /** \brief Manages shared libraries in a portable fashion.
-     *
-     * Multiple implementations of this class must be provided for each platform with
-     * different native functions. Instances of this class cannot be copied because
-     * the library is closed in the destructor and no reference counting is performed.
-     *
-     * Make sure that no symbols or objects from within the library are open and used
-     * when the object of this class is destructed (i.e., when the library is unloaded
-     * from the application).
-     */
-    class SharedLibrary : boost::noncopyable
-    {
-    public:
+/** \brief Manages shared libraries in a portable fashion.
+ *
+ * Multiple implementations of this class must be provided for each platform with
+ * different native functions. Instances of this class cannot be copied because
+ * the library is closed in the destructor and no reference counting is performed.
+ *
+ * Make sure that no symbols or objects from within the library are open and used
+ * when the object of this class is destructed (i.e., when the library is unloaded
+ * from the application).
+ */
+class SharedLibrary : boost::noncopyable
+{
+  public:
 
 #ifdef BOOST_WINDOWS
-            typedef FARPROC SymbolPointer;   //!< Type that can hold a pointer to a library symbol
+        typedef FARPROC SymbolPointer;   //!< Type that can hold a pointer to a library symbol
 #else
-            typedef void* SymbolPointer;     //!< Type that can hold a pointer to a library symbol
+        typedef void* SymbolPointer;     //!< Type that can hold a pointer to a library symbol
 #endif
 
-        // ---------- standard usage
+    // ---------- standard usage
 
-        /** Constructs a SharedLibrary instance and loads a shared library.
-         *
-         * @param filename Path to the library file.
-         * @throw LibraryLoadException If an error occurred during library loading.
-         * @throw FileNotFoundException If the given file could not be found.
-         */
-        SharedLibrary(boost::filesystem::path filename) throw (LibraryLoadException,
+    /** Constructs a SharedLibrary instance and loads a shared library.
+     *
+     * \param filename Path to the library file.
+     * \throw LibraryLoadException If an error occurred during library loading.
+     * \throw FileNotFoundException If the given file could not be found.
+     */
+    SharedLibrary(boost::filesystem::path filename) throw (LibraryLoadException,
+        FileNotFoundException);
+
+    /** Gets the address of a symbol from the dynamic library.
+     *
+     * \param symbolName Name of the symbol (function or variable) to search for
+     * \return Return value should be cast to the function prototype pointer or variable pointer
+     * \throw LibrarySymbolException If an error occurred during resolution of the symbol name.
+     */
+    SymbolPointer getSymbol(std::string symbolName) throw (LibrarySymbolException);
+
+    /** Destructor. Closes the library.    */
+    ~SharedLibrary();
+
+    std::string getName(){return "SharedLibrary";}
+
+
+
+    // ---------- Usage without giving filename to constructor
+
+    //! Default constructor. Does not open a library.
+    SharedLibrary() : d_library(NULL) {};
+
+    //! \brief Opens a shared library.
+    //! If a different library is already open and held by this object, it is closed
+    //! automatically before opening the new one. See constructor for description
+    //! of parameters.
+    void open(boost::filesystem::path filename) throw (LibraryLoadException,
             FileNotFoundException);
 
-        /** Gets the address of a symbol from the dynamic library.
-         *
-         * @param symbolName Name of the symbol (function or variable) to search for
-         * @return Return value should be cast to the function prototype pointer or variable pointer
-         * @throw LibrarySymbolException If an error occurred during resolution of the symbol name.
-         */
-        SymbolPointer getSymbol(std::string symbolName) throw (LibrarySymbolException);
+    //! Check whether the library has been loaded
+    bool isLoaded() {return d_library == NULL;};
 
-        /** Destructor. Closes the library.    */
-        ~SharedLibrary();
+    // ----------- Accessors
 
-        std::string getName(){return "SharedLibrary";}
+    //! retrieves filename of currently open file
+    boost::filesystem::path getFilename() const {  return d_filename; }
 
+    // ----------- Information
 
+    //! Returns the standard system extension for shared libraries.
+    //! That is, in Windows, returns "dll", Linux: "so", Mac: "dylib", etc.
+    static std::string getSystemExtension()
+    {
+        #if defined(_WIN32) || defined(__CYGWIN__)
+            return ".dll";
+        #elif defined(__unix__)
+            return ".so";
+        #elif defined(__APPLE__)
+            return ".dylib";
+        #endif
+    }
 
-        // ---------- Usage without giving filename to constructor
+    //! Returns the standard system prefix for shared libraries.
+    //! That is, in Windows, returns "", Linux: "lib", Mac: "", etc.
+    static std::string getSystemPrefix()
+    {
+        #if defined(_WIN32) || defined(__CYGWIN__)
+            return "";
+        #elif defined(__unix__)
+            return "lib";
+        #elif defined(__APPLE__)
+            return "";
+        #endif
+    }
 
-        //! Default constructor. Does not open a library.
-        SharedLibrary() : d_library(NULL) {};
-
-        //! \brief Opens a shared library.
-        //! If a different library is already open and held by this object, it is closed
-        //! automatically before opening the new one. See constructor for description
-        //! of parameters.
-        void open(boost::filesystem::path filename) throw (LibraryLoadException,
-                FileNotFoundException);
-
-        //! Check whether the library has been loaded
-        bool isLoaded() {return d_library == NULL;};
-
-        // ----------- Accessors
-
-        //! retrieves filename of currently open file
-        boost::filesystem::path getFilename() const {  return d_filename; }
-
-        // ----------- Information
-
-        //! Returns the standard system extension for shared libraries.
-        //! That is, in Windows, returns "dll", Linux: "so", Mac: "dylib", etc.
-        static std::string getSystemExtension()
-        {
-            #if defined(_WIN32) || defined(__CYGWIN__)
-                return ".dll";
-            #elif defined(__unix__)
-                return ".so";
-            #elif defined(__APPLE__)
-                return ".dylib";
-            #endif
-        }
-
-        //! Returns the standard system prefix for shared libraries.
-        //! That is, in Windows, returns "", Linux: "lib", Mac: "", etc.
-        static std::string getSystemPrefix()
-        {
-            #if defined(_WIN32) || defined(__CYGWIN__)
-                return "";
-            #elif defined(__unix__)
-                return "lib";
-            #elif defined(__APPLE__)
-                return "";
-            #endif
-        }
-
-    private:
+  private:
 
 #ifdef BOOST_WINDOWS
-        typedef HMODULE LibraryHandle;  //!< Handle for library
+    typedef HMODULE LibraryHandle;  //!< Handle for library
 #else
-        typedef void* LibraryHandle;    //!< Handle for library
+    typedef void* LibraryHandle;    //!< Handle for library
 #endif
 
-        //! holds the name of the library file
-        boost::filesystem::path d_filename;
+    //! holds the name of the library file
+    boost::filesystem::path d_filename;
 
-        //! handle to the library
-        LibraryHandle d_library;
-    };
+    //! handle to the library
+    LibraryHandle d_library;
+};
 
 
 }

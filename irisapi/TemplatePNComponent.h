@@ -1,14 +1,14 @@
 /**
- * @file TemplatePNComponent.h
- * @version 1.0
+ * \file TemplatePNComponent.h
+ * \version 1.0
  *
- * @section COPYRIGHT
+ * \section COPYRIGHT
  *
  * Copyright 2012 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
- * @section LICENSE
+ * \section LICENSE
  *
  * This file is part of the Iris Project.
  *
@@ -26,7 +26,7 @@
  * the LICENSE file in the top-level directory of this distribution
  * and at http://www.gnu.org/licenses/.
  *
- * @section DESCRIPTION
+ * \section DESCRIPTION
  *
  * Base class for templated PN Components + template helper functions.
  */
@@ -73,9 +73,9 @@ public:
     }
 
     /** Sets up input and output types.
-     * @param inputTypes Vector of input type identifiers, each element represents a port
-     * @param outputTypes Vector of output type identifiers, each element represents a port
-     * @return A PNComponent* with the input and output correctly setup, i.e., an instance of
+     * \param inputTypes Vector of input type identifiers, each element represents a port
+     * \param outputTypes Vector of output type identifiers, each element represents a port
+     * \return A PNComponent* with the input and output correctly setup, i.e., an instance of
      * CompImp with the correct template parameters according to inputTypes & outputTypes.
      */
     virtual PNComponent* setupIO(const std::vector<int>& inputTypes, const std::vector<int>& outputTypes)
@@ -88,9 +88,9 @@ protected:
      *  templated component should be instantiated with.
      *
      *
-     * @param inputTypes Vector of input type identifiers, each element represents a port
-     * @param outputTypes Vector of output type identifiers, each element represents a port
-     * @return A newly instantiated object of a templated component with the appropriate type
+     * \param inputTypes Vector of input type identifiers, each element represents a port
+     * \param outputTypes Vector of output type identifiers, each element represents a port
+     * \return A newly instantiated object of a templated component with the appropriate type
      * parameters.
      */
     PNComponent* registerTemplateComponent(const std::vector<int>& inputTypes, const std::vector<int>& outputTypes);

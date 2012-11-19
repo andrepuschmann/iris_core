@@ -1,14 +1,14 @@
 /**
- * @file ComponentPorts.h
- * @version 1.0
+ * \file ComponentPorts.h
+ * \version 1.0
  *
- * @section COPYRIGHT
+ * \section COPYRIGHT
  *
  * Copyright 2012 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
- * @section LICENSE
+ * \section LICENSE
  *
  * This file is part of the Iris Project.
  *
@@ -26,7 +26,7 @@
  * the LICENSE file in the top-level directory of this distribution
  * and at http://www.gnu.org/licenses/.
  *
- * @section DESCRIPTION
+ * \section DESCRIPTION
  *
  * Contains classes for the port interface of an Iris component.
  */
@@ -60,8 +60,8 @@ struct Port
 
     /** Constructs a new Port object.
      *
-     * @param name The name assigned to this port
-     * @param types The types supported for this port
+     * \param name The name assigned to this port
+     * \param types The types supported for this port
      */
         Port(std::string name, const std::vector<int>& types) :
         portName(name), supportedTypes(types)
@@ -89,8 +89,8 @@ private:
 protected:
     /** Registers an input port of a child class.
      *
-     * @param name Name of the port
-     * @param types Types supported by the port
+     * \param name Name of the port
+     * \param types Types supported by the port
      */
     void registerInputPort(std::string name, const std::vector<int>& types)
     {
@@ -99,8 +99,8 @@ protected:
 
     /** Registers an output port of a child class.
      *
-     * @param name Name of the port
-     * @param types Types supported by the port
+     * \param name Name of the port
+     * \param types Types supported by the port
      */
     void registerOutputPort(std::string name, std::vector<int> types)
     {

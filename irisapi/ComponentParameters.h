@@ -1,14 +1,14 @@
 /**
- * @file ComponentParameters.h
- * @version 1.0
+ * \file ComponentParameters.h
+ * \version 1.0
  *
- * @section COPYRIGHT
+ * \section COPYRIGHT
  *
  * Copyright 2012 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
- * @section LICENSE
+ * \section LICENSE
  *
  * This file is part of the Iris Project.
  *
@@ -26,7 +26,7 @@
  * the LICENSE file in the top-level directory of this distribution
  * and at http://www.gnu.org/licenses/.
  *
- * @section DESCRIPTION
+ * \section DESCRIPTION
  *
  * Contains classes for the parameter interface of a component (parameters
  * adjustable from XML or controller).
@@ -95,10 +95,10 @@ struct Parameter
     /** Constructs a new Parameter object.
      * identifier is initialised to -1 and the allowedValues field is empty.
      *
-     * @param parameter A reference to the actual parameter in the child class
-     * @param description Description of the parameter
-     * @param defaultValue Default value, represented as a string
-     * @param isDynamic Whether the parameter can be changed dynamically
+     * \param parameter A reference to the actual parameter in the child class
+     * \param description Description of the parameter
+     * \param defaultValue Default value, represented as a string
+     * \param isDynamic Whether the parameter can be changed dynamically
      */
     template<typename T>
     Parameter(T& parameter, std::string description, std::string defaultValue = "",
@@ -131,7 +131,7 @@ private:
             std::string defaultValue, bool isDynamic, T& parameter);
 
     //! Returns a const reference to a Parameter object given by name.
-    //! @throw ParameterNotFoundException if the parameter does not exist
+    //! \throw ParameterNotFoundException if the parameter does not exist
     const Parameter& getParameterReference(std::string name) const
         throw (ParameterNotFoundException)
     {
@@ -142,7 +142,7 @@ private:
     }
 
     //! Return a reference to a Parameter object given by name.
-    //! @throw ParameterNotFoundException if the parameter does not exist
+    //! \throw ParameterNotFoundException if the parameter does not exist
     Parameter& getParameterReference(std::string name)
         throw (ParameterNotFoundException)
     {
@@ -156,12 +156,12 @@ protected:
     /** Registers a parameter of a child class. All parameters registered
      * with this function can be accessed from the XML description and from the Controller.
      *
-     * @param name Name of the parameter
-     * @param description Description of the parameter
-     * @param defaultValue  Default value as a string
-     * @param isDynamic  Whether the parameter is dynamically changeable at run-time.
-     * @param parameter  The parameter itself. A pointer to it will be stored.
-     * @throw InvalidDataTypeException If allowedInterval.min > allowedInterval.max.
+     * \param name Name of the parameter
+     * \param description Description of the parameter
+     * \param defaultValue  Default value as a string
+     * \param isDynamic  Whether the parameter is dynamically changeable at run-time.
+     * \param parameter  The parameter itself. A pointer to it will be stored.
+     * \throw InvalidDataTypeException If allowedInterval.min > allowedInterval.max.
      */
     template<typename T>
     inline void registerParameter(std::string name, std::string description, std::string defaultValue,
@@ -171,13 +171,13 @@ protected:
     /** Registers a parameter of a child class. All parameters registered
      * with this function can be accessed from the XML description and from the Controller.
      *
-     * @param name Name of the parameter
-     * @param description Description of the parameter
-     * @param defaultValue  Default value as a string
-     * @param isDynamic  Whether the parameter is dynamically changeable at run-time.
-     * @param parameter  The parameter itself. A pointer to it will be stored.
-     * @param allowedInterval Interval for allowed values. Defaults to [min, max] of the data type.
-     * @throw InvalidDataTypeException If allowedInterval.min > allowedInterval.max.
+     * \param name Name of the parameter
+     * \param description Description of the parameter
+     * \param defaultValue  Default value as a string
+     * \param isDynamic  Whether the parameter is dynamically changeable at run-time.
+     * \param parameter  The parameter itself. A pointer to it will be stored.
+     * \param allowedInterval Interval for allowed values. Defaults to [min, max] of the data type.
+     * \throw InvalidDataTypeException If allowedInterval.min > allowedInterval.max.
      */
     template<typename T>
     inline void registerParameter(std::string name, std::string description, std::string defaultValue,
@@ -187,13 +187,13 @@ protected:
     /** Registers a parameter of a child class. All parameters registered
      * with this function can be accessed from the XML description and from the Controller.
      *
-     * @param name Name of the parameter
-     * @param description Description of the parameter
-     * @param defaultValue  Default value as a string
-     * @param isDynamic  Whether the parameter is dynamically changeable at run-time.
-     * @param parameter  The parameter itself. A pointer to it will be stored.
-     * @param allowedValues std::list of allowed values.
-     * @throw InvalidDataTypeException If allowedValues is empty.
+     * \param name Name of the parameter
+     * \param description Description of the parameter
+     * \param defaultValue  Default value as a string
+     * \param isDynamic  Whether the parameter is dynamically changeable at run-time.
+     * \param parameter  The parameter itself. A pointer to it will be stored.
+     * \param allowedValues std::list of allowed values.
+     * \throw InvalidDataTypeException If allowedValues is empty.
      */
     template<typename T>
     inline void registerParameter(std::string name, std::string description, std::string defaultValue,
@@ -209,7 +209,7 @@ public:
 
     /** Copies the parameter values stored in other into this instance by value.
      *
-     * @param other The ComponentParameters object to copy from
+     * \param other The ComponentParameters object to copy from
      */
     virtual ComponentParameters& assignParameters(const ComponentParameters& other)
             throw (ParameterNotFoundException, InvalidDataTypeException);
@@ -217,7 +217,7 @@ public:
 
     /** Returns the default XML for all parameters.
      *
-     * @return A std::string (with newlines) with all parameters, e.g.
+     * \return A std::string (with newlines) with all parameters, e.g.
      *  \code
      *   <parameter name="example" value="1.234" />
      *   <parameter name="debug" value="false" />
@@ -243,8 +243,8 @@ public:
     size_t getNumParameters() const { return d_parameterMap.size(); }
 
     /** Get the value of parameter 'name' in a std::string.
-     * @throw ParameterNotFoundException if no such parameter exists
-     * @throw InvalidDataTypeException if the type of the parameter could not
+     * \throw ParameterNotFoundException if no such parameter exists
+     * \throw InvalidDataTypeException if the type of the parameter could not
      * be identified (should never happen).
      */
     std::string getValue(std::string name) const
@@ -252,18 +252,18 @@ public:
 
     /** Get the value of a registered parameter
      *
-     * @param name Parameter name
-     * @param value  Pointer to a variable where the result should be stored.
-     * @throw ParameterNotFoundException If there is no parameter with the given name.
-     * @throw InvalidDataTypeException If the parameter is of a different type.
+     * \param name Parameter name
+     * \param value  Pointer to a variable where the result should be stored.
+     * \throw ParameterNotFoundException If there is no parameter with the given name.
+     * \throw InvalidDataTypeException If the parameter is of a different type.
      */
     template<typename T>
     inline void getValue(std::string name, T* value) const
         throw (ParameterNotFoundException, InvalidDataTypeException);
 
     /** Changes the value of parameter "name" to value "val".
-     * @throw ParameterNotFoundException if no such parameter exists
-     * @throw InvalidDataTypeException if the parameter is not of type T.
+     * \throw ParameterNotFoundException if no such parameter exists
+     * \throw InvalidDataTypeException if the parameter is not of type T.
      */
     template <typename T>
     inline void setValue(std::string name, T value)
@@ -271,8 +271,8 @@ public:
 
     /** Get the description of the parameter.
      *
-     * @param name Name of the parameter
-     * @return Description of the parameter
+     * \param name Name of the parameter
+     * \return Description of the parameter
      */
     std::string getParameterDescription(std::string name) const
         throw (ParameterNotFoundException)
@@ -283,7 +283,7 @@ public:
     }
 
     /** Returns the default value of a parameter.
-     * @throw ParameterNotFoundException if parameter with name name does not exist.
+     * \throw ParameterNotFoundException if parameter with name name does not exist.
      */
     std::string getParameterDefaultValue(std::string name) const
         throw (ParameterNotFoundException)
@@ -294,7 +294,7 @@ public:
     }
 
     //! Returns the data type of a registered parameter.
-    //! @throw ParameterNotFoundException if no parameter with the given name exists.
+    //! \throw ParameterNotFoundException if no parameter with the given name exists.
     std::string getParameterDataType(std::string name) const
         throw(ParameterNotFoundException)
     {
@@ -305,7 +305,7 @@ public:
 
     //! Returns true if the parameter with the given name is dynamically
     //! reconfigurable.
-    //! @throw ParameterNotFoundException if the parameter could not be found.
+    //! \throw ParameterNotFoundException if the parameter could not be found.
     bool isParameterDynamic(std::string name) const
         throw (ParameterNotFoundException)
     {
@@ -316,7 +316,7 @@ public:
 
     /** Called to tell a component that one of its parameters has been reconfigured
      *
-     * @param name Name of the parameter
+     * \param name Name of the parameter
      */
     virtual void parameterHasChanged(std::string name){}
 };
@@ -596,15 +596,15 @@ inline void ComponentParameters::registerParameter(std::string name, std::string
 
 /** Specialistaion for std::string - intervals don't make sense here.
 *
- * @todo It should be possible for string parameters to give a list of allowed values,
+ * \todo It should be possible for string parameters to give a list of allowed values,
  *       but an interval does not make sense (and string parameters without an allowedValues
  *       list are of course possible)
  *
- * @param name Name of the parameter
- * @param description Description of the parameter
- * @param defaultValue  Default value as a string
- * @param isDynamic  Whether the parameter is dynamically changeable at run-time.
- * @param parameter  The parameter itself. A pointer to it will be stored.
+ * \param name Name of the parameter
+ * \param description Description of the parameter
+ * \param defaultValue  Default value as a string
+ * \param isDynamic  Whether the parameter is dynamically changeable at run-time.
+ * \param parameter  The parameter itself. A pointer to it will be stored.
  */
 template <>
 inline void ComponentParameters::registerParameter(std::string name, std::string description,
