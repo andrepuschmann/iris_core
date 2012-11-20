@@ -92,9 +92,9 @@ struct ControllerRepository
 class ControllerManager: public ControllerCallbackInterface
 {
 private:
-    std::vector< LoadedController > d_loadedControllers;
-    std::vector<ControllerRepository> d_repositories;
-    ControllerManagerCallbackInterface* d_engineManager;
+    std::vector< LoadedController > loadedControllers_;
+    std::vector<ControllerRepository> repositories_;
+    ControllerManagerCallbackInterface* engineManager_;
 
     /** Map of events to subscribed controllers
     *
@@ -102,7 +102,7 @@ private:
     *    Each key is associated with a vector of Controller* - these are the controllers that have
     *    subscribed to that event.
     */
-    std::map< std::string, std::vector<Controller*> > d_eventMap;
+    std::map< std::string, std::vector<Controller*> >eventMap_;
 
 public:
 

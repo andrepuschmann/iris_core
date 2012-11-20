@@ -50,7 +50,7 @@ namespace iris
 
     void ControllerManager::setCallbackInterface(ControllerManagerCallbackInterface* e)
     {
-        d_engineManager = e;
+        engineManager_ = e;
     }
 
     void ControllerManager::addRepository(std::string repoPath) throw (ResourceNotFoundException)
@@ -101,7 +101,7 @@ namespace iris
             }
 
             //Add to vector of repository paths
-            d_repositories.push_back(tmp);
+            repositories_.push_back(tmp);
         }
     }
 
@@ -110,7 +110,7 @@ namespace iris
     {
         //Check if the library has already been loaded
         vector< LoadedController >::iterator libIt;
-        for(libIt=d_loadedControllers.begin();libIt!=d_loadedControllers.end();++libIt)
+        for(libIt=loadedControllers_.begin();libIt!=loadedControllers_.end();++libIt)
         {
             if(libIt->name == name)
             {
@@ -121,7 +121,7 @@ namespace iris
 
         //Look for the controller in our repositories
         vector< ControllerRepository >::iterator repIt;
-        for(repIt=d_repositories.begin();repIt!=d_repositories.end();++repIt)
+        for(repIt=repositories_.begin();repIt!=repositories_.end();++repIt)
         {
             vector< ControllerLibrary >::iterator compIt;
             for(compIt=repIt->controllerLibs.begin();compIt!=repIt->controllerLibs.end();++compIt)
@@ -160,7 +160,7 @@ namespace iris
 
                     //Add to d_loadedControllers
                     LoadedController l(compIt->name, cont);
-                    d_loadedControllers.push_back(l);    
+                    loadedControllers_.push_back(l);    
 
                     return;
                 }
@@ -176,7 +176,7 @@ namespace iris
     {
         //Look for the controller in our repositories
         vector< ControllerRepository >::iterator repIt;
-        for(repIt=d_repositories.begin();repIt!=d_repositories.end();++repIt)
+        for(repIt=repositories_.begin();repIt!=repositories_.end();++repIt)
         {
             vector< ControllerLibrary >::iterator compIt;
             for(compIt=repIt->controllerLibs.begin();compIt!=repIt->controllerLibs.end();++compIt)
@@ -195,7 +195,7 @@ namespace iris
     {
         //Go through the loaded Controllers and start each one
         vector< LoadedController>::iterator it;
-        for(it = d_loadedControllers.begin(); it != d_loadedControllers.end(); ++it)
+        for(it = loadedControllers_.begin(); it != loadedControllers_.end(); ++it)
         {
             it->contPtr->start();
             LOG(LINFO) << "Controller " + it->name + " started.";
@@ -207,7 +207,7 @@ namespace iris
     {
         //Go through the loaded Controllers and stop each one
         vector< LoadedController>::iterator it;
-        for(it = d_loadedControllers.begin(); it != d_loadedControllers.end(); ++it)
+        for(it = loadedControllers_.begin(); it != loadedControllers_.end(); ++it)
         {
             it->contPtr->stop();
             LOG(LINFO) << "Controller " + it->name + " stopped.";
@@ -218,25 +218,25 @@ namespace iris
         throw (IrisException)
     {
         //Clear the event-controller map
-        d_eventMap.clear();
+        eventMap_.clear();
 
         //Go through the loaded Controllers and unload each one
         vector< LoadedController>::iterator it;
-        for(it = d_loadedControllers.begin(); it != d_loadedControllers.end(); ++it)
+        for(it = loadedControllers_.begin(); it != loadedControllers_.end(); ++it)
         {
             it->contPtr->unload();
             LOG(LINFO) << "Controller " + it->name + " unloaded.";
         }
 
         //Just clear the vector, boost::shared_ptr will automatically call the custom deallocator
-        d_loadedControllers.clear();
+        loadedControllers_.clear();
     }
 
     vector<bfs::path> ControllerManager::getRepositories()
     {
         vector<bfs::path> paths;
         vector<ControllerRepository>::iterator it;
-        for(it=d_repositories.begin();it!=d_repositories.end();++it)
+        for(it=repositories_.begin();it!=repositories_.end();++it)
         {
             paths.push_back(it->path);
         }
@@ -246,7 +246,7 @@ namespace iris
     //! Inform controllers that an event has been activated
     void ControllerManager::activateEvent(Event &e)
     {
-        vector<Controller*> controllers = d_eventMap[e.eventName + e.componentName];
+        vector<Controller*> controllers = eventMap_[e.eventName + e.componentName];
         vector<Controller*>::iterator contIt;
         for(contIt=controllers.begin();contIt!=controllers.end();++contIt)
         {
@@ -257,31 +257,31 @@ namespace iris
     //! Reconfigure the radio
     void ControllerManager::reconfigureRadio(ReconfigSet reconfigs)
     {
-        if(d_engineManager == NULL)
+        if(engineManager_ == NULL)
             return;
 
-        d_engineManager->reconfigureRadio(reconfigs);
+        engineManager_->reconfigureRadio(reconfigs);
     }
 
     //! Post a command to a component
     void ControllerManager::postCommand(Command command)
     {
-        if(d_engineManager == NULL)
+        if(engineManager_ == NULL)
             return;
 
-        d_engineManager->postCommand(command);
+        engineManager_->postCommand(command);
     }
 
     //! Get the value of a parameter
     std::string ControllerManager::getParameterValue(std::string paramName, std::string componentName)
     {
-        return d_engineManager->getParameterValue(paramName, componentName);
+        return engineManager_->getParameterValue(paramName, componentName);
     }
 
     //! Subscribe to an event
     void ControllerManager::subscribeToEvent(std::string eventName, std::string componentName, Controller* cont)
     {
-        d_eventMap[eventName + componentName].push_back(cont); 
+        eventMap_[eventName + componentName].push_back(cont); 
     }
 
 
