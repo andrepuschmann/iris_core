@@ -23,7 +23,7 @@
 ########################################################################
 # Setup Dependencies
 ########################################################################
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR})
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR})
 
 ########################################################################
 # Build the library from source files

@@ -28,7 +28,7 @@
 ########################################################################
 # Add includes and dependencies
 ########################################################################
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR})
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR})
 
 ########################################################################
 # Build the test library used by SharedLibrary_test.cpp
