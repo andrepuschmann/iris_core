@@ -33,7 +33,7 @@
 
 #include <boost/scoped_ptr.hpp>
 
-#include "iris/IRISV2.h"
+#include "iris/Iris.h"
 #include "iris/System.h"
 
 using namespace std;

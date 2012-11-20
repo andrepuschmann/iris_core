@@ -82,7 +82,7 @@ namespace iris
             for(;dir_iter != dir_end; ++dir_iter)
             {
                 //Check that the file path contains the system library extension
-                string filename = dir_iter->path().leaf();
+                string filename = dir_iter->path().filename().string();
                 size_t pos = filename.find_last_of('.');
                 if(pos != string::npos)
                 {
