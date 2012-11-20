@@ -68,13 +68,13 @@ public:
     *   \param dataBufferLength     number of DataSets in the buffer
     */
     explicit DataBuffer(int dataBufferLength = 2) throw (InvalidDataTypeException)
-        :d_buffer(dataBufferLength, DataSet<T>()),
-        d_isReadLocked(false),
-        d_isWriteLocked(false),
-        d_readIndex(0),
-        d_writeIndex(0),
-        d_notEmpty(false),
-        d_notFull(true)
+        :buffer_(dataBufferLength, DataSet<T>()),
+        isReadLocked_(false),
+        isWriteLocked_(false),
+        readIndex_(0),
+        writeIndex_(0),
+        notEmpty_(false),
+        notFull_(true)
     {
         //Set the type identifier for this buffer
         typeIdentifier = TypeInfo<T>::identifier;
@@ -107,7 +107,7 @@ public:
     //! Is there any data in this buffer?
     bool hasData() const
     {
-        boost::mutex::scoped_lock lock(d_mutex);
+        boost::mutex::scoped_lock lock(mutex_);
         return is_not_empty();
     }
 
@@ -118,12 +118,12 @@ public:
     */
     void getReadData(DataSet<T>*& setPtr) throw(DataBufferReleaseException, boost::thread_interrupted)
     {
-        boost::mutex::scoped_lock lock(d_mutex);
-        if(d_isReadLocked)
+        boost::mutex::scoped_lock lock(mutex_);
+        if(isReadLocked_)
             throw DataBufferReleaseException("getReadData() called before previous DataSet was released");
-        d_notEmptyCond.wait(lock, boost::bind(&DataBuffer<T>::is_not_empty, this));
-        d_isReadLocked = true;
-        setPtr = &d_buffer[d_readIndex];
+        notEmptyCond_.wait(lock, boost::bind(&DataBuffer<T>::is_not_empty, this));
+        isReadLocked_ = true;
+        setPtr = &buffer_[readIndex_];
     };
 
     /*!
@@ -134,15 +134,15 @@ public:
     */
     void getWriteData(DataSet<T>*& setPtr, std::size_t size) throw(DataBufferReleaseException, boost::thread_interrupted)
     {
-        boost::mutex::scoped_lock lock(d_mutex);
-        if(d_isWriteLocked)
+        boost::mutex::scoped_lock lock(mutex_);
+        if(isWriteLocked_)
             throw DataBufferReleaseException("getWriteData() called before previous DataSet was released");
-        d_notFullCond.wait(lock, boost::bind(&DataBuffer<T>::is_not_full, this));
-        d_isWriteLocked = true;
-        if(d_buffer[d_writeIndex].data.size() != size)
-            d_buffer[d_writeIndex].data.resize(size);
-        d_buffer[d_writeIndex].timeStamp = 0;
-        setPtr = &d_buffer[d_writeIndex];
+        notFullCond_.wait(lock, boost::bind(&DataBuffer<T>::is_not_full, this));
+        isWriteLocked_ = true;
+        if(buffer_[writeIndex_].data.size() != size)
+            buffer_[writeIndex_].data.resize(size);
+        buffer_[writeIndex_].timeStamp = 0;
+        setPtr = &buffer_[writeIndex_];
     };
 
     /*!
@@ -152,14 +152,14 @@ public:
     */
     void releaseReadData(DataSet<T>*& setPtr)
     {
-        boost::mutex::scoped_lock lock(d_mutex);
-        if(++d_readIndex == d_buffer.size())
-            d_readIndex = 0;
-        if(d_readIndex == d_writeIndex)
-            d_notEmpty = false;
-        d_notFull = true;
-        d_notFullCond.notify_one();
-        d_isReadLocked = false;
+        boost::mutex::scoped_lock lock(mutex_);
+        if(++readIndex_ == buffer_.size())
+            readIndex_ = 0;
+        if(readIndex_ == writeIndex_)
+            notEmpty_ = false;
+        notFull_ = true;
+        notFullCond_.notify_one();
+        isReadLocked_ = false;
         setPtr = NULL;
     };
 
@@ -170,14 +170,14 @@ public:
     */
     void releaseWriteData(DataSet<T>*& setPtr)
     {
-        boost::mutex::scoped_lock lock(d_mutex);
-        if(++d_writeIndex == d_buffer.size())
-            d_writeIndex = 0;
-        if(d_readIndex == d_writeIndex)
-            d_notFull = false;
-        d_notEmpty = true;
-        d_notEmptyCond.notify_one();
-        d_isWriteLocked = false;
+        boost::mutex::scoped_lock lock(mutex_);
+        if(++writeIndex_ == buffer_.size())
+            writeIndex_ = 0;
+        if(readIndex_ == writeIndex_)
+            notFull_ = false;
+        notEmpty_ = true;
+        notEmptyCond_.notify_one();
+        isWriteLocked_ = false;
         setPtr = NULL;
     };
 
@@ -189,23 +189,23 @@ private:
     int typeIdentifier;
 
     //! The vector of DataSets
-    std::vector< DataSet<T> > d_buffer;
+    std::vector< DataSet<T> > buffer_;
 
-    bool d_isReadLocked;
-    bool d_isWriteLocked;
+    bool isReadLocked_;
+    bool isWriteLocked_;
 
-    std::size_t d_readIndex;
-    std::size_t d_writeIndex;
+    std::size_t readIndex_;
+    std::size_t writeIndex_;
 
-    bool d_notEmpty;
-    bool d_notFull;
+    bool notEmpty_;
+    bool notFull_;
 
-    bool is_not_empty() const { return d_notEmpty; }
-    bool is_not_full() const { return d_notFull; }
+    bool is_not_empty() const { return notEmpty_; }
+    bool is_not_full() const { return notFull_; }
 
-    mutable boost::mutex d_mutex;
-    boost::condition d_notEmptyCond;
-    boost::condition d_notFullCond;
+    mutable boost::mutex mutex_;
+    boost::condition notEmptyCond_;
+    boost::condition notFullCond_;
 
 };
 
