@@ -56,11 +56,11 @@ class StackInTranslator
 {
 private:
 
-    ReadBuffer<uint8_t>* d_inputBuffer;
-    StackDataBuffer* d_aboveBuffer;
+    ReadBuffer<uint8_t>* inputBuffer_;
+    StackDataBuffer* aboveBuffer_;
 
     //! Handle for this StackComponent's thread of execution
-    boost::scoped_ptr< boost::thread > d_thread;
+    boost::scoped_ptr< boost::thread > thread_;
 
     //! The main thread loop for this stack component
     virtual void threadLoop();

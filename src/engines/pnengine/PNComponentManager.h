@@ -84,10 +84,10 @@ class PNComponentManager
 {
 private:
     //! Repositories of components which can be loaded by this manager
-    std::vector< Repository > d_repositories;
+    std::vector< Repository > repositories_;
 
     //! Loaded component libraries
-    std::vector< ComponentLibrary > d_loadedLibraries;
+    std::vector< ComponentLibrary > loadedLibraries_;
 
 public:
     //! ctor

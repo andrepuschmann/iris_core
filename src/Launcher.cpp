@@ -74,27 +74,27 @@ public:
 
 private:
     //! XML radio configuration
-    string d_radioConfig;
+    string radioConfig_;
     //! path to the Stack component repository
-    string d_stackRepoPath;
+    string stackRepoPath_;
     //! path to the PN component repository
-    string d_pnRepoPath;
+    string pnRepoPath_;
     //! path to the SDF component repository
-    string d_sdfRepoPath;
+    string sdfRepoPath_;
     //! path to the controller repository
-    string d_contRepoPath;
+    string contRepoPath_;
     //! log level
-    string d_logLevel;
+    string logLevel_;
     //! whether to load the radio automatically at startup
-    bool d_autoLoad;
+    bool autoLoad_;
     //! whether to start the radio automatically at startup
-    bool d_autoStart;
+    bool autoStart_;
     //! configuration file for passing options to launcher
-    string d_configFile;
+    string configFile_;
     //! the state machine managing the various calls into the iris interface
-    IrisStateMachine d_stateMachine;
+    IrisStateMachine stateMachine_;
     //! whether the launcher is running - if false, functions will return immediately
-    bool d_isRunning;
+    bool isRunning_;
 };
 
 
@@ -131,9 +131,9 @@ int main(int argc, char* argv[])
 
 
 Launcher::Launcher()
-    :d_radioConfig(""), d_pnRepoPath(""), d_sdfRepoPath(""), d_contRepoPath(""), 
-    d_logLevel("debug"), d_autoLoad(true), d_autoStart(true), d_stateMachine(),
-    d_isRunning(true)
+    :radioConfig_(""), pnRepoPath_(""), sdfRepoPath_(""), contRepoPath_(""), 
+    logLevel_("debug"), autoLoad_(true), autoStart_(true), stateMachine_(),
+    isRunning_(true)
 {
     printBanner();
 }
@@ -150,23 +150,23 @@ void Launcher::pauseConsole()
 
 void Launcher::parseOptions(int argc, char* argv[]) throw (po::error, LauncherException)
 {
-    if (!d_isRunning)
+    if (!isRunning_)
         return;
 
     po::options_description general("General options");
     general.add_options()
         ("help,h", "Produce help message")
         ("version,V", "Print version information and exit")
-        ("config-file,f", po::value<string>(&d_configFile), "Load parameters from config file")
+        ("config-file,f", po::value<string>(&configFile_), "Load parameters from config file")
         ;
 
     po::options_description desc("Configuration options");
     desc.add_options()
-        ("stackrepository,t", po::value<string>(&d_stackRepoPath), "Repository of IRISv2 Stack components")
-        ("pnrepository,p", po::value<string>(&d_pnRepoPath), "Repository of IRISv2 PN components")
-        ("sdfrepository,s", po::value<string>(&d_sdfRepoPath), "Repository of IRISv2 SDF components")
-        ("controllerrepository,c", po::value<string>(&d_contRepoPath), "Repository of IRISv2 controllers")
-        ("loglevel,l", po::value<string>(&d_logLevel), "Log level (options are debug, info, warning, error & fatal)")
+        ("stackrepository,t", po::value<string>(&stackRepoPath_), "Repository of IRISv2 Stack components")
+        ("pnrepository,p", po::value<string>(&pnRepoPath_), "Repository of IRISv2 PN components")
+        ("sdfrepository,s", po::value<string>(&sdfRepoPath_), "Repository of IRISv2 SDF components")
+        ("controllerrepository,c", po::value<string>(&contRepoPath_), "Repository of IRISv2 controllers")
+        ("loglevel,l", po::value<string>(&logLevel_), "Log level (options are debug, info, warning, error & fatal)")
         ("no-load",  "Do not automatically load radio (implies --no-start)")
         ("no-start", "Do not automatically start radio")
     ;
@@ -174,7 +174,7 @@ void Launcher::parseOptions(int argc, char* argv[]) throw (po::error, LauncherEx
     // Hidden options, will not be shown in the help string (positional options)
     po::options_description hidden("Hidden options");
     hidden.add_options()
-    ("xmlconfig,x", po::value< string >(&d_radioConfig), "XML configuration file for the radio")
+    ("xmlconfig,x", po::value< string >(&radioConfig_), "XML configuration file for the radio")
     ;
 
     // positional options - the parameters without --option will be treated as xml files
@@ -196,23 +196,23 @@ void Launcher::parseOptions(int argc, char* argv[]) throw (po::error, LauncherEx
         cout << "Iris software radio" << endl << endl;
         cout << "Usage: " << argv[0] << " [OPTIONS] xmlconfigfile" << endl << endl;
         cout << desc << endl << general << endl;
-        d_isRunning = false;
+        isRunning_ = false;
         return;
     }
 
     // print version number and exit
     if (vm.count("version")) {
         cout << "Iris, version " << VERSION << endl;
-        d_isRunning = false;
+        isRunning_ = false;
         return;
     }
 
     // config file was given
     if (vm.count("config-file")) {
-        cout << "parsing config file " << d_configFile << "..." << endl;
-        ifstream hConfFile(d_configFile.c_str(), ios::in);
+        cout << "parsing config file " << configFile_ << "..." << endl;
+        ifstream hConfFile(configFile_.c_str(), ios::in);
         if (hConfFile.fail())
-            throw LauncherException("Could not open " + d_configFile + " for reading.");
+            throw LauncherException("Could not open " + configFile_ + " for reading.");
         po::store(po::parse_config_file(hConfFile, desc), vm);
         po::notify(vm);
     }
@@ -229,32 +229,32 @@ void Launcher::parseOptions(int argc, char* argv[]) throw (po::error, LauncherEx
 
     if (vm.count("no-load"))
     {
-        d_autoLoad = false;
-        d_autoStart = false;
+        autoLoad_ = false;
+        autoStart_ = false;
     }
 
     if (vm.count("no-start"))
-        d_autoStart = false;
+        autoStart_ = false;
 }
 
 void Launcher::menuLoop() throw (LauncherException)
 {
-    if (!d_isRunning)
+    if (!isRunning_)
         return;
 
-    d_stateMachine.setRadioConfig(d_radioConfig);
-    d_stateMachine.setStackRadioRepository(d_stackRepoPath);
-    d_stateMachine.setPnRadioRepository(d_pnRepoPath);
-    d_stateMachine.setSdfRadioRepository(d_sdfRepoPath);
-    d_stateMachine.setContRadioRepository(d_contRepoPath);
-    d_stateMachine.setLogLevel(d_logLevel);
-    d_stateMachine.initiate();
+    stateMachine_.setRadioConfig(radioConfig_);
+    stateMachine_.setStackRadioRepository(stackRepoPath_);
+    stateMachine_.setPnRadioRepository(pnRepoPath_);
+    stateMachine_.setSdfRadioRepository(sdfRepoPath_);
+    stateMachine_.setContRadioRepository(contRepoPath_);
+    stateMachine_.setLogLevel(logLevel_);
+    stateMachine_.initiate();
 
-    if (d_autoLoad)
+    if (autoLoad_)
     {
-        d_stateMachine.process_event(EvLoadUnload() );
-        if (d_autoStart)
-            d_stateMachine.process_event(EvStartStop() );
+        stateMachine_.process_event(EvLoadUnload() );
+        if (autoStart_)
+            stateMachine_.process_event(EvStartStop() );
     }
 
     char key = 0;
@@ -270,15 +270,15 @@ void Launcher::menuLoop() throw (LauncherException)
         {
             case 'L':  // load
             case 'U':  // unload
-                d_stateMachine.process_event( EvLoadUnload() );
+                stateMachine_.process_event( EvLoadUnload() );
                 break;
             case 'S':  // start/stop
-                d_stateMachine.process_event( EvStartStop() );
+                stateMachine_.process_event( EvStartStop() );
                 break;
             case 'Q':   // do nothing, will exit while
                 break;
             case 'R':   // reconfigure the radio
-                d_stateMachine.reconfigureRadio();
+                stateMachine_.reconfigureRadio();
                 break;
             default:
                 cout << "Unknown command: '" << key << "'";
@@ -287,18 +287,18 @@ void Launcher::menuLoop() throw (LauncherException)
 
     }
 
-    d_stateMachine.terminate();
+    stateMachine_.terminate();
 }
 
 void Launcher::printStatus()
 {
     cout << endl;
-    cout << "Stack Repository  :  " << d_stackRepoPath << endl;
-    cout << "PN Repository  :  " << d_pnRepoPath << endl;
-    cout << "SDF Repository  : " << d_sdfRepoPath << endl;
-    cout << "Controller Repository  : " << d_contRepoPath << endl;
-    cout << "Log level : " << d_logLevel << endl;
-    cout << "Radio Config: " << d_radioConfig << endl;
+    cout << "Stack Repository  :  " << stackRepoPath_ << endl;
+    cout << "PN Repository  :  " << pnRepoPath_ << endl;
+    cout << "SDF Repository  : " << sdfRepoPath_ << endl;
+    cout << "Controller Repository  : " << contRepoPath_ << endl;
+    cout << "Log level : " << logLevel_ << endl;
+    cout << "Radio Config: " << radioConfig_ << endl;
 }
 
 void Launcher::printMenu()
@@ -307,8 +307,8 @@ void Launcher::printMenu()
     string state = "";
 
     // iterate over leaf state to find menu output
-    for (IrisStateMachine::state_iterator pLeafState = d_stateMachine.state_begin();
-         pLeafState != d_stateMachine.state_end(); ++pLeafState )
+    for (IrisStateMachine::state_iterator pLeafState = stateMachine_.state_begin();
+         pLeafState != stateMachine_.state_end(); ++pLeafState )
     {
         if (pLeafState->dynamic_type() == Running::static_type())
         {

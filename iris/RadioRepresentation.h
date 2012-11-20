@@ -181,7 +181,7 @@ class RadioRepresentation
         bool isBuilt;
 
         //! A mutex to ensure thread-safe access
-        mutable boost::mutex d_mutex;
+        mutable boost::mutex mutex_;
 
         //! Reconfigure a parameter within the representation
         void reconfigureParameter(ParametricReconfig reconfig);

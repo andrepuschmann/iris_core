@@ -47,41 +47,41 @@ namespace iris
 {
     //ctor
     System::System()
-        :d_status(RADIOUNLOADED),
-        pFile(NULL)
+        :status_(RADIOUNLOADED),
+        pFile_(NULL)
     {
         //Set up logging
-        pFile = fopen("iris2.log", "a+");
-        if(pFile != NULL)
-            LoggingPolicy::getPolicyInstance()->setFileStream(pFile);
+        pFile_ = fopen("iris2.log", "a+");
+        if(pFile_ != NULL)
+            LoggingPolicy::getPolicyInstance()->setFileStream(pFile_);
 
         LoggingPolicy::getPolicyInstance()->ReportingLevel() = LDEBUG;
     }
 
     System::~System()
     {
-        if(pFile != NULL)
-            fclose(pFile);
+        if(pFile_ != NULL)
+            fclose(pFile_);
     }
 
     void System::setStackRepository(std::string rep)
     {
-        d_reps.stackRepository = rep;
+        reps_.stackRepository = rep;
     }
 
     void System::setPnRepository(std::string rep)
     {
-        d_reps.pnRepository = rep;
+        reps_.pnRepository = rep;
     }
 
     void System::setSdfRepository(std::string rep)
     {
-        d_reps.sdfRepository = rep;
+        reps_.sdfRepository = rep;
     }
 
     void System::setContRepository(std::string rep)
     {
-        d_reps.contRepository = rep;
+        reps_.contRepository = rep;
     }
 
     void System::setLogLevel(std::string level)
@@ -115,16 +115,16 @@ namespace iris
         bool result = false;
 
         //Can only load if current status is RADIOUNLOADED
-        switch(d_status)
+        switch(status_)
         {
         case RADIOUNLOADED:
             LOG(LINFO) << "Loading radio: " << radioConfig;
 
             try{
                 XmlParser::parseXmlFile(radioConfig, rad);
-                d_engineManager.setRepositories(d_reps);
-                d_engineManager.loadRadio(rad);
-                d_status = RADIOLOADED;
+                engineManager_.setRepositories(reps_);
+                engineManager_.loadRadio(rad);
+                status_ = RADIOLOADED;
                 result = true;
             }
             catch(std::exception& ex)
@@ -145,7 +145,7 @@ namespace iris
         bool result = false;
 
         //Can only start if current status is RADIOLOADED
-        switch(d_status)
+        switch(status_)
         {
         case RADIOUNLOADED:
             LOG(LWARNING) << "There is no radio loaded";
@@ -154,8 +154,8 @@ namespace iris
             LOG(LINFO) << "Starting radio";
 
             try{
-                d_engineManager.startRadio();
-                d_status = RADIORUNNING;
+                engineManager_.startRadio();
+                status_ = RADIORUNNING;
                 result = true;
             }
             catch(std::exception& ex)
@@ -176,7 +176,7 @@ namespace iris
         bool result = false;
 
         //Can only stop if current status is RADIORUNNING
-        switch(d_status)
+        switch(status_)
         {
         case RADIOUNLOADED:
             LOG(LWARNING) << "There is no radio loaded";
@@ -188,8 +188,8 @@ namespace iris
             LOG(LINFO) << "Stopping radio";
 
             try{
-                d_engineManager.stopRadio();
-                d_status = RADIOLOADED;
+                engineManager_.stopRadio();
+                status_ = RADIOLOADED;
                 result = true;
             }
             catch(std::exception& ex)
@@ -210,7 +210,7 @@ namespace iris
         bool result = false;
 
         //Can only unload if current status is RADIOLOADED
-        switch(d_status)
+        switch(status_)
         {
         case RADIOUNLOADED:
             LOG(LWARNING) << "There is no radio loaded";
@@ -219,8 +219,8 @@ namespace iris
             LOG(LINFO) << "Unloading radio";
 
             try{
-                d_engineManager.unloadRadio();
-                d_status = RADIOUNLOADED;
+                engineManager_.unloadRadio();
+                status_ = RADIOUNLOADED;
                 result = true;
             }
             catch(std::exception& ex)
@@ -242,7 +242,7 @@ namespace iris
         bool result = false;
 
         //Can only load if current status is RADIOUNLOADED
-        switch(d_status)
+        switch(status_)
         {
         case RADIOUNLOADED:
             LOG(LWARNING) << "No radio has been loaded - loading new configuration";
@@ -253,8 +253,8 @@ namespace iris
 
             try{
                 XmlParser::parseXmlFile(radioConfig, rad);
-                ReconfigSet reconfigs = ReconfigurationManager::compareRadios(d_engineManager.getCurrentRadio(), rad);
-                d_engineManager.reconfigureRadio(reconfigs);
+                ReconfigSet reconfigs = ReconfigurationManager::compareRadios(engineManager_.getCurrentRadio(), rad);
+                engineManager_.reconfigureRadio(reconfigs);
                 result = true;
             }
             catch(std::exception& ex)
@@ -269,17 +269,17 @@ namespace iris
 
     bool System::isRadioLoaded() const
     {
-        return d_status == RADIOLOADED;
+        return status_ == RADIOLOADED;
     }
 
     bool System::isRadioRunning() const
     {
-        return d_status == RADIORUNNING;
+        return status_ == RADIORUNNING;
     }
 
     bool System::isRadioSuspended() const
     {
-        return d_status == RADIOSUSPENDED;
+        return status_ == RADIOSUSPENDED;
     }
 
 

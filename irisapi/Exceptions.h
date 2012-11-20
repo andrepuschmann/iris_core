@@ -48,14 +48,14 @@ namespace iris
 class IrisException : public std::exception
 {
 private:
-    std::string d_message;
+    std::string message_;
 public:
     IrisException(const std::string &message) throw()
-        :exception(), d_message(message)
+        :exception(), message_(message)
     {};
     virtual const char* what() const throw()
     {
-        return d_message.c_str();
+        return message_.c_str();
     };
     virtual ~IrisException() throw()
     {};

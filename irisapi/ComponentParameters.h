@@ -123,7 +123,7 @@ class ComponentParameters : boost::noncopyable
 {
 private:
     //! Map holding all registered parameters. The key is the parameter name.
-    std::map<std::string, Parameter> d_parameterMap;
+    std::map<std::string, Parameter> parameterMap_;
 
     //! Helper method called by the registerParameter methods
     template<typename T>
@@ -135,8 +135,8 @@ private:
     const Parameter& getParameterReference(std::string name) const
         throw (ParameterNotFoundException)
     {
-        std::map<std::string, Parameter>::const_iterator it = d_parameterMap.find(name);
-        if (it == d_parameterMap.end())
+        std::map<std::string, Parameter>::const_iterator it = parameterMap_.find(name);
+        if (it == parameterMap_.end())
             throw ParameterNotFoundException(std::string("Parameter ") + name + " does not exist.");
         return it->second;
     }
@@ -146,8 +146,8 @@ private:
     Parameter& getParameterReference(std::string name)
         throw (ParameterNotFoundException)
     {
-        std::map<std::string, Parameter>::iterator it = d_parameterMap.find(name);
-        if (it == d_parameterMap.end())
+        std::map<std::string, Parameter>::iterator it = parameterMap_.find(name);
+        if (it == parameterMap_.end())
             throw ParameterNotFoundException(std::string("Parameter ") + name + " does not exist.");
         return it->second;
     }
@@ -203,7 +203,7 @@ protected:
 public:
 
     //! Constructs an instance of ComponentParameters
-    ComponentParameters() : d_parameterMap() {}
+    ComponentParameters() : parameterMap_() {}
 
     virtual ~ComponentParameters() {}
 
@@ -230,7 +230,7 @@ public:
         map<string,Parameter>::const_iterator it;
         stringstream ret;
 
-        for (it = d_parameterMap.begin(); it != d_parameterMap.end(); ++it)
+        for (it = parameterMap_.begin(); it != parameterMap_.end(); ++it)
         {
             ret << "\t<parameter name=\"" << it->first << "\" " <<
                     "value=\"" << it->second.defaultValue << "\" />" << endl;
@@ -240,7 +240,7 @@ public:
     }
 
     //! returns the number of registered parameters
-    size_t getNumParameters() const { return d_parameterMap.size(); }
+    size_t getNumParameters() const { return parameterMap_.size(); }
 
     /** Get the value of parameter 'name' in a std::string.
      * \throw ParameterNotFoundException if no such parameter exists
@@ -564,10 +564,10 @@ inline void ComponentParameters::registerParameterHelper(std::string name, std::
     BOOST_STATIC_ASSERT(ParameterTypeInfo<T>::identifier >= 0);
 
     Parameter par(parameter, description, defaultValue, isDynamic);
-    par.identifier = (int)d_parameterMap.size();
+    par.identifier = (int)parameterMap_.size();
     par.typeIdentifier = ParameterTypeInfo<T>::identifier;
     par.typeName = ParameterTypeInfo<T>::name();
-    d_parameterMap[name] = par;
+    parameterMap_[name] = par;
 
 }
 
@@ -587,8 +587,8 @@ inline void ComponentParameters::registerParameter(std::string name, std::string
     boost::to_lower(name);
 
     registerParameterHelper(name, description, defaultValue, isDynamic, parameter);
-    d_parameterMap[name].isList = false;
-    d_parameterMap[name].allowedValues = allowedInterval;
+    parameterMap_[name].isList = false;
+    parameterMap_[name].allowedValues = allowedInterval;
 
     // set parameter to its default value
     this->setValue(name, defaultValue);
@@ -635,8 +635,8 @@ inline void ComponentParameters::registerParameter(std::string name, std::string
     boost::to_lower(name);
 
     registerParameterHelper(name, description, defaultValue, isDynamic, parameter);
-    d_parameterMap[name].isList = false;
-    d_parameterMap[name].allowedValues = allowedInterval;
+    parameterMap_[name].isList = false;
+    parameterMap_[name].allowedValues = allowedInterval;
 
     // set parameter to its default value
     this->setValue(name, defaultValue);
@@ -657,8 +657,8 @@ inline void ComponentParameters::registerParameter(std::string name, std::string
     boost::to_lower(name);
 
     registerParameterHelper(name, description, defaultValue, isDynamic, parameter);
-    d_parameterMap[name].isList = true;
-    d_parameterMap[name].allowedValues = allowedValues;
+    parameterMap_[name].isList = true;
+    parameterMap_[name].allowedValues = allowedValues;
 
     // set to default
     this->setValue(name, defaultValue);
@@ -668,8 +668,8 @@ inline void ComponentParameters::registerParameter(std::string name, std::string
 inline ComponentParameters& ComponentParameters::assignParameters(const ComponentParameters& other)
             throw (ParameterNotFoundException, InvalidDataTypeException)
     {
-        for (std::map<std::string, Parameter>::iterator i = d_parameterMap.begin();
-             i != d_parameterMap.end();
+        for (std::map<std::string, Parameter>::iterator i = parameterMap_.begin();
+             i != parameterMap_.end();
              ++i)
         {
             setValue(i->first, other.getValue(i->first));

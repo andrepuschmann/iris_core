@@ -45,7 +45,7 @@ StackInTranslator::~StackInTranslator()
 
 void StackInTranslator::setBufferAbove(StackDataBuffer* above)
 {
-    d_aboveBuffer = above;
+    aboveBuffer_ = above;
 }
 
 void StackInTranslator::setInputBuffer(ReadBufferBase* in)
@@ -54,19 +54,19 @@ void StackInTranslator::setInputBuffer(ReadBufferBase* in)
     {
         throw InvalidDataTypeException("Only uint8_t data types are valid in the StackEngine");
     }
-    d_inputBuffer = dynamic_cast< ReadBuffer<uint8_t>* >(in);
+    inputBuffer_ = dynamic_cast< ReadBuffer<uint8_t>* >(in);
 }
 
 void StackInTranslator::startTranslator()
 {
     //Start the main component thread
-    d_thread.reset( new boost::thread( boost::bind( &StackInTranslator::threadLoop, this ) ) );
+    thread_.reset( new boost::thread( boost::bind( &StackInTranslator::threadLoop, this ) ) );
 }
 
 void StackInTranslator::stopTranslator()
 {
-    d_thread->interrupt();
-    d_thread->join();
+    thread_->interrupt();
+    thread_->join();
 }
 
 void StackInTranslator::threadLoop()
@@ -79,7 +79,7 @@ void StackInTranslator::threadLoop()
 
             //Get a DataSet from the input DataBuffer
             DataSet< uint8_t >* inData = NULL;
-            d_inputBuffer->getReadData(inData);
+            inputBuffer_->getReadData(inData);
 
             //Create a StackDataSet and fill it with the info from the DataSet
             boost::shared_ptr<StackDataSet> set(new StackDataSet);
@@ -91,7 +91,7 @@ void StackInTranslator::threadLoop()
             sendUpwards(set);
 
             //Release the DataSet
-            d_inputBuffer->releaseReadData(inData);
+            inputBuffer_->releaseReadData(inData);
         }
     }
     catch(IrisException& ex)
@@ -106,10 +106,10 @@ void StackInTranslator::threadLoop()
 
 void StackInTranslator::sendUpwards(boost::shared_ptr<StackDataSet> set)
 {
-    if(d_aboveBuffer != NULL)
+    if(aboveBuffer_ != NULL)
     {
         set->source = BELOW;
-        d_aboveBuffer->pushDataSet(set);
+        aboveBuffer_->pushDataSet(set);
     }
 }
 

@@ -189,7 +189,7 @@ BOOST_AUTO_TEST_CASE(SingleThread)
 
 struct threads
 {
-    threads(int number) : d_number(number) {}
+    threads(int number) : number_(number) {}
 
     void operator()()
     {
@@ -197,14 +197,14 @@ struct threads
 
         for (int i = 1; i < 123; i++)
         {
-            LOG(LWARNING) << "Thread " << d_number << " " << i << " testing logging";
+            LOG(LWARNING) << "Thread " << number_ << " " << i << " testing logging";
             LOG(LDEBUG) << "no log";
             if (i % 10 == 0) // sleep a while every 10 iterations
                 boost::this_thread::sleep(boost::posix_time::milliseconds(1));
         }     
     }
 private:
-    int d_number;
+    int number_;
 };
 
 BOOST_AUTO_TEST_CASE(MultipleThreads)

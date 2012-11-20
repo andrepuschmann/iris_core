@@ -63,29 +63,29 @@ class StackEngine:public EngineInterface, public ComponentCallbackInterface
 {
 private:
     //! The graph representing the components within the engine and the links between them
-    RadioGraph d_engineGraph;
+    RadioGraph engineGraph_;
 
     //! The StackComponents running within this engine
-    std::vector< boost::shared_ptr<StackComponent> > d_components;
+    std::vector< boost::shared_ptr<StackComponent> > components_;
 
     //! The StackInTranslators running within this engine
-    std::vector< boost::shared_ptr<StackInTranslator> > d_inTranslators;
+    std::vector< boost::shared_ptr<StackInTranslator> > inTranslators_;
 
     //! The StackOutTranslators running within this engine
-    std::vector< boost::shared_ptr<StackOutTranslator> > d_outTranslators;
+    std::vector< boost::shared_ptr<StackOutTranslator> > outTranslators_;
 
     //! The DataBuffers for the external links into and out of this engine
-    std::vector< boost::shared_ptr< DataBufferBase > > d_engInputBuffers;
-    std::vector< boost::shared_ptr< DataBufferBase > > d_engOutputBuffers;
+    std::vector< boost::shared_ptr< DataBufferBase > > engInputBuffers_;
+    std::vector< boost::shared_ptr< DataBufferBase > > engOutputBuffers_;
 
     //! Name of this engine
-    std::string d_engineName;
+    std::string engineName_;
 
     //! The component manager for this engine
-    boost::scoped_ptr< StackComponentManager > d_compManager;
+    boost::scoped_ptr< StackComponentManager > compManager_;
 
     //! The interface to the owner of this engine
-    EngineCallbackInterface *d_engineManager;
+    EngineCallbackInterface *engineManager_;
 
     // Helper functions
     void createExternalLink(LinkDescription& l);

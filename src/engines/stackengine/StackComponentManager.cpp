@@ -97,7 +97,7 @@ namespace iris
             }
 
             //Add to vector of repository paths
-            d_repositories.push_back(tmp);
+            repositories_.push_back(tmp);
         }
     }
 
@@ -108,7 +108,7 @@ namespace iris
 
         //Check if the library has already been loaded
         vector< ComponentLibrary >::iterator libIt;
-        for(libIt=d_loadedLibraries.begin();libIt!=d_loadedLibraries.end();++libIt)
+        for(libIt=loadedLibraries_.begin();libIt!=loadedLibraries_.end();++libIt)
         {
             if(libIt->name == desc.type)
                 temp = *libIt;
@@ -118,7 +118,7 @@ namespace iris
         if(temp.name == "")
         {
             vector< Repository >::iterator repIt;
-            for(repIt=d_repositories.begin();repIt!=d_repositories.end();++repIt)
+            for(repIt=repositories_.begin();repIt!=repositories_.end();++repIt)
             {
                 vector< ComponentLibrary >::iterator compIt;
                 for(compIt=repIt->componentLibs.begin();compIt!=repIt->componentLibs.end();++compIt)
@@ -150,7 +150,7 @@ namespace iris
         {
             //Load the component library and set the pointer, add to vector of loaded libraries
             temp.libPtr.reset(new SharedLibrary(temp.path));
-            d_loadedLibraries.push_back(temp);
+            loadedLibraries_.push_back(temp);
         }
 
         //Pull a PNComponent class out of the library
@@ -194,7 +194,7 @@ namespace iris
     {
         //Look for the component in our repositories
         vector< Repository >::iterator repIt;
-        for(repIt=d_repositories.begin();repIt!=d_repositories.end();++repIt)
+        for(repIt=repositories_.begin();repIt!=repositories_.end();++repIt)
         {
             vector< ComponentLibrary >::iterator compIt;
             for(compIt=repIt->componentLibs.begin();compIt!=repIt->componentLibs.end();++compIt)
@@ -212,7 +212,7 @@ namespace iris
     {
         vector<bfs::path> paths;
         vector<Repository>::iterator it;
-        for(it=d_repositories.begin();it!=d_repositories.end();++it)
+        for(it=repositories_.begin();it!=repositories_.end();++it)
         {
             paths.push_back(it->path);
         }

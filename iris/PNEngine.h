@@ -60,34 +60,34 @@ class PNComponentManager;
 */
 class PNEngine:public EngineInterface, public ComponentCallbackInterface
 {
-private:
+  private:
     //! The component manager for this engine
-    boost::scoped_ptr< PNComponentManager > d_compManager;
+    boost::scoped_ptr< PNComponentManager > compManager_;
 
     //! Handle for this engine's thread of execution
-    boost::scoped_ptr< boost::thread > d_thread;
+    boost::scoped_ptr< boost::thread > thread_;
 
     //! The graph representing the components within the engine and the links between them
-    RadioGraph d_engineGraph;
+    RadioGraph engineGraph_;
 
     //! The PNComponents running within this engine
-    std::vector< boost::shared_ptr<PNComponent> > d_components;
+    std::vector< boost::shared_ptr<PNComponent> > components_;
 
     //! The DataBuffers for the internal links between components of this engine
-    std::vector< boost::shared_ptr< DataBufferBase > > d_internalBuffers;
+    std::vector< boost::shared_ptr< DataBufferBase > > internalBuffers_;
 
     //! The DataBuffers for the external links into and out of this engine
-    std::vector< boost::shared_ptr< DataBufferBase > > d_engInputBuffers;
-    std::vector< boost::shared_ptr< DataBufferBase > > d_engOutputBuffers;
+    std::vector< boost::shared_ptr< DataBufferBase > > engInputBuffers_;
+    std::vector< boost::shared_ptr< DataBufferBase > > engOutputBuffers_;
 
     //! Name of this engine
-    std::string d_engineName;
+    std::string engineName_;
 
     //! The reconfiguration message queue for this engine
-    MessageQueue< ReconfigSet > d_reconfigQueue;
+    MessageQueue< ReconfigSet > reconfigQueue_;
 
     //! The interface to the owner of this engine
-    EngineCallbackInterface *d_engineManager;
+    EngineCallbackInterface *engineManager_;
 
 
     //! Helper functions
@@ -107,7 +107,7 @@ private:
     void reconfigureParameter(ParametricReconfig reconfig);
     //! Reconfigure the structure of this engine
     void reconfigureStructure();
-public:
+  public:
     //! ctor
     PNEngine(std::string name, std::string repository)
         throw (IrisException);
@@ -119,7 +119,7 @@ public:
     /** Load the engine
     *   \param eng          Description of the engine
     *   \param inputLinks   The input DataBuffers for this engine
-    *   \returns The output DataBuffers for this engine
+    *   \return The output DataBuffers for this engine
     */
     std::vector< boost::shared_ptr< DataBufferBase > > loadEngine(EngineDescription eng, std::vector< boost::shared_ptr< DataBufferBase > > inputLinks)
         throw (IrisException);

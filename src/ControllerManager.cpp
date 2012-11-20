@@ -158,7 +158,7 @@ namespace iris
                     //Call load on the controller
                     cont->load();
 
-                    //Add to d_loadedControllers
+                    //Add to loadedControllers_
                     LoadedController l(compIt->name, cont);
                     loadedControllers_.push_back(l);    
 

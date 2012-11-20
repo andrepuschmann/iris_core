@@ -57,13 +57,13 @@ class StackOutTranslator
 {
 private:
 
-    WriteBuffer<uint8_t>* d_outputBuffer;
+    WriteBuffer<uint8_t>* outputBuffer_;
 
     //! The StackDataBuffer for this Translator
-    StackDataBuffer d_buffer;
+    StackDataBuffer buffer_;
 
     //! Handle for this StackComponent's thread of execution
-    boost::scoped_ptr< boost::thread > d_thread;
+    boost::scoped_ptr< boost::thread > thread_;
 
     //! The main thread loop for this translator
     virtual void threadLoop();

@@ -66,7 +66,7 @@ enum LogLevel {LDEBUG, LINFO, LWARNING, LERROR, LFATAL};
 class LoggingPolicy
 {
 private:
-    boost::mutex d_mutex;
+    boost::mutex mutex_;
     FILE* consoleStream;
     FILE* fileStream;
     LogLevel reportingLevel;
@@ -86,7 +86,7 @@ public:
 
     void output(const std::string& msg)
     {
-        boost::mutex::scoped_lock lock(d_mutex);
+        boost::mutex::scoped_lock lock(mutex_);
 
         // Output to console
         if(consoleStream)
@@ -106,7 +106,7 @@ public:
 
     void setFileStream(FILE* pFile)
     {
-        boost::mutex::scoped_lock lock(d_mutex);
+        boost::mutex::scoped_lock lock(mutex_);
         fileStream = pFile;
     }
 

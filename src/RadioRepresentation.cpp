@@ -91,7 +91,7 @@ namespace iris
     //internal graphs for each engine.
     void RadioRepresentation::buildGraphs() throw (GraphStructureErrorException)
     {
-        boost::mutex::scoped_lock lock(d_mutex);
+        boost::mutex::scoped_lock lock(mutex_);
 
         //Add component descriptions as vertices to radio graph
         vector<EngineDescription>::iterator engIt;
@@ -198,8 +198,8 @@ namespace iris
     {
         //Find all the parametric reconfigurations and apply them
         vector< ParametricReconfig >::iterator paramIt;
-        for(paramIt = reconfigs.d_paramReconfigs.begin();
-            paramIt != reconfigs.d_paramReconfigs.end();
+        for(paramIt = reconfigs.paramReconfigs_.begin();
+            paramIt != reconfigs.paramReconfigs_.end();
             ++paramIt)
         {
             reconfigureParameter(*paramIt);
@@ -208,7 +208,7 @@ namespace iris
 
     void RadioRepresentation::reconfigureParameter(ParametricReconfig reconfig)
     {
-        boost::mutex::scoped_lock lock(d_mutex);
+        boost::mutex::scoped_lock lock(mutex_);
 
         //Apply change to the RadioGraph
         Vertex v;
@@ -258,7 +258,7 @@ namespace iris
 
     std::string RadioRepresentation::getParameterValue(std::string paramName, std::string componentName)
     {
-        boost::mutex::scoped_lock lock(d_mutex);
+        boost::mutex::scoped_lock lock(mutex_);
 
         Vertex v;
         if(!findComponent(componentName, theRadioGraph, v))

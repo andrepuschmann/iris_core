@@ -64,13 +64,13 @@ public:
     *   \param dataBufferLength     number of DataSets in the buffer
     */
     explicit PNDataBuffer(int dataBufferLength = 2) throw (InvalidDataTypeException)
-        :d_buffer(dataBufferLength, DataSet<T>()),
-        d_isReadLocked(false),
-        d_isWriteLocked(false),
-        d_readIndex(0),
-        d_writeIndex(0),
-        d_notEmpty(false),
-        d_notFull(true)
+        :buffer_(dataBufferLength, DataSet<T>()),
+        isReadLocked_(false),
+        isWriteLocked_(false),
+        readIndex_(0),
+        writeIndex_(0),
+        notEmpty_(false),
+        notFull_(true)
     {
         //Set the type identifier for this buffer
         typeIdentifier = TypeInfo<T>::identifier;
@@ -113,10 +113,10 @@ public:
     */
     void getReadData(DataSet<T>*& setPtr) throw(DataBufferReleaseException, boost::thread_interrupted)
     {
-        if(d_isReadLocked)
+        if(isReadLocked_)
             throw DataBufferReleaseException("getReadData() called before previous DataSet was released");
-        d_isReadLocked = true;
-        setPtr = &d_buffer[d_readIndex];
+        isReadLocked_ = true;
+        setPtr = &buffer_[readIndex_];
     };
 
     /*!
@@ -127,19 +127,19 @@ public:
     */
     void getWriteData(DataSet<T>*& setPtr, std::size_t size) throw(DataBufferReleaseException, boost::thread_interrupted)
     {
-        if(d_isWriteLocked)
+        if(isWriteLocked_)
             throw DataBufferReleaseException("getWriteData() called before previous DataSet was released");
-        if(!d_notFull)
+        if(!notFull_)
         {
             //If buffer is full, add a new DataSet
-            d_buffer.push_back(DataSet<T>());
-            d_writeIndex = d_buffer.size()-1;
+            buffer_.push_back(DataSet<T>());
+            writeIndex_ = buffer_.size()-1;
         }
-        d_isWriteLocked = true;
-        if(d_buffer[d_writeIndex].data.size() != size)
-            d_buffer[d_writeIndex].data.resize(size);
-        d_buffer[d_writeIndex].timeStamp = 0;
-        setPtr = &d_buffer[d_writeIndex];
+        isWriteLocked_ = true;
+        if(buffer_[writeIndex_].data.size() != size)
+            buffer_[writeIndex_].data.resize(size);
+        buffer_[writeIndex_].timeStamp = 0;
+        setPtr = &buffer_[writeIndex_];
     };
 
     /*!
@@ -149,12 +149,12 @@ public:
     */
     void releaseReadData(DataSet<T>*& setPtr)
     {
-        if(++d_readIndex == d_buffer.size())
-            d_readIndex = 0;
-        if(d_readIndex == d_writeIndex)
-            d_notEmpty = false;
-        d_notFull = true;
-        d_isReadLocked = false;
+        if(++readIndex_ == buffer_.size())
+            readIndex_ = 0;
+        if(readIndex_ == writeIndex_)
+            notEmpty_ = false;
+        notFull_ = true;
+        isReadLocked_ = false;
         setPtr = NULL;
     };
 
@@ -165,12 +165,12 @@ public:
     */
     void releaseWriteData(DataSet<T>*& setPtr)
     {
-        if(++d_writeIndex == d_buffer.size())
-            d_writeIndex = 0;
-        if(d_readIndex == d_writeIndex)
-            d_notFull = false;
-        d_notEmpty = true;
-        d_isWriteLocked = false;
+        if(++writeIndex_ == buffer_.size())
+            writeIndex_ = 0;
+        if(readIndex_ == writeIndex_)
+            notFull_ = false;
+        notEmpty_ = true;
+        isWriteLocked_ = false;
         setPtr = NULL;
     };
 
@@ -182,19 +182,19 @@ private:
     int typeIdentifier;
 
     //! The vector of DataSets
-    std::vector< DataSet<T> > d_buffer;
+    std::vector< DataSet<T> > buffer_;
 
-    bool d_isReadLocked;
-    bool d_isWriteLocked;
+    bool isReadLocked_;
+    bool isWriteLocked_;
 
-    std::size_t d_readIndex;
-    std::size_t d_writeIndex;
+    std::size_t readIndex_;
+    std::size_t writeIndex_;
 
-    bool d_notEmpty;
-    bool d_notFull;
+    bool notEmpty_;
+    bool notFull_;
 
-    bool is_not_empty() const { return d_notEmpty; }
-    bool is_not_full() const { return d_notFull; }
+    bool is_not_empty() const { return notEmpty_; }
+    bool is_not_full() const { return notFull_; }
 
 };
 

@@ -97,7 +97,7 @@ class SharedLibrary : boost::noncopyable
     // ---------- Usage without giving filename to constructor
 
     //! Default constructor. Does not open a library.
-    SharedLibrary() : d_library(NULL) {};
+    SharedLibrary() : library_(NULL) {};
 
     //! \brief Opens a shared library.
     //! If a different library is already open and held by this object, it is closed
@@ -107,12 +107,12 @@ class SharedLibrary : boost::noncopyable
             FileNotFoundException);
 
     //! Check whether the library has been loaded
-    bool isLoaded() {return d_library == NULL;};
+    bool isLoaded() {return library_ == NULL;};
 
     // ----------- Accessors
 
     //! retrieves filename of currently open file
-    boost::filesystem::path getFilename() const {  return d_filename; }
+    boost::filesystem::path getFilename() const {  return filename_; }
 
     // ----------- Information
 
@@ -151,10 +151,10 @@ class SharedLibrary : boost::noncopyable
 #endif
 
     //! holds the name of the library file
-    boost::filesystem::path d_filename;
+    boost::filesystem::path filename_;
 
     //! handle to the library
-    LibraryHandle d_library;
+    LibraryHandle library_;
 };
 
 

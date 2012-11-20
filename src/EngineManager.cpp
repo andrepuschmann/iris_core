@@ -44,41 +44,41 @@ namespace iris
 
     EngineManager::EngineManager()
     {
-        d_controllerManager.setCallbackInterface(this);
+        controllerManager_.setCallbackInterface(this);
     }
 
     void EngineManager::loadRadio(RadioRepresentation rad)
     {
         //Set the current radio representation
-        d_radioRep = rad;
+        radioRep_ = rad;
 
         //Set the controller repositories in the ControllerManager
-        d_controllerManager.addRepository(d_reps.contRepository);
+        controllerManager_.addRepository(reps_.contRepository);
 
         //Load the controllers
         vector<ControllerDescription> conts = rad.getControllers();
         vector<ControllerDescription>::iterator contIt;
         for(contIt=conts.begin(); contIt!=conts.end(); ++contIt)
         {
-            d_controllerManager.loadController(contIt->type);
+            controllerManager_.loadController(contIt->type);
         }
 
-        d_engineGraph = rad.getEngineGraph();
+        engineGraph_ = rad.getEngineGraph();
 
         //Create the engines
         EngVertexIterator i, iend;
-        for(tie(i,iend) = vertices(d_engineGraph); i != iend; ++i)
+        for(tie(i,iend) = vertices(engineGraph_); i != iend; ++i)
         {
             //Get the engine description
-            EngineDescription current = d_engineGraph[*i];
+            EngineDescription current = engineGraph_[*i];
 
             //Add the engine to our vector
-            d_engines.push_back(createEngine(current));
+            engines_.push_back(createEngine(current));
         }
 
         //Do a topological sort of the graph
         deque<unsigned> topoOrder;
-        topological_sort(d_engineGraph, front_inserter(topoOrder), vertex_index_map(identity_property_map()));
+        topological_sort(engineGraph_, front_inserter(topoOrder), vertex_index_map(identity_property_map()));
 
         //Go through graph in topological order and set buffers
         for(deque<unsigned>::iterator i = topoOrder.begin(); i != topoOrder.end(); ++i)
@@ -86,26 +86,26 @@ namespace iris
             //Get input buffers
             vector< shared_ptr< DataBufferBase > > inputBuffers, outputBuffers;
             EngInEdgeIterator edgeIt, edgeItEnd;
-            for(tie(edgeIt, edgeItEnd) = in_edges(*i, d_engineGraph); edgeIt != edgeItEnd; ++edgeIt)
+            for(tie(edgeIt, edgeItEnd) = in_edges(*i, engineGraph_); edgeIt != edgeItEnd; ++edgeIt)
             {
-                inputBuffers.push_back(d_engineGraph[*edgeIt].theBuffer);
+                inputBuffers.push_back(engineGraph_[*edgeIt].theBuffer);
             }
 
             //Load the engine, passing in the input buffers
-            outputBuffers = d_engines[*i].loadEngine(d_engineGraph[*i], inputBuffers);
+            outputBuffers = engines_[*i].loadEngine(engineGraph_[*i], inputBuffers);
 
             //Set the ouput buffers in the graph edges
             EngOutEdgeIterator outEdgeIt, outEdgeItEnd;
-            for(tie(outEdgeIt, outEdgeItEnd) = out_edges(*i, d_engineGraph); outEdgeIt != outEdgeItEnd; ++outEdgeIt)
+            for(tie(outEdgeIt, outEdgeItEnd) = out_edges(*i, engineGraph_); outEdgeIt != outEdgeItEnd; ++outEdgeIt)
             {
                 for(vector< shared_ptr< DataBufferBase > >::iterator it = outputBuffers.begin(); it != outputBuffers.end(); ++it)
                 {
                     LinkDescription first = (*it)->getLinkDescription();
-                    LinkDescription second = d_engineGraph[*outEdgeIt];
+                    LinkDescription second = engineGraph_[*outEdgeIt];
                     if(sameLink(first, second))
                     {
-                        d_engineGraph[*outEdgeIt].theBuffer = *it;
-                        d_engineGraph[*outEdgeIt].theBuffer->setLinkDescription( second );
+                        engineGraph_[*outEdgeIt].theBuffer = *it;
+                        engineGraph_[*outEdgeIt].theBuffer->setLinkDescription( second );
                     }
                 }
             }
@@ -115,10 +115,10 @@ namespace iris
     void EngineManager::startRadio()
     {
         //Start all the controllers
-        d_controllerManager.startControllers();
+        controllerManager_.startControllers();
 
         //Start all the engines, one by one
-        for( ptr_vector<EngineInterface>::iterator i = d_engines.begin(); i != d_engines.end(); ++i)
+        for( ptr_vector<EngineInterface>::iterator i = engines_.begin(); i != engines_.end(); ++i)
         {
             i->startEngine();
         }
@@ -127,10 +127,10 @@ namespace iris
     void EngineManager::stopRadio()
     {
         //Stop all the controllers
-        d_controllerManager.stopControllers();
+        controllerManager_.stopControllers();
 
         //Stop all the engines, one by one
-        for( ptr_vector<EngineInterface>::iterator i = d_engines.begin(); i != d_engines.end(); ++i)
+        for( ptr_vector<EngineInterface>::iterator i = engines_.begin(); i != engines_.end(); ++i)
         {
             i->stopEngine();
         }
@@ -139,51 +139,51 @@ namespace iris
     void EngineManager::unloadRadio()
     {
         //Unload all controllers
-        d_controllerManager.unloadControllers();
+        controllerManager_.unloadControllers();
 
         //Unload all the engines and remove them from the vector
-        for( ptr_vector<EngineInterface>::iterator i = d_engines.begin(); i != d_engines.end(); ++i)
+        for( ptr_vector<EngineInterface>::iterator i = engines_.begin(); i != engines_.end(); ++i)
         {
             i->unloadEngine();
         }
-        d_engines.clear();  //Automatic deletion of pointers due to boost::ptr_vector
+        engines_.clear();  //Automatic deletion of pointers due to boost::ptr_vector
     }
 
     RadioRepresentation& EngineManager::getCurrentRadio()
     {
-        return d_radioRep;
+        return radioRep_;
     }
 
     void EngineManager::reconfigureRadio(ReconfigSet reconfigs)
     {
         //Separate out reconfigurations for each engine
         boost::ptr_vector<EngineInterface>::iterator engIt;
-        for(engIt = d_engines.begin(); engIt != d_engines.end(); ++engIt)
+        for(engIt = engines_.begin(); engIt != engines_.end(); ++engIt)
         {
             string current = engIt->getName();
             ReconfigSet currentReconfigs;
 
             //Find parametric reconfigs for this engine
             vector<ParametricReconfig>::iterator parmIt;
-            for(parmIt = reconfigs.d_paramReconfigs.begin(); parmIt != reconfigs.d_paramReconfigs.end(); ++parmIt)
+            for(parmIt = reconfigs.paramReconfigs_.begin(); parmIt != reconfigs.paramReconfigs_.end(); ++parmIt)
             {
                 if(parmIt->engineName == current)
-                    currentReconfigs.d_paramReconfigs.push_back(*parmIt);
+                    currentReconfigs.paramReconfigs_.push_back(*parmIt);
             }
             //Find structural reconfigs for this engine
             vector<StructuralReconfig>::iterator structIt;
-            for(structIt = reconfigs.d_structReconfigs.begin(); structIt != reconfigs.d_structReconfigs.end(); ++structIt)
+            for(structIt = reconfigs.structReconfigs_.begin(); structIt != reconfigs.structReconfigs_.end(); ++structIt)
             {
                 if(structIt->engineName == current)
-                    currentReconfigs.d_structReconfigs.push_back(*structIt);
+                    currentReconfigs.structReconfigs_.push_back(*structIt);
             }
 
             //Apply reconfigurations to the relevent engine if non-empty
-            if(!(currentReconfigs.d_paramReconfigs.empty() && currentReconfigs.d_structReconfigs.empty()))
+            if(!(currentReconfigs.paramReconfigs_.empty() && currentReconfigs.structReconfigs_.empty()))
                 engIt->addReconfiguration(currentReconfigs);
 
             //Apply reconfigurations to the radio representation
-            d_radioRep.reconfigureRepresentation(currentReconfigs);
+            radioRep_.reconfigureRepresentation(currentReconfigs);
         }
     }
 
@@ -191,7 +191,7 @@ namespace iris
     {
         //Post the command to the relevant engine
         boost::ptr_vector<EngineInterface>::iterator engIt;
-        for(engIt = d_engines.begin(); engIt != d_engines.end(); ++engIt)
+        for(engIt = engines_.begin(); engIt != engines_.end(); ++engIt)
         {
             if(command.engineName == engIt->getName())
             {
@@ -202,13 +202,13 @@ namespace iris
 
     std::string EngineManager::getParameterValue(std::string paramName, std::string componentName)
     {
-        return d_radioRep.getParameterValue(paramName, componentName);
+        return radioRep_.getParameterValue(paramName, componentName);
     }
 
     void EngineManager::activateEvent(Event &e)
     {
         //Pass the event to the controller manager
-        d_controllerManager.activateEvent(e);
+        controllerManager_.activateEvent(e);
     }
 
     EngineInterface* EngineManager::createEngine(EngineDescription& d) throw (ResourceNotFoundException)
@@ -217,11 +217,11 @@ namespace iris
 
         if(d.type == "pnengine")
         {
-            current = new PNEngine(d.name, d_reps.pnRepository); 
+            current = new PNEngine(d.name, reps_.pnRepository); 
         }
         else if(d.type == "stackengine")
         {
-            current = new StackEngine(d.name, d_reps.stackRepository); 
+            current = new StackEngine(d.name, reps_.stackRepository); 
         }
         else
         {

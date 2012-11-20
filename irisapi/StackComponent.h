@@ -57,20 +57,20 @@ namespace iris
 class StackComponent: public ComponentBase
 {
 private:
-    std::map<std::string, StackDataBuffer*> d_aboveBuffers;
-    std::map<std::string, StackDataBuffer*> d_belowBuffers;
+    std::map<std::string, StackDataBuffer*> aboveBuffers_;
+    std::map<std::string, StackDataBuffer*> belowBuffers_;
 
     //! Handle for this StackComponent's thread of execution
-    boost::scoped_ptr< boost::thread > d_thread;
+    boost::scoped_ptr< boost::thread > thread_;
 
     //! The reconfiguration message queue for this StackComponent
-    MessageQueue< ParametricReconfig > d_reconfigQueue;
+    MessageQueue< ParametricReconfig > reconfigQueue_;
 
     //! The command prison for this StackComponent
-    CommandPrison d_prison;
+    CommandPrison prison_;
 
     //! The StackDataBuffer for this StackComponent
-    StackDataBuffer d_buffer;
+    StackDataBuffer buffer_;
 
 
     //! The main thread loop for this stack component
@@ -83,13 +83,13 @@ private:
                 boost::this_thread::interruption_point();
 
                 //Get a DataSet
-                boost::shared_ptr<StackDataSet> p = d_buffer.popDataSet();
+                boost::shared_ptr<StackDataSet> p = buffer_.popDataSet();
 
                 //Check message queue for ParametricReconfigs
                 ParametricReconfig currentReconfig;
-                while(d_reconfigQueue.tryPop(currentReconfig))
+                while(reconfigQueue_.tryPop(currentReconfig))
                 {
-                    boost::mutex::scoped_lock lock(d_parameterMutex);
+                    boost::mutex::scoped_lock lock(parameterMutex_);
                     setValue(currentReconfig.parameterName, currentReconfig.parameterValue);
                     parameterHasChanged(currentReconfig.parameterName);
                     LOG(LINFO) << "Reconfigured parameter " << currentReconfig.parameterName << " : " << currentReconfig.parameterValue;
@@ -122,15 +122,15 @@ private:
 protected:
 
     //! A mutex to protect the parameters of this component when using multiple threads
-    mutable boost::mutex d_parameterMutex;
+    mutable boost::mutex parameterMutex_;
 
     //! Pass a message down the stack using the first port
     virtual void sendDownwards(boost::shared_ptr<StackDataSet> set)
     {
-        if(!d_belowBuffers.empty())
+        if(!belowBuffers_.empty())
         {
             set->source = ABOVE;
-            d_belowBuffers.begin()->second->pushDataSet(set);
+            belowBuffers_.begin()->second->pushDataSet(set);
         }
         else
         {
@@ -141,10 +141,10 @@ protected:
     //Pass a message up the stack using the first port
     virtual void sendUpwards(boost::shared_ptr<StackDataSet> set)
     {
-        if(!d_aboveBuffers.empty())
+        if(!aboveBuffers_.empty())
         {
             set->source = BELOW;
-            d_aboveBuffers.begin()->second->pushDataSet(set);
+            aboveBuffers_.begin()->second->pushDataSet(set);
         }
         else
         {
@@ -155,10 +155,10 @@ protected:
     //! Pass a message down the stack using a named port
     virtual void sendDownwards(std::string portName, boost::shared_ptr<StackDataSet> set)
     {
-        if(d_belowBuffers.find(portName) != d_belowBuffers.end())
+        if(belowBuffers_.find(portName) != belowBuffers_.end())
         {
             set->source = ABOVE;
-            d_belowBuffers[portName]->pushDataSet(set);
+            belowBuffers_[portName]->pushDataSet(set);
         }
         else
         {
@@ -169,10 +169,10 @@ protected:
     //Pass a message up the stack using a named port
     virtual void sendUpwards(std::string portName, boost::shared_ptr<StackDataSet> set)
     {
-        if(d_aboveBuffers.find(portName) != d_aboveBuffers.end())
+        if(aboveBuffers_.find(portName) != aboveBuffers_.end())
         {
             set->source = BELOW;
-            d_aboveBuffers[portName]->pushDataSet(set);
+            aboveBuffers_[portName]->pushDataSet(set);
         }
         else
         {
@@ -183,7 +183,7 @@ protected:
     //Wait for a command
     Command waitForCommand(std::string command)
     {
-        return d_prison.trap(command);
+        return prison_.trap(command);
     }
 
 public:
@@ -209,7 +209,7 @@ public:
     */
     virtual void addBufferAbove(std::string portName, StackDataBuffer* above)
     {
-        d_aboveBuffers[portName] = above;
+        aboveBuffers_[portName] = above;
     };
 
     /** Add a buffer below this component
@@ -219,7 +219,7 @@ public:
     */
     virtual void addBufferBelow(std::string portName, StackDataBuffer* below)
     {
-        d_belowBuffers[portName] = below;
+        belowBuffers_[portName] = below;
     };
 
     /** Get the buffer for this component
@@ -228,7 +228,7 @@ public:
     */
     virtual StackDataBuffer* getBuffer()
     {
-        return &d_buffer;
+        return &buffer_;
     };
 
     /** Add reconfigurations to the queue
@@ -237,7 +237,7 @@ public:
     */
     void addReconfiguration(ParametricReconfig reconfig)
     {
-        d_reconfigQueue.push(reconfig);
+        reconfigQueue_.push(reconfig);
     };
 
     /** Post a command to this component
@@ -246,21 +246,21 @@ public:
     */
     void postCommand(Command command)
     {
-        d_prison.release(command);
+        prison_.release(command);
     };
 
     //! Create and start the thread for this stack component
     virtual void startComponent()
     {
         //Start the main component thread
-        d_thread.reset( new boost::thread( boost::bind( &StackComponent::threadLoop, this ) ) );
+        thread_.reset( new boost::thread( boost::bind( &StackComponent::threadLoop, this ) ) );
     };
 
     //! Stop the thread for this stack component
     virtual void stopComponent()
     {
-        d_thread->interrupt();
-        d_thread->join();
+        thread_->interrupt();
+        thread_->join();
     };
 
     //Register the port of this component (Can be overridden to implement multiplex components)

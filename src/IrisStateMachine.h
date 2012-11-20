@@ -77,14 +77,14 @@
 class LauncherException : public std::exception
 {
 private:
-    std::string d_message;
+    std::string message_;
 public:
     LauncherException(const std::string &message) throw()
-        :exception(), d_message(message)
+        :exception(), message_(message)
     {};
     virtual const char* what() const throw()
     {
-        return d_message.c_str();
+        return message_.c_str();
     };
     virtual ~LauncherException() throw()
     {};
@@ -107,44 +107,44 @@ struct Running;   //!< radio is running, state within Loaded
 struct IrisStateMachine : boost::statechart::state_machine< IrisStateMachine, Active >
 {
     //! set XML radio configuration
-    void setRadioConfig(std::string radioConfig) { d_radioConfig = radioConfig; }
+    void setRadioConfig(std::string radioConfig) { radioConfig_ = radioConfig; }
     //! return XML radio configuration
-    std::string getRadioConfig() const { return d_radioConfig; }
+    std::string getRadioConfig() const { return radioConfig_; }
     //! set radio Stack component repository
-    void setStackRadioRepository(std::string radioRepository) { d_stackRadioRepository = radioRepository; }
+    void setStackRadioRepository(std::string radioRepository) { stackRadioRepository_ = radioRepository; }
     //! return radio Stack component repository
-    std::string getStackRadioRepository() const { return d_stackRadioRepository; }
+    std::string getStackRadioRepository() const { return stackRadioRepository_; }
     //! set radio PN component repository
-    void setPnRadioRepository(std::string radioRepository) { d_pnRadioRepository = radioRepository; }
+    void setPnRadioRepository(std::string radioRepository) { pnRadioRepository_ = radioRepository; }
     //! return radio PN component repository
-    std::string getPnRadioRepository() const { return d_pnRadioRepository; }
+    std::string getPnRadioRepository() const { return pnRadioRepository_; }
     //! set radio SDF component repository
-    void setSdfRadioRepository(std::string radioRepository) { d_sdfRadioRepository = radioRepository; }
+    void setSdfRadioRepository(std::string radioRepository) { sdfRadioRepository_ = radioRepository; }
     //! return radio SDF component repository
-    std::string getSdfRadioRepository() const { return d_sdfRadioRepository; }
+    std::string getSdfRadioRepository() const { return sdfRadioRepository_; }
     //! set radio Controller repository
-    void setContRadioRepository(std::string radioRepository) { d_contRadioRepository = radioRepository; }
+    void setContRadioRepository(std::string radioRepository) { contRadioRepository_ = radioRepository; }
     //! return radio Controller repository
-    std::string getContRadioRepository() const { return d_contRadioRepository; }
+    std::string getContRadioRepository() const { return contRadioRepository_; }
     //! set log level
-    void setLogLevel(std::string level) { d_logLevel = level; }
+    void setLogLevel(std::string level) { logLevel_ = level; }
     //! return log level
-    std::string getLogLevel() const { return d_logLevel; }
+    std::string getLogLevel() const { return logLevel_; }
     //! Reconfigure the radio
     void reconfigureRadio();
 private:
     //! stores the XML radio configuration
-    std::string d_radioConfig;
+    std::string radioConfig_;
     //! stores the radio Stack component repository
-    std::string d_stackRadioRepository;
+    std::string stackRadioRepository_;
     //! stores the radio PN component repository
-    std::string d_pnRadioRepository;
+    std::string pnRadioRepository_;
     //! stores the radio SDF component repository
-    std::string d_sdfRadioRepository;
+    std::string sdfRadioRepository_;
     //! stores the radio Controller repository
-    std::string d_contRadioRepository;
+    std::string contRadioRepository_;
     //! stores the log level
-    std::string d_logLevel;
+    std::string logLevel_;
 };
 
 //! Active is the parent of all other states, destruction means termination

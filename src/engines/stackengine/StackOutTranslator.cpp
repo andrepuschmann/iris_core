@@ -49,24 +49,24 @@ namespace iris
         {
             throw InvalidDataTypeException("Only uint8_t data types are valid in the StackEngine");
         }
-        d_outputBuffer = dynamic_cast< WriteBuffer<uint8_t>* >(out);
+        outputBuffer_ = dynamic_cast< WriteBuffer<uint8_t>* >(out);
     }
 
     StackDataBuffer* StackOutTranslator::getBuffer()
     {
-        return &d_buffer;
+        return &buffer_;
     }
 
     void StackOutTranslator::startTranslator()
     {
         //Start the main component thread
-        d_thread.reset( new boost::thread( boost::bind( &StackOutTranslator::threadLoop, this ) ) );
+        thread_.reset( new boost::thread( boost::bind( &StackOutTranslator::threadLoop, this ) ) );
     }
 
     void StackOutTranslator::stopTranslator()
     {
-        d_thread->interrupt();
-        d_thread->join();
+        thread_->interrupt();
+        thread_->join();
     }
 
     void StackOutTranslator::threadLoop()
@@ -78,11 +78,11 @@ namespace iris
                 boost::this_thread::interruption_point();
 
                 //Get a StackDataSet
-                boost::shared_ptr<StackDataSet> p = d_buffer.popDataSet();
+                boost::shared_ptr<StackDataSet> p = buffer_.popDataSet();
 
                 //Get a DataSet to write from the output buffer
                 DataSet< uint8_t >* outData = NULL;
-                d_outputBuffer->getWriteData(outData, p->data.size());
+                outputBuffer_->getWriteData(outData, p->data.size());
 
                 //Fill the DataSet with info from the StackDataSet
                 std::copy(p->data.begin(), p->data.end(), outData->data.begin());
@@ -90,7 +90,7 @@ namespace iris
                 outData->sampleRate = 0;
 
                 //Release the DataSet
-                d_outputBuffer->releaseWriteData(outData);
+                outputBuffer_->releaseWriteData(outData);
             }
         }
         catch(IrisException& ex)

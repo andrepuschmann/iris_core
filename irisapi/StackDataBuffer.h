@@ -81,14 +81,14 @@ class StackDataBuffer
 
 private:
     //! The queue of StackDataSet pointers
-    std::queue< boost::shared_ptr<StackDataSet> > d_buffer;
+    std::queue< boost::shared_ptr<StackDataSet> > buffer_;
 
     //! Max number of items in the queue
-    unsigned d_maxBufferSize;
+    unsigned maxBufferSize_;
 
-    mutable boost::mutex d_mutex;
-    boost::condition_variable notEmptyVariable;
-    boost::condition_variable notFullVariable;
+    mutable boost::mutex mutex_;
+    boost::condition_variable notEmptyVariable_;
+    boost::condition_variable notFullVariable_;
 
 public:
 
@@ -98,7 +98,7 @@ public:
     *   \param maxSize        Max number of elements in queue
     */
     explicit StackDataBuffer(unsigned maxSize = 10)
-        :d_maxBufferSize(maxSize)
+        :maxBufferSize_(maxSize)
     {};
 
     virtual ~StackDataBuffer(){};
@@ -106,15 +106,15 @@ public:
     //! Is there any data in this buffer?
     bool hasData() const
     {
-        boost::mutex::scoped_lock lock(d_mutex);
-        return d_buffer.empty();
+        boost::mutex::scoped_lock lock(mutex_);
+        return buffer_.empty();
     }
 
     //! Is the buffer full?
     bool isFull() const
     {
-    boost::mutex::scoped_lock(d_mutex);
-    return (d_buffer.size() >= d_maxBufferSize);
+    boost::mutex::scoped_lock(mutex_);
+    return (buffer_.size() >= maxBufferSize_);
     }
     
     /*!
@@ -124,15 +124,15 @@ public:
     */
     boost::shared_ptr<StackDataSet> popDataSet() throw(boost::thread_interrupted)
     {
-        boost::mutex::scoped_lock lock(d_mutex);
-        while(d_buffer.empty())
+        boost::mutex::scoped_lock lock(mutex_);
+        while(buffer_.empty())
         {
-            notEmptyVariable.wait(lock);
+            notEmptyVariable_.wait(lock);
         }
-        boost::shared_ptr<StackDataSet> p = d_buffer.front();
-        d_buffer.pop();
+        boost::shared_ptr<StackDataSet> p = buffer_.front();
+        buffer_.pop();
         lock.unlock();
-        notFullVariable.notify_one();
+        notFullVariable_.notify_one();
         return p;
     };
 
@@ -143,14 +143,14 @@ public:
     */
     void pushDataSet( boost::shared_ptr<StackDataSet> set) throw(boost::thread_interrupted)
     {
-        boost::mutex::scoped_lock lock(d_mutex);
-        while(d_buffer.size() >= d_maxBufferSize)
+        boost::mutex::scoped_lock lock(mutex_);
+        while(buffer_.size() >= maxBufferSize_)
         {
-            notFullVariable.wait(lock);
+            notFullVariable_.wait(lock);
         }
-        d_buffer.push(set);
+        buffer_.push(set);
         lock.unlock();
-        notEmptyVariable.notify_one();
+        notEmptyVariable_.notify_one();
     };
 };
 

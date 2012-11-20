@@ -78,10 +78,10 @@ struct StructuralReconfig
 struct ReconfigSet
 {
     //! A set of parametric reconfigurations 
-    std::vector< ParametricReconfig > d_paramReconfigs;
+    std::vector< ParametricReconfig > paramReconfigs_;
 
     //! The set of structural reconfigurations
-    std::vector< StructuralReconfig > d_structReconfigs;
+    std::vector< StructuralReconfig > structReconfigs_;
 };
 
 } /* namespace iris */

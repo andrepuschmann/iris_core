@@ -96,9 +96,9 @@ BOOST_AUTO_TEST_CASE(ReconfigurationManagerParametersTest)
     XmlParser::parseXmlString(xmlConfig2, second);
 
     ReconfigSet reconfigs = ReconfigurationManager::compareRadios(first, second);
-    BOOST_REQUIRE(reconfigs.d_paramReconfigs.size() == 3);
+    BOOST_REQUIRE(reconfigs.paramReconfigs_.size() == 3);
     vector<ParametricReconfig>::iterator it;
-    for(it = reconfigs.d_paramReconfigs.begin(); it != reconfigs.d_paramReconfigs.end(); ++it)
+    for(it = reconfigs.paramReconfigs_.begin(); it != reconfigs.paramReconfigs_.end(); ++it)
     {
         BOOST_REQUIRE(it->engineName == "pnengine1");
         BOOST_REQUIRE(it->componentName == "src1");

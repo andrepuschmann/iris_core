@@ -52,16 +52,16 @@ namespace iris
     {
     private:
         //! The EngineManager controls all engines running within IRISv2
-        EngineManager d_engineManager;
+        EngineManager engineManager_;
 
         //! The current radio status
-        RadioStatus d_status;
+        RadioStatus status_;
 
         //! The repositories
-        Repositories d_reps;
+        Repositories reps_;
 
         //! Pointer to the log file
-        FILE* pFile;
+        FILE* pFile_;
 
     public:
         //! ctor

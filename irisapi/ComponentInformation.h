@@ -48,11 +48,11 @@ namespace iris {
 class ComponentInformation
 {
 private:
-    const std::string d_name;
-    const std::string d_type;
-    const std::string d_description;
-    const std::string d_author;
-    const std::string d_version;
+    const std::string name_;
+    const std::string type_;
+    const std::string description_;
+    const std::string author_;
+    const std::string version_;
 
     //! private default constructor -> cannot be called
     ComponentInformation() {};
@@ -69,24 +69,24 @@ public:
      */
     ComponentInformation(std::string name, std::string type, std::string description, std::string author,
             std::string version) :
-        d_name(name), d_type(type), d_description(description), d_author(author), d_version(version)
+        name_(name), type_(type), description_(description), author_(author), version_(version)
     {
     }
 
     //! Return the component name
-    std::string getName() const { return d_name; }
+    std::string getName() const { return name_; }
 
     //! Return the component type
-    std::string getType() const { return d_type; }
+    std::string getType() const { return type_; }
 
     //! Return the author of the component
-    std::string getAuthor() const { return d_author; }
+    std::string getAuthor() const { return author_; }
 
     //! Return the description of what the component does
-    std::string getDescription() const {return d_description; }
+    std::string getDescription() const {return description_; }
 
     //! Return component version information
-    std::string getVersion() const { return d_version; }
+    std::string getVersion() const { return version_; }
 
 };
 

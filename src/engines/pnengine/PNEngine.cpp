@@ -51,11 +51,11 @@ namespace iris
 {
 
     PNEngine::PNEngine(std::string name, std::string repository) throw (IrisException)
-        :d_engineName(name)
-        ,d_engineManager(NULL)
+        :engineName_(name)
+        ,engineManager_(NULL)
     {
-        d_compManager.reset(new PNComponentManager());
-        d_compManager->addRepository(repository);
+        compManager_.reset(new PNComponentManager());
+        compManager_->addRepository(repository);
     }
 
     PNEngine::~PNEngine()
@@ -64,73 +64,73 @@ namespace iris
 
     string PNEngine::getName() const
     {
-        return d_engineName;
+        return engineName_;
     }
 
     void PNEngine::setEngineManager(EngineCallbackInterface *e)
     {
-        d_engineManager = e;
+        engineManager_ = e;
     }
 
     std::vector< boost::shared_ptr< DataBufferBase > > PNEngine::loadEngine(EngineDescription eng, std::vector< boost::shared_ptr< DataBufferBase > > inputLinks)
         throw (IrisException)
     {
         //Set the external input buffer
-        d_engInputBuffers = inputLinks;
+        engInputBuffers_ = inputLinks;
 
         //Set the engineGraph
-        d_engineGraph = eng.engineGraph;
+        engineGraph_ = eng.engineGraph;
 
         //Check the graph
-        checkGraph(d_engineGraph);
+        checkGraph(engineGraph_);
 
         //Build the engine
-        buildEngineGraph(d_engineGraph);
+        buildEngineGraph(engineGraph_);
 
-        return d_engOutputBuffers;
+        return engOutputBuffers_;
     }
 
     void PNEngine::unloadEngine()
     {
         //Destroy all components and clear the vector
-        d_components.clear();   //Components are deleted here using a custom deallocator due to use of boost::shared_ptr
+        components_.clear();   //Components are deleted here using a custom deallocator due to use of boost::shared_ptr
 
         //Destroy all internal buffers and clear the vector
-        d_internalBuffers.clear();
+        internalBuffers_.clear();
     }
 
     void PNEngine::startEngine()
     {
         //Start any components that require it
-        for( vector< shared_ptr<PNComponent> >::iterator i = d_components.begin(); i != d_components.end(); ++i)
+        for( vector< shared_ptr<PNComponent> >::iterator i = components_.begin(); i != components_.end(); ++i)
         {
             (*i)->start();
         }
         //Start the main engine thread
-        d_thread.reset( new thread( boost::bind( &PNEngine::threadLoop, this ) ) );
+        thread_.reset( new thread( boost::bind( &PNEngine::threadLoop, this ) ) );
     }
 
     void PNEngine::stopEngine()
     {
         //Stop any components that require it
-        for( vector< shared_ptr<PNComponent> >::iterator i = d_components.begin(); i != d_components.end(); ++i)
+        for( vector< shared_ptr<PNComponent> >::iterator i = components_.begin(); i != components_.end(); ++i)
         {
             (*i)->stop();
         }
-        d_thread->interrupt();
-        d_thread->join();
+        thread_->interrupt();
+        thread_->join();
     }
 
     void PNEngine::addReconfiguration(ReconfigSet reconfigs)
     {
-        d_reconfigQueue.push(reconfigs);
+        reconfigQueue_.push(reconfigs);
     }
 
     void PNEngine::threadLoop()
     {
         //Do a topological sort of the graph (sorts in reverse topological order)
         vector<unsigned> revTopoOrder;
-        topological_sort(d_engineGraph, back_inserter(revTopoOrder), vertex_index_map(identity_property_map()));
+        topological_sort(engineGraph_, back_inserter(revTopoOrder), vertex_index_map(identity_property_map()));
 
         //The main loop of this engine thread
         try{
@@ -140,11 +140,11 @@ namespace iris
 
                 //Check message queue for ReconfigSets
                 ReconfigSet currentReconfigSet;
-                while(d_reconfigQueue.tryPop(currentReconfigSet))
+                while(reconfigQueue_.tryPop(currentReconfigSet))
                 {
                     vector< ParametricReconfig >::iterator paramIt;
-                    for(paramIt = currentReconfigSet.d_paramReconfigs.begin();
-                        paramIt != currentReconfigSet.d_paramReconfigs.end();
+                    for(paramIt = currentReconfigSet.paramReconfigs_.begin();
+                        paramIt != currentReconfigSet.paramReconfigs_.end();
                         ++paramIt)
                     {
                         reconfigureParameter(*paramIt);
@@ -156,17 +156,17 @@ namespace iris
                 {
                     if(i == revTopoOrder.rbegin()) //First component in the graph
                     {
-                        d_components[*i]->doProcess();
+                        components_[*i]->doProcess();
                     }
                     else
                     {
                         InEdgeIterator edgeIt, edgeItEnd;
-                        for(tie(edgeIt, edgeItEnd) = in_edges(*i, d_engineGraph); edgeIt != edgeItEnd; ++edgeIt)
+                        for(tie(edgeIt, edgeItEnd) = in_edges(*i, engineGraph_); edgeIt != edgeItEnd; ++edgeIt)
                         {
                             //If there's data available in an input buffer, process it
-                            while( d_engineGraph[*edgeIt].theBuffer->hasData() )
+                            while( engineGraph_[*edgeIt].theBuffer->hasData() )
                             {
-                                d_components[*i]->doProcess();
+                                components_[*i]->doProcess();
                             }
                         }
                     }
@@ -175,11 +175,11 @@ namespace iris
         }
         catch(IrisException& ex)
         {
-            LOG(LFATAL) << "Error in engine " << d_engineName << ": " << ex.what() << " - Engine thread exiting.";
+            LOG(LFATAL) << "Error in engine " << engineName_ << ": " << ex.what() << " - Engine thread exiting.";
         }
         catch(thread_interrupted&)
         {
-            LOG(LINFO) << "Thread in Engine " << d_engineName << " interrupted";
+            LOG(LINFO) << "Thread in Engine " << engineName_ << " interrupted";
         }
     }
 
@@ -199,9 +199,9 @@ namespace iris
         {
             //Load the component and add to vector
             ComponentDescription current = graph[*i];
-            shared_ptr<PNComponent> comp = d_compManager->loadComponent(current);
+            shared_ptr<PNComponent> comp = compManager_->loadComponent(current);
             comp->setEngine(this);    //Provide an interface to the component
-            d_components.push_back(comp);
+            components_.push_back(comp);
         }
 
         //Do a topological sort of the graph
@@ -214,7 +214,7 @@ namespace iris
         map<string, int> inputTypes, outputTypes;
 
         //The external input buffers feed the source component of the graph
-        for( vector< boost::shared_ptr< DataBufferBase > >::iterator i = d_engInputBuffers.begin(); i != d_engInputBuffers.end(); ++i)
+        for( vector< boost::shared_ptr< DataBufferBase > >::iterator i = engInputBuffers_.begin(); i != engInputBuffers_.end(); ++i)
         {
             DataBufferBase* buf = (*i).get();
             LinkDescription desc = buf->getLinkDescription();
@@ -237,7 +237,7 @@ namespace iris
             //TODO: Check that inputs exist for each of the registered input port names
 
             //Get output buffer types from component
-            outputTypes = d_components[*i]->calculateOutputTypes(inputTypes);
+            outputTypes = components_[*i]->calculateOutputTypes(inputTypes);
 
             // temporary shell for testing template components
             std::vector<int> inTypes, outTypes;
@@ -250,10 +250,10 @@ namespace iris
                 outTypes.push_back(j->second);
             }
 
-            PNComponent* x = d_components[*i]->setupIO(inTypes, outTypes);
-            if (x != d_components[*i].get())
+            PNComponent* x = components_[*i]->setupIO(inTypes, outTypes);
+            if (x != components_[*i].get())
             {
-                d_components[*i].reset(x);
+                components_[*i].reset(x);
             }
 
             //Create internal output buffers and add to graph edges
@@ -265,7 +265,7 @@ namespace iris
                 if(outputTypes.find(srcPort) == outputTypes.end())
                 {
                     throw ResourceNotFoundException("Output port " + srcPort + \
-                        " could not be found on PNComponent " + d_components[*i]->getName()); 
+                        " could not be found on PNComponent " + components_[*i]->getName()); 
                 }
 
                 //Create a PNDataBuffer of the correct type
@@ -273,7 +273,7 @@ namespace iris
                 shared_ptr< DataBufferBase > buf = createPNDataBuffer(currentType);
                 graph[*outEdgeIt].theBuffer = buf;
                 graph[*outEdgeIt].theBuffer->setLinkDescription(graph[*outEdgeIt]);
-                d_internalBuffers.push_back( buf );
+                internalBuffers_.push_back( buf );
 
                 currentOutBufs.push_back( dynamic_cast<WriteBufferBase*>( buf.get() ) );
 
@@ -287,19 +287,19 @@ namespace iris
                 //Create a DataBuffer and add to exOutputBuffers
                 shared_ptr< DataBufferBase > buf = createDataBuffer( j->second );
                 LinkDescription l;
-                l.sourceEngine = d_engineName;
-                l.sourceComponent = d_components[*i]->getName();
+                l.sourceEngine = engineName_;
+                l.sourceComponent = components_[*i]->getName();
                 l.sourcePort = j->first;
                 buf->setLinkDescription(l);
-                d_engOutputBuffers.push_back(buf);
+                engOutputBuffers_.push_back(buf);
                 currentOutBufs.push_back( dynamic_cast<WriteBufferBase*>( buf.get() ) );
             }
 
             //Set the buffers in the component
-            d_components[*i]->setBuffers(currentInBufs, currentOutBufs);
+            components_[*i]->setBuffers(currentInBufs, currentOutBufs);
 
             //Initialize the component
-            d_components[*i]->initialize();
+            components_[*i]->initialize();
 
             currentInBufs.clear();
             currentOutBufs.clear();
@@ -313,7 +313,7 @@ namespace iris
 
         //Find component
         vector< shared_ptr<PNComponent> >::iterator compIt;
-        for(compIt = d_components.begin(); compIt != d_components.end(); ++compIt)
+        for(compIt = components_.begin(); compIt != components_.end(); ++compIt)
         {
             if((*compIt)->getName() == reconfig.componentName)
             {
@@ -338,14 +338,14 @@ namespace iris
 
     void PNEngine::activateEvent(Event &e)
     {
-        if(d_engineManager == NULL)
+        if(engineManager_ == NULL)
         {
-            LOG(LERROR) << "Failed to activate event: Engine " << d_engineName << " could not access EngineManager";
+            LOG(LERROR) << "Failed to activate event: Engine " << engineName_ << " could not access EngineManager";
             return;
         }
 
         //Simply pass the event on to the EngineManager
-        d_engineManager->activateEvent(e);
+        engineManager_->activateEvent(e);
     }
 
     bool PNEngine::sameLink(LinkDescription first, LinkDescription second) const

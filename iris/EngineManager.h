@@ -63,19 +63,19 @@ namespace iris
     {
     private:
         //! The ControllerManager for this radio
-        ControllerManager d_controllerManager;
+        ControllerManager controllerManager_;
 
         //! The engines of the current radio
-        boost::ptr_vector<EngineInterface> d_engines;
+        boost::ptr_vector<EngineInterface> engines_;
 
         //! The paths to the radio component repositories
-        Repositories d_reps;
+        Repositories reps_;
 
         //! A graph representing each of the radio engines and the links between them
-        EngineGraph d_engineGraph;
+        EngineGraph engineGraph_;
 
         //! The current radio representation - this is updated with any reconfigurations which occur
-        RadioRepresentation d_radioRep;
+        RadioRepresentation radioRep_;
 
         /*!
         *   \brief Create an engine
@@ -98,8 +98,8 @@ namespace iris
     public:
 
         EngineManager();
-        void setRepositories(Repositories reps){d_reps = reps;}
-        Repositories getRepositories() const {return d_reps;}
+        void setRepositories(Repositories reps){reps_ = reps;}
+        Repositories getRepositories() const {return reps_;}
         void loadRadio(RadioRepresentation rad);
         void startRadio();
         void stopRadio();

@@ -43,7 +43,7 @@ namespace iris
 
 SharedLibrary::SharedLibrary(boost::filesystem::path filename) throw (LibraryLoadException,
         FileNotFoundException) :
-    d_filename(filename), d_library(NULL)
+    filename_(filename), library_(NULL)
 {
     this->open(filename);
 }
@@ -52,18 +52,18 @@ void
 SharedLibrary::open(boost::filesystem::path filename) throw (LibraryLoadException,
                 FileNotFoundException)
 {
-    if (d_library != NULL)
+    if (library_ != NULL)
     {
-        if (dlclose(d_library) != 0)
+        if (dlclose(library_) != 0)
         {
             // there should normally be no error on close
             // -> So we just output a message in that case
-            LOG(LERROR) << "Error: could not close library " << d_filename << ". Message: " << dlerror()
+            LOG(LERROR) << "Error: could not close library " << filename_ << ". Message: " << dlerror()
                     << std::endl;
 
         }
-        d_library = NULL;
-        d_filename = "";
+        library_ = NULL;
+        filename_ = "";
     }
 
     using namespace boost::filesystem;
@@ -75,31 +75,31 @@ SharedLibrary::open(boost::filesystem::path filename) throw (LibraryLoadExceptio
         throw FileNotFoundException(sstr.str());
     }
 
-    d_filename = filename;
-    std::string fString = d_filename.string();
+    filename_ = filename;
+    std::string fString = filename_.string();
     const char* system_filename = fString.c_str();
 
-    d_library = dlopen(system_filename, RTLD_NOW | RTLD_GLOBAL);
+    library_ = dlopen(system_filename, RTLD_NOW | RTLD_GLOBAL);
 
-    if (d_library == NULL)
+    if (library_ == NULL)
     {
         std::stringstream sstr;
         sstr << "An error occurred during load of library " << filename << ": " << dlerror();
         throw LibraryLoadException(sstr.str());
     }
 
-    d_filename = filename;
+    filename_ = filename;
 }
 
 SharedLibrary::SymbolPointer
 SharedLibrary::getSymbol(std::string symbolName) throw (LibrarySymbolException)
 {
-    void* tmp = dlsym(d_library, symbolName.c_str());
+    void* tmp = dlsym(library_, symbolName.c_str());
 
     if (tmp == NULL)
     {
         std::stringstream sstr;
-        sstr << "Could not resolve symbol " << symbolName << " in library " << d_filename
+        sstr << "Could not resolve symbol " << symbolName << " in library " << filename_
                 << ". Error: " << dlerror();
         throw LibrarySymbolException(sstr.str());
     }
@@ -109,13 +109,13 @@ SharedLibrary::getSymbol(std::string symbolName) throw (LibrarySymbolException)
 
 SharedLibrary::~SharedLibrary()
 {
-    if (d_library == NULL)
+    if (library_ == NULL)
         return;
-    if (dlclose(d_library) != 0)
+    if (dlclose(library_) != 0)
     {
         // cannot throw an exception here, but there should normally be no error on close
         // -> So we just output a message in that case
-        LOG(LERROR) << "Error: could not close library " << d_filename << ". Message: " << dlerror()
+        LOG(LERROR) << "Error: could not close library " << filename_ << ". Message: " << dlerror()
                 << std::endl;
     }
 }
