@@ -48,47 +48,47 @@ namespace iris
 template <typename T>
 struct Interval
 {
-    //! Make sure we use a numeric type here
-    BOOST_STATIC_ASSERT( TypeInfo<T>::isNumeric );
-    //! The lower bound of the interval
-    T minimum;
-    //! The upper bound of the interval
-    T maximum;
+  //! Make sure we use a numeric type here
+  BOOST_STATIC_ASSERT( TypeInfo<T>::isNumeric );
+  //! The lower bound of the interval
+  T minimum;
+  //! The upper bound of the interval
+  T maximum;
 
-    //! Default constructor, initialises the values with min and max from
-    //! std::numeric_limits.
-    //! In case of floats, the min is set to -max.
-    Interval()
-        : minimum(boost::numeric::bounds<T>::lowest()),
-          maximum(boost::numeric::bounds<T>::highest())
-    {
-    };
+  //! Default constructor, initialises the values with min and max from
+  //! std::numeric_limits.
+  //! In case of floats, the min is set to -max.
+  Interval()
+    : minimum(boost::numeric::bounds<T>::lowest()),
+      maximum(boost::numeric::bounds<T>::highest())
+  {
+  };
 
-    //! Constructor giving the min and max explicitly
-    Interval(T min, T max) : minimum(min), maximum(max) {  }
+  //! Constructor giving the min and max explicitly
+  Interval(T min, T max) : minimum(min), maximum(max) {  }
 
-    //! Copy constructor
-    Interval(const Interval& other) : minimum(other.minimum), maximum(other.maximum) {}
+  //! Copy constructor
+  Interval(const Interval& other) : minimum(other.minimum), maximum(other.maximum) {}
 
-    //! Assignment
-    Interval operator=(const Interval& other)
-    {
-        minimum = other.minimum;
-        maximum = other.maximum;
-        return *this;
-    }
+  //! Assignment
+  Interval operator=(const Interval& other)
+  {
+    minimum = other.minimum;
+    maximum = other.maximum;
+    return *this;
+  }
 
-    //! compare to another Interval
-    bool operator==(const Interval& other) const
-    {
-        return minimum==other.minimum && maximum == other.maximum;
-    }
+  //! compare to another Interval
+  bool operator==(const Interval& other) const
+  {
+    return minimum==other.minimum && maximum == other.maximum;
+  }
 
-    //! check if number is in interval
-    bool isIn(const T& num) const
-    {
-        return (num >= minimum) && (num <= maximum);
-    }
+  //! check if number is in interval
+  bool isIn(const T& num) const
+  {
+    return (num >= minimum) && (num <= maximum);
+  }
 
 };
 
@@ -100,8 +100,8 @@ inline Interval<bool>::Interval() : minimum(false), maximum(true) {}
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const Interval<T> i)
 {
-    os << "[" << i.minimum << ", " << i.maximum << "]";
-    return os;
+  os << "[" << i.minimum << ", " << i.maximum << "]";
+  return os;
 }
 
 } // end of iris namespace

@@ -56,80 +56,80 @@ class PNComponentManager;
 
 /** The PNEngine class implements a process network engine for the IRIS framework.
 *
-*    Each PNEngine runs its own thread of execution and serves one or more PNComponents.
+*  Each PNEngine runs its own thread of execution and serves one or more PNComponents.
 */
 class PNEngine:public EngineInterface, public ComponentCallbackInterface
 {
   private:
-    //! The component manager for this engine
-    boost::scoped_ptr< PNComponentManager > compManager_;
+  //! The component manager for this engine
+  boost::scoped_ptr< PNComponentManager > compManager_;
 
-    //! Handle for this engine's thread of execution
-    boost::scoped_ptr< boost::thread > thread_;
+  //! Handle for this engine's thread of execution
+  boost::scoped_ptr< boost::thread > thread_;
 
-    //! The graph representing the components within the engine and the links between them
-    RadioGraph engineGraph_;
+  //! The graph representing the components within the engine and the links between them
+  RadioGraph engineGraph_;
 
-    //! The PNComponents running within this engine
-    std::vector< boost::shared_ptr<PNComponent> > components_;
+  //! The PNComponents running within this engine
+  std::vector< boost::shared_ptr<PNComponent> > components_;
 
-    //! The DataBuffers for the internal links between components of this engine
-    std::vector< boost::shared_ptr< DataBufferBase > > internalBuffers_;
+  //! The DataBuffers for the internal links between components of this engine
+  std::vector< boost::shared_ptr< DataBufferBase > > internalBuffers_;
 
-    //! The DataBuffers for the external links into and out of this engine
-    std::vector< boost::shared_ptr< DataBufferBase > > engInputBuffers_;
-    std::vector< boost::shared_ptr< DataBufferBase > > engOutputBuffers_;
+  //! The DataBuffers for the external links into and out of this engine
+  std::vector< boost::shared_ptr< DataBufferBase > > engInputBuffers_;
+  std::vector< boost::shared_ptr< DataBufferBase > > engOutputBuffers_;
 
-    //! Name of this engine
-    std::string engineName_;
+  //! Name of this engine
+  std::string engineName_;
 
-    //! The reconfiguration message queue for this engine
-    MessageQueue< ReconfigSet > reconfigQueue_;
+  //! The reconfiguration message queue for this engine
+  MessageQueue< ReconfigSet > reconfigQueue_;
 
-    //! The interface to the owner of this engine
-    EngineCallbackInterface *engineManager_;
+  //! The interface to the owner of this engine
+  EngineCallbackInterface *engineManager_;
 
 
-    //! Helper functions
-     boost::shared_ptr< DataBufferBase >  createDataBuffer(int type) const;
-     boost::shared_ptr< DataBufferBase >  createPNDataBuffer(int type) const;
-    bool sameLink(LinkDescription first, LinkDescription second) const;
+  //! Helper functions
+   boost::shared_ptr< DataBufferBase >  createDataBuffer(int type) const;
+   boost::shared_ptr< DataBufferBase >  createPNDataBuffer(int type) const;
+  bool sameLink(LinkDescription first, LinkDescription second) const;
 
-    //! The internal loop which this engine's thread executes
-    void threadLoop();
-    //! Check that a given graph complies with the policies of this engine
-    void checkGraph(RadioGraph& graph);
-    //! Build a given graph
-    void buildEngineGraph(RadioGraph& graph)
-        throw (IrisException);
+  //! The internal loop which this engine's thread executes
+  void threadLoop();
+  //! Check that a given graph complies with the policies of this engine
+  void checkGraph(RadioGraph& graph);
+  //! Build a given graph
+  void buildEngineGraph(RadioGraph& graph)
+    throw (IrisException);
 
-    //! Reconfigure a parameter within a component running in the engine
-    void reconfigureParameter(ParametricReconfig reconfig);
-    //! Reconfigure the structure of this engine
-    void reconfigureStructure();
+  //! Reconfigure a parameter within a component running in the engine
+  void reconfigureParameter(ParametricReconfig reconfig);
+  //! Reconfigure the structure of this engine
+  void reconfigureStructure();
   public:
-    //! ctor
-    PNEngine(std::string name, std::string repository)
-        throw (IrisException);
-    //! dtor
-    ~PNEngine();
+  //! ctor
+  PNEngine(std::string name, std::string repository)
+    throw (IrisException);
+  //! dtor
+  ~PNEngine();
 
-    void setEngineManager(EngineCallbackInterface *e);
+  void setEngineManager(EngineCallbackInterface *e);
 
-    /** Load the engine
-    *   \param eng          Description of the engine
-    *   \param inputLinks   The input DataBuffers for this engine
-    *   \return The output DataBuffers for this engine
-    */
-    std::vector< boost::shared_ptr< DataBufferBase > > loadEngine(EngineDescription eng, std::vector< boost::shared_ptr< DataBufferBase > > inputLinks)
-        throw (IrisException);
-    void unloadEngine();
-    void startEngine();
-    void stopEngine();
-    std::string getName() const;
-    void addReconfiguration(ReconfigSet reconfigs);
-    void postCommand(Command command);
-    void activateEvent(Event &e);
+  /** Load the engine
+  *   \param eng      Description of the engine
+  *   \param inputLinks   The input DataBuffers for this engine
+  *   \return The output DataBuffers for this engine
+  */
+  std::vector< boost::shared_ptr< DataBufferBase > > loadEngine(EngineDescription eng, std::vector< boost::shared_ptr< DataBufferBase > > inputLinks)
+    throw (IrisException);
+  void unloadEngine();
+  void startEngine();
+  void stopEngine();
+  std::string getName() const;
+  void addReconfiguration(ReconfigSet reconfigs);
+  void postCommand(Command command);
+  void activateEvent(Event &e);
 
 };
 

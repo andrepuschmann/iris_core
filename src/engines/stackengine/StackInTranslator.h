@@ -49,51 +49,51 @@ namespace iris
 {
 
 /** The StackInTranslator class translates between the DataBuffers of the Iris system
-*    and the StackDataBuffers of the StackEngine
+*  and the StackDataBuffers of the StackEngine
 *
 */
 class StackInTranslator
 {
 private:
 
-    ReadBuffer<uint8_t>* inputBuffer_;
-    StackDataBuffer* aboveBuffer_;
+  ReadBuffer<uint8_t>* inputBuffer_;
+  StackDataBuffer* aboveBuffer_;
 
-    //! Handle for this StackComponent's thread of execution
-    boost::scoped_ptr< boost::thread > thread_;
+  //! Handle for this StackComponent's thread of execution
+  boost::scoped_ptr< boost::thread > thread_;
 
-    //! The main thread loop for this stack component
-    virtual void threadLoop();
+  //! The main thread loop for this stack component
+  virtual void threadLoop();
 
 public:
-    //! Constructor
-    StackInTranslator();
+  //! Constructor
+  StackInTranslator();
 
-    //! Destructor
-    virtual ~StackInTranslator();
+  //! Destructor
+  virtual ~StackInTranslator();
 
-    /** Set the buffers above this component
-    *
-    *   \param above        Buffers for components above
-    */
-    virtual void setBufferAbove(StackDataBuffer* above);
+  /** Set the buffers above this component
+  *
+  *   \param above    Buffers for components above
+  */
+  virtual void setBufferAbove(StackDataBuffer* above);
 
-    /** Set the input buffers for this translator
-    *
-    *   \param in   ReadBufferBase pointer
-    */
-    virtual void setInputBuffer(ReadBufferBase* in);
+  /** Set the input buffers for this translator
+  *
+  *   \param in   ReadBufferBase pointer
+  */
+  virtual void setInputBuffer(ReadBufferBase* in);
 
-    //! Create and start the thread for this stack component
-    virtual void startTranslator();
+  //! Create and start the thread for this stack component
+  virtual void startTranslator();
 
-    //! Stop the thread for this stack component
-    virtual void stopTranslator();
+  //! Stop the thread for this stack component
+  virtual void stopTranslator();
 
-    //! Send a StackDataSet to the neighbour above
-    virtual void sendUpwards(boost::shared_ptr<StackDataSet> set);
+  //! Send a StackDataSet to the neighbour above
+  virtual void sendUpwards(boost::shared_ptr<StackDataSet> set);
 
-    std::string getName(){return "StackInTranslator";};
+  std::string getName(){return "StackInTranslator";};
 };
 
 } /* namespace iris */

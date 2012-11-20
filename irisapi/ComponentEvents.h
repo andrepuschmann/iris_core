@@ -48,20 +48,20 @@ namespace iris
  */
 struct EventDescription
 {
-    //! description of the event
-    std::string description;
+  //! description of the event
+  std::string description;
 
-    //! name of the event
-    std::string name;
+  //! name of the event
+  std::string name;
 
-    //! type of data to be passed with event
-    int typeId;
+  //! type of data to be passed with event
+  int typeId;
 
-    //! default constructor
-    EventDescription(std::string n="", std::string d="", int t=0) :
-        description(d), name(n), typeId(t)
-    {
-    }
+  //! default constructor
+  EventDescription(std::string n="", std::string d="", int t=0) :
+    description(d), name(n), typeId(t)
+  {
+  }
 };
 
 /*!
@@ -74,107 +74,107 @@ struct EventDescription
 class ComponentEvents : boost::noncopyable
 {
 private:
-    std::map<std::string, EventDescription> events_;
-    ComponentCallbackInterface* engine_;
+  std::map<std::string, EventDescription> events_;
+  ComponentCallbackInterface* engine_;
 
 protected:
-    ComponentEvents& assignEvents(const ComponentEvents& other)
-    {
-        events_ = other.events_;
-        engine_ = other.engine_;
+  ComponentEvents& assignEvents(const ComponentEvents& other)
+  {
+    events_ = other.events_;
+    engine_ = other.engine_;
 
-        return *this;
-    }
+    return *this;
+  }
 
-    void registerEvent(std::string name, std::string description, int typeId) throw (InvalidDataTypeException)
-    {
-        if(typeId < 0)
-            throw InvalidDataTypeException("Invalid data type specified when registering event " + name);
+  void registerEvent(std::string name, std::string description, int typeId) throw (InvalidDataTypeException)
+  {
+    if(typeId < 0)
+      throw InvalidDataTypeException("Invalid data type specified when registering event " + name);
 
-        boost::to_lower(name);
-        EventDescription e(name, description, typeId);
-        events_[name] = e;
-    }
+    boost::to_lower(name);
+    EventDescription e(name, description, typeId);
+    events_[name] = e;
+  }
 
-    template<typename T>
-    inline void activateEventInternal(std::string compName, std::string name, T &data) 
-        throw (EventNotFoundException, InvalidDataTypeException);
+  template<typename T>
+  inline void activateEventInternal(std::string compName, std::string name, T &data) 
+    throw (EventNotFoundException, InvalidDataTypeException);
 
-    template<typename T>
-    inline void activateEventInternal(std::string compName, std::string name, std::vector<T> &data) 
-        throw (EventNotFoundException, InvalidDataTypeException);
+  template<typename T>
+  inline void activateEventInternal(std::string compName, std::string name, std::vector<T> &data) 
+    throw (EventNotFoundException, InvalidDataTypeException);
 
 public:
-    ComponentEvents():engine_(NULL){}
-    void setEngine(ComponentCallbackInterface* e){engine_ = e;}
-    size_t getNumEvents(){return events_.size();}
-    std::map<std::string, EventDescription> getEvents(){return events_;}
+  ComponentEvents():engine_(NULL){}
+  void setEngine(ComponentCallbackInterface* e){engine_ = e;}
+  size_t getNumEvents(){return events_.size();}
+  std::map<std::string, EventDescription> getEvents(){return events_;}
 };
 
 template<typename T>
 inline void ComponentEvents::activateEventInternal(std::string compName, std::string name, T &data)
-    throw (EventNotFoundException, InvalidDataTypeException)
+  throw (EventNotFoundException, InvalidDataTypeException)
 {
-    //Check that we have an interface to the engine
-    if(engine_ == NULL)
-    {
-        return;
-    }
+  //Check that we have an interface to the engine
+  if(engine_ == NULL)
+  {
+    return;
+  }
 
-    //Check that the event exists and that the datatypes match
-    std::map<std::string, EventDescription>::const_iterator it = events_.find(name);
-    if (it == events_.end())
-        throw EventNotFoundException("Event " + name + " not found");
-    
-    if(it->second.typeId == TypeInfo<T>::identifier)
-    {
-        //std::vector<boost::any> d;
-        //d.push_back(boost::any(data));
-        //d_engine->activateEvent(name, d);
-        Event e;
-        e.data.push_back(boost::any(data));
-        e.eventName = name;
-        e.componentName = compName;
-        e.typeId = TypeInfo<T>::identifier;
-        engine_->activateEvent(e);
-        return;
-    }else{
-        throw InvalidDataTypeException("Event data type did not match registered type for event " + name); 
-    }
+  //Check that the event exists and that the datatypes match
+  std::map<std::string, EventDescription>::const_iterator it = events_.find(name);
+  if (it == events_.end())
+    throw EventNotFoundException("Event " + name + " not found");
+  
+  if(it->second.typeId == TypeInfo<T>::identifier)
+  {
+    //std::vector<boost::any> d;
+    //d.push_back(boost::any(data));
+    //d_engine->activateEvent(name, d);
+    Event e;
+    e.data.push_back(boost::any(data));
+    e.eventName = name;
+    e.componentName = compName;
+    e.typeId = TypeInfo<T>::identifier;
+    engine_->activateEvent(e);
+    return;
+  }else{
+    throw InvalidDataTypeException("Event data type did not match registered type for event " + name); 
+  }
 }
 
 template<typename T>
 inline void ComponentEvents::activateEventInternal(std::string compName, std::string name, std::vector<T> &data) 
-    throw (EventNotFoundException, InvalidDataTypeException)
+  throw (EventNotFoundException, InvalidDataTypeException)
 {
-    //Check that we have an interface to the engine
-    if(engine_ == NULL)
-    {
-        return;
-    }
+  //Check that we have an interface to the engine
+  if(engine_ == NULL)
+  {
+    return;
+  }
 
-    //Check that the event exists and that the datatypes match
-    std::map<std::string, EventDescription>::const_iterator it = events_.find(name);
-    if (it == events_.end())
-        throw EventNotFoundException("Event " + name + " not found");
+  //Check that the event exists and that the datatypes match
+  std::map<std::string, EventDescription>::const_iterator it = events_.find(name);
+  if (it == events_.end())
+    throw EventNotFoundException("Event " + name + " not found");
 
-    if(it->second.typeId == TypeInfo<T>::identifier)
-    {
-        //std::vector<boost::any> d;
-        //d.resize(data.size());
-        //std::copy(data.begin(), data.end(), d.begin());
-        //d_engine->activateEvent(name, d);
-        Event e;
-        e.data.resize(data.size());
-        std::copy(data.begin(), data.end(), e.data.begin());
-        e.eventName = name;
-        e.componentName = compName;
-        e.typeId = TypeInfo<T>::identifier;
-        engine_->activateEvent(e);
-        return;
-    }else{
-        throw InvalidDataTypeException("Event data type did not match registered type for event " + name); 
-    }
+  if(it->second.typeId == TypeInfo<T>::identifier)
+  {
+    //std::vector<boost::any> d;
+    //d.resize(data.size());
+    //std::copy(data.begin(), data.end(), d.begin());
+    //d_engine->activateEvent(name, d);
+    Event e;
+    e.data.resize(data.size());
+    std::copy(data.begin(), data.end(), e.data.begin());
+    e.eventName = name;
+    e.componentName = compName;
+    e.typeId = TypeInfo<T>::identifier;
+    engine_->activateEvent(e);
+    return;
+  }else{
+    throw InvalidDataTypeException("Event data type did not match registered type for event " + name); 
+  }
 }
 
 } /* namespace iris */

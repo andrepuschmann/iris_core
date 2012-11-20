@@ -34,30 +34,30 @@
 // Machine graph:
 //
 //  ---------------------------------------
-// |                                       |
-// |        o         Active               |
-// |        |                              |
-// |        v                              |
-// |  -------------------------------      |
-// | |         Unloaded              |     |
-// |  -------------------------------      |
-// |    |                 ^                |
-// |    |  EvLoadUnload   | EvLoadUnload   |
-// |    v                 |                |
+// |                     |
+// |    o     Active         |
+// |    |                |
+// |    v                |
+// |  -------------------------------    |
+// | |     Unloaded        |   |
+// |  -------------------------------    |
+// |  |         ^        |
+// |  |  EvLoadUnload   | EvLoadUnload   |
+// |  v         |        |
 // |  -----------------------------------  |
-// | |                                   | |
-// | |        o       Loaded             | |
-// | |        |                          | |
-// | |        v                          | |
-// | |   -------------------------       | |
-// | |  |    Stopped              |      | |
-// | |   -------------------------       | |
-// | |    |                ^             | |
-// | |    | EvStartStop    | EvStartStop | |
-// | |    v                |             | |
-// | |   -------------------------       | |
-// | |  |    Running              |      | |
-// | |   -------------------------       | |
+// | |                   | |
+// | |    o     Loaded       | |
+// | |    |              | |
+// | |    v              | |
+// | |   -------------------------     | |
+// | |  |  Stopped        |    | |
+// | |   -------------------------     | |
+// | |  |        ^       | |
+// | |  | EvStartStop  | EvStartStop | |
+// | |  v        |       | |
+// | |   -------------------------     | |
+// | |  |  Running        |    | |
+// | |   -------------------------     | |
 // |  -----------------------------------  |
 //  ---------------------------------------
 //
@@ -77,17 +77,17 @@
 class LauncherException : public std::exception
 {
 private:
-    std::string message_;
+  std::string message_;
 public:
-    LauncherException(const std::string &message) throw()
-        :exception(), message_(message)
-    {};
-    virtual const char* what() const throw()
-    {
-        return message_.c_str();
-    };
-    virtual ~LauncherException() throw()
-    {};
+  LauncherException(const std::string &message) throw()
+    :exception(), message_(message)
+  {};
+  virtual const char* what() const throw()
+  {
+    return message_.c_str();
+  };
+  virtual ~LauncherException() throw()
+  {};
 };
 
 //! Event to start/stop the radio
@@ -96,9 +96,9 @@ struct EvStartStop : boost::statechart::event< EvStartStop > {};
 struct EvLoadUnload : boost::statechart::event< EvLoadUnload > {};
 
 // forward declarations of the states
-struct Active;    //!< active state, Iris engine is initialized
+struct Active;  //!< active state, Iris engine is initialized
 struct Unloaded;  //!< no radio loaded, initial state within Active
-struct Loaded;    //!< radio loaded, within Active
+struct Loaded;  //!< radio loaded, within Active
 struct Stopped;   //!< radio is stopped, initial state within Loaded
 struct Running;   //!< radio is running, state within Loaded
 
@@ -106,45 +106,45 @@ struct Running;   //!< radio is running, state within Loaded
 //! The state machine itself, start state is Active
 struct IrisStateMachine : boost::statechart::state_machine< IrisStateMachine, Active >
 {
-    //! set XML radio configuration
-    void setRadioConfig(std::string radioConfig) { radioConfig_ = radioConfig; }
-    //! return XML radio configuration
-    std::string getRadioConfig() const { return radioConfig_; }
-    //! set radio Stack component repository
-    void setStackRadioRepository(std::string radioRepository) { stackRadioRepository_ = radioRepository; }
-    //! return radio Stack component repository
-    std::string getStackRadioRepository() const { return stackRadioRepository_; }
-    //! set radio PN component repository
-    void setPnRadioRepository(std::string radioRepository) { pnRadioRepository_ = radioRepository; }
-    //! return radio PN component repository
-    std::string getPnRadioRepository() const { return pnRadioRepository_; }
-    //! set radio SDF component repository
-    void setSdfRadioRepository(std::string radioRepository) { sdfRadioRepository_ = radioRepository; }
-    //! return radio SDF component repository
-    std::string getSdfRadioRepository() const { return sdfRadioRepository_; }
-    //! set radio Controller repository
-    void setContRadioRepository(std::string radioRepository) { contRadioRepository_ = radioRepository; }
-    //! return radio Controller repository
-    std::string getContRadioRepository() const { return contRadioRepository_; }
-    //! set log level
-    void setLogLevel(std::string level) { logLevel_ = level; }
-    //! return log level
-    std::string getLogLevel() const { return logLevel_; }
-    //! Reconfigure the radio
-    void reconfigureRadio();
+  //! set XML radio configuration
+  void setRadioConfig(std::string radioConfig) { radioConfig_ = radioConfig; }
+  //! return XML radio configuration
+  std::string getRadioConfig() const { return radioConfig_; }
+  //! set radio Stack component repository
+  void setStackRadioRepository(std::string radioRepository) { stackRadioRepository_ = radioRepository; }
+  //! return radio Stack component repository
+  std::string getStackRadioRepository() const { return stackRadioRepository_; }
+  //! set radio PN component repository
+  void setPnRadioRepository(std::string radioRepository) { pnRadioRepository_ = radioRepository; }
+  //! return radio PN component repository
+  std::string getPnRadioRepository() const { return pnRadioRepository_; }
+  //! set radio SDF component repository
+  void setSdfRadioRepository(std::string radioRepository) { sdfRadioRepository_ = radioRepository; }
+  //! return radio SDF component repository
+  std::string getSdfRadioRepository() const { return sdfRadioRepository_; }
+  //! set radio Controller repository
+  void setContRadioRepository(std::string radioRepository) { contRadioRepository_ = radioRepository; }
+  //! return radio Controller repository
+  std::string getContRadioRepository() const { return contRadioRepository_; }
+  //! set log level
+  void setLogLevel(std::string level) { logLevel_ = level; }
+  //! return log level
+  std::string getLogLevel() const { return logLevel_; }
+  //! Reconfigure the radio
+  void reconfigureRadio();
 private:
-    //! stores the XML radio configuration
-    std::string radioConfig_;
-    //! stores the radio Stack component repository
-    std::string stackRadioRepository_;
-    //! stores the radio PN component repository
-    std::string pnRadioRepository_;
-    //! stores the radio SDF component repository
-    std::string sdfRadioRepository_;
-    //! stores the radio Controller repository
-    std::string contRadioRepository_;
-    //! stores the log level
-    std::string logLevel_;
+  //! stores the XML radio configuration
+  std::string radioConfig_;
+  //! stores the radio Stack component repository
+  std::string stackRadioRepository_;
+  //! stores the radio PN component repository
+  std::string pnRadioRepository_;
+  //! stores the radio SDF component repository
+  std::string sdfRadioRepository_;
+  //! stores the radio Controller repository
+  std::string contRadioRepository_;
+  //! stores the log level
+  std::string logLevel_;
 };
 
 //! Active is the parent of all other states, destruction means termination
@@ -157,7 +157,7 @@ private:
 // 3. (optional) The initial internal state in hierarchical FSMs
 struct Active : boost::statechart::state< Active, IrisStateMachine, Unloaded >
 {
-    Active(my_context ctx);    //!< Constructor. Initialises the Iris System
+  Active(my_context ctx);  //!< Constructor. Initialises the Iris System
 };
 
 //! In the Loaded state, a transition is made to Unloaded on EvLoadUnload
@@ -165,21 +165,21 @@ struct Active : boost::statechart::state< Active, IrisStateMachine, Unloaded >
 //! for execution.
 struct Loaded : boost::statechart::state< Loaded, Active, Stopped >
 {
-    //! On event EvLoadUnload, change to  Unloaded
-    typedef boost::statechart::transition< EvLoadUnload, Unloaded > reactions;
+  //! On event EvLoadUnload, change to  Unloaded
+  typedef boost::statechart::transition< EvLoadUnload, Unloaded > reactions;
 
-    Loaded(my_context ctx) throw (LauncherException);  //!< Constructor. Loads the radio.
+  Loaded(my_context ctx) throw (LauncherException);  //!< Constructor. Loads the radio.
 
-    //! unloads the radio
-    void exit() throw (LauncherException);
+  //! unloads the radio
+  void exit() throw (LauncherException);
 };
 
 //! In the Unloaded state, a transition is made to Loaded on EvLoadUnload
 //! Nothing is done when entering or exiting this state
 struct Unloaded :  boost::statechart::simple_state< Unloaded, Active >
 {
-    //! On event EvLoadUnload, transit to Loaded
-    typedef boost::statechart::transition< EvLoadUnload, Loaded > reactions;
+  //! On event EvLoadUnload, transit to Loaded
+  typedef boost::statechart::transition< EvLoadUnload, Loaded > reactions;
 
 };
 
@@ -187,8 +187,8 @@ struct Unloaded :  boost::statechart::simple_state< Unloaded, Active >
 //! When entering/exiting this state, no actions are performed.
 struct Stopped : boost::statechart::simple_state< Stopped, Loaded >
 {
-    //! On event EvStartStop, transit to Running
-    typedef boost::statechart::transition< EvStartStop, Running > reactions;
+  //! On event EvStartStop, transit to Running
+  typedef boost::statechart::transition< EvStartStop, Running > reactions;
 };
 
 //! In the Running state, a transition is made to Stopped on EvStartStop
@@ -196,14 +196,14 @@ struct Stopped : boost::statechart::simple_state< Stopped, Loaded >
 //! radio execution is stopped.
 struct Running : boost::statechart::simple_state< Running, Loaded >
 {
-    //! On event EvStartStop, transit to Stopped
-    typedef boost::statechart::transition< EvStartStop, Stopped > reactions;
+  //! On event EvStartStop, transit to Stopped
+  typedef boost::statechart::transition< EvStartStop, Stopped > reactions;
 
-    //! starts the radio
-    Running() throw (LauncherException);
+  //! starts the radio
+  Running() throw (LauncherException);
 
-    //! stops the radio
-    void exit() throw (LauncherException);
+  //! stops the radio
+  void exit() throw (LauncherException);
 };
 
 #endif

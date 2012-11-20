@@ -42,7 +42,7 @@ class TestLibrary
 private:
 
 public:
-    TestLibrary();
+  TestLibrary();
 
 };
 

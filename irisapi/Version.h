@@ -37,15 +37,15 @@
 
 namespace iris
 {
-    class Version
+  class Version
+  {
+  public:
+    static const char* getApiVersion()
     {
-    public:
-        static const char* getApiVersion()
-        {
-            return "0.0.16";
-        };
-
+      return "0.0.16";
     };
+
+  };
 
 } /* namespace iris */
 

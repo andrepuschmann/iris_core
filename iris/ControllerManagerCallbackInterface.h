@@ -46,13 +46,13 @@ namespace iris
  */
 class ControllerManagerCallbackInterface{
 public:
-    virtual ~ControllerManagerCallbackInterface(){};
+  virtual ~ControllerManagerCallbackInterface(){};
 
-    virtual void reconfigureRadio(ReconfigSet reconfigs) = 0;
+  virtual void reconfigureRadio(ReconfigSet reconfigs) = 0;
 
-    virtual void postCommand(Command command) = 0;
+  virtual void postCommand(Command command) = 0;
 
-    virtual std::string getParameterValue(std::string paramName, std::string componentName) = 0;
+  virtual std::string getParameterValue(std::string paramName, std::string componentName) = 0;
 };
 
 } /* namespace iris */

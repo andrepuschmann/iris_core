@@ -45,20 +45,20 @@ class TestController : public Controller
 private:
 
 public:
-    TestController() 
-        : Controller("testcontroller",  //name
-        "This is just for a little bit of testing",  // description
-        "Paul Sutton", //author
-        "1.0") // version
-    {
-    }
+  TestController() 
+    : Controller("testcontroller",  //name
+    "This is just for a little bit of testing",  // description
+    "Paul Sutton", //author
+    "1.0") // version
+  {
+  }
 
-    virtual ~TestController() {};
+  virtual ~TestController() {};
 
-    virtual void initialize(){};
-    virtual void processEvent(){};
-    virtual void destroy(){};
-    virtual void subscribeToEvents(){};
+  virtual void initialize(){};
+  virtual void processEvent(){};
+  virtual void destroy(){};
+  virtual void subscribeToEvents(){};
 };
 
 } /* namespace iris */

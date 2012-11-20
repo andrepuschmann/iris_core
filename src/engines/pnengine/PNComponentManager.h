@@ -60,61 +60,61 @@ typedef void (*DESTROYFUNCTION)(PNComponent*);
 //! A component library
 struct ComponentLibrary
 {
-    boost::filesystem::path path;
-    std::string name;
-    boost::shared_ptr< SharedLibrary > libPtr;
+  boost::filesystem::path path;
+  std::string name;
+  boost::shared_ptr< SharedLibrary > libPtr;
 
-    //! Constructor initializes our variables
-    ComponentLibrary()
-        :name(""){}
+  //! Constructor initializes our variables
+  ComponentLibrary()
+    :name(""){}
 };
 
 //! A repository containing a number of component libraries
 struct Repository
 {
-    boost::filesystem::path path;
-    std::vector< ComponentLibrary > componentLibs;
+  boost::filesystem::path path;
+  std::vector< ComponentLibrary > componentLibs;
 };
 
 /** The PNComponentManager class implements a component manager for the PNEngine.
 *
-*    The PNEngine uses the PNComponentManager to manage the lifecycle of its components
+*  The PNEngine uses the PNComponentManager to manage the lifecycle of its components
 */
 class PNComponentManager
 {
 private:
-    //! Repositories of components which can be loaded by this manager
-    std::vector< Repository > repositories_;
+  //! Repositories of components which can be loaded by this manager
+  std::vector< Repository > repositories_;
 
-    //! Loaded component libraries
-    std::vector< ComponentLibrary > loadedLibraries_;
+  //! Loaded component libraries
+  std::vector< ComponentLibrary > loadedLibraries_;
 
 public:
-    //! ctor
-    PNComponentManager();
+  //! ctor
+  PNComponentManager();
 
-    /** Add a repository 
-    *   Multiple repositories can be specified by separating paths with ";"
-    *   \param repoPath     Path to the component repository
-    */
-    void addRepository(std::string repoPath) throw (ResourceNotFoundException);
-    
-    /** Load a PNComponent
-    *   \param desc     Description of PNComponent to be loaded
-    *   \returns A pointer to the loaded PNComponent
-    */
-    boost::shared_ptr<PNComponent> loadComponent(ComponentDescription desc) throw (IrisException);
+  /** Add a repository 
+  *   Multiple repositories can be specified by separating paths with ";"
+  *   \param repoPath   Path to the component repository
+  */
+  void addRepository(std::string repoPath) throw (ResourceNotFoundException);
+  
+  /** Load a PNComponent
+  *   \param desc   Description of PNComponent to be loaded
+  *   \returns A pointer to the loaded PNComponent
+  */
+  boost::shared_ptr<PNComponent> loadComponent(ComponentDescription desc) throw (IrisException);
 
-    /** Check whether a component exists
-    *   \param  name    The name of the component to look for
-    */
-    bool componentExists(std::string name);
+  /** Check whether a component exists
+  *   \param  name  The name of the component to look for
+  */
+  bool componentExists(std::string name);
 
-    //! Get all the repositories which are available
-    std::vector<boost::filesystem::path> getRepositories();
+  //! Get all the repositories which are available
+  std::vector<boost::filesystem::path> getRepositories();
 
-    //! Get the name of this element
-    std::string getName(){return "PNComponentManager";};
+  //! Get the name of this element
+  std::string getName(){return "PNComponentManager";};
 };
 
 }

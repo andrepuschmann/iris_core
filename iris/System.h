@@ -41,74 +41,74 @@
 namespace iris
 {
 
-    //! The radio status
-    enum RadioStatus {RADIOUNLOADED, RADIOLOADED, RADIORUNNING, RADIOSUSPENDED };
+  //! The radio status
+  enum RadioStatus {RADIOUNLOADED, RADIOLOADED, RADIORUNNING, RADIOSUSPENDED };
 
-    /*! \class System
-     *  \brief This is the core part of the IRISv2 architecture. It uses the other elements of the
-     *  architecture to run and reconfigure radios.
-     */
-    class System
-    {
-    private:
-        //! The EngineManager controls all engines running within IRISv2
-        EngineManager engineManager_;
+  /*! \class System
+   *  \brief This is the core part of the IRISv2 architecture. It uses the other elements of the
+   *  architecture to run and reconfigure radios.
+   */
+  class System
+  {
+  private:
+    //! The EngineManager controls all engines running within IRISv2
+    EngineManager engineManager_;
 
-        //! The current radio status
-        RadioStatus status_;
+    //! The current radio status
+    RadioStatus status_;
 
-        //! The repositories
-        Repositories reps_;
+    //! The repositories
+    Repositories reps_;
 
-        //! Pointer to the log file
-        FILE* pFile_;
+    //! Pointer to the log file
+    FILE* pFile_;
 
-    public:
-        //! ctor
-        System();
+  public:
+    //! ctor
+    System();
 
-        //! dtor
-        ~System();
+    //! dtor
+    ~System();
 
-        //! Set the Stack Component repository
-        void setStackRepository(std::string rep);
+    //! Set the Stack Component repository
+    void setStackRepository(std::string rep);
 
-        //! Set the PN Component repository
-        void setPnRepository(std::string rep);
+    //! Set the PN Component repository
+    void setPnRepository(std::string rep);
 
-        //! Set the SDF Component repository
-        void setSdfRepository(std::string rep);
+    //! Set the SDF Component repository
+    void setSdfRepository(std::string rep);
 
-        //! Set the Controller repository
-        void setContRepository(std::string rep);
+    //! Set the Controller repository
+    void setContRepository(std::string rep);
 
-        //! Set the log level
-        void setLogLevel(std::string level);
+    //! Set the log level
+    void setLogLevel(std::string level);
 
-        //! Load a radio given a configuration file name
-        bool loadRadio(std::string radioConfig);
+    //! Load a radio given a configuration file name
+    bool loadRadio(std::string radioConfig);
 
-        //! Start a loaded radio
-        bool startRadio();
+    //! Start a loaded radio
+    bool startRadio();
 
-        //! Stop a running radio
-        bool stopRadio();
+    //! Stop a running radio
+    bool stopRadio();
 
-        //! Unload a loaded radio
-        bool unloadRadio();
+    //! Unload a loaded radio
+    bool unloadRadio();
 
-        //! Reconfigure the radio
-        bool reconfigureRadio(std::string radioConfig);
+    //! Reconfigure the radio
+    bool reconfigureRadio(std::string radioConfig);
 
-        bool isRadioLoaded() const;
+    bool isRadioLoaded() const;
 
-        bool isRadioRunning() const;
+    bool isRadioRunning() const;
 
-        bool isRadioSuspended() const;
+    bool isRadioSuspended() const;
 
-        std::string getName() const
-        {   return "System"; };
-    };
+    std::string getName() const
+    {   return "System"; };
+  };
 
 } /* namespace iris */
 

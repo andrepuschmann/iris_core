@@ -53,105 +53,105 @@ enum Source { ABOVE, BELOW };
 /*!
 *   \brief The StackDataSet class implements a set of data which is passed between StackComponents.
 *
-*    A dequeue of uint8_t is used to store data - this provides efficient addition of data at the front and back.
+*  A dequeue of uint8_t is used to store data - this provides efficient addition of data at the front and back.
 */
 struct StackDataSet
 {
-    Source source;
-    std::deque<uint8_t> data;
-    double timeStamp;
-    std::string lastComponent;
-    
-    //! Constructor initializes our variables
-    StackDataSet(double t=0)
-        :timeStamp(t){}
+  Source source;
+  std::deque<uint8_t> data;
+  double timeStamp;
+  std::string lastComponent;
+  
+  //! Constructor initializes our variables
+  StackDataSet(double t=0)
+    :timeStamp(t){}
 };
 
 /*!
 *   \brief The StackDataBuffer class implements a buffer which exists between two IRIS components in a StackEngine.
 *
-*    The buffer consists of a queue of pointers to StackDataSets.
-*    Components can push a StackDataSet to the buffer by calling pushDataSet().
-*    Components can get a DataSet from the buffer by calling popDataSet().
-*    The DataBuffer is thread-safe. In the event that the buffer is full, PushDataSet() will block.
-*    In the event that the buffer is empty, PopDataSet() will block.
+*  The buffer consists of a queue of pointers to StackDataSets.
+*  Components can push a StackDataSet to the buffer by calling pushDataSet().
+*  Components can get a DataSet from the buffer by calling popDataSet().
+*  The DataBuffer is thread-safe. In the event that the buffer is full, PushDataSet() will block.
+*  In the event that the buffer is empty, PopDataSet() will block.
 */
 class StackDataBuffer
 {
 
 private:
-    //! The queue of StackDataSet pointers
-    std::queue< boost::shared_ptr<StackDataSet> > buffer_;
+  //! The queue of StackDataSet pointers
+  std::queue< boost::shared_ptr<StackDataSet> > buffer_;
 
-    //! Max number of items in the queue
-    unsigned maxBufferSize_;
+  //! Max number of items in the queue
+  unsigned maxBufferSize_;
 
-    mutable boost::mutex mutex_;
-    boost::condition_variable notEmptyVariable_;
-    boost::condition_variable notFullVariable_;
+  mutable boost::mutex mutex_;
+  boost::condition_variable notEmptyVariable_;
+  boost::condition_variable notFullVariable_;
 
 public:
 
-    /*!
-    *   \brief Constructor
-    *
-    *   \param maxSize        Max number of elements in queue
-    */
-    explicit StackDataBuffer(unsigned maxSize = 10)
-        :maxBufferSize_(maxSize)
-    {};
+  /*!
+  *   \brief Constructor
+  *
+  *   \param maxSize    Max number of elements in queue
+  */
+  explicit StackDataBuffer(unsigned maxSize = 10)
+    :maxBufferSize_(maxSize)
+  {};
 
-    virtual ~StackDataBuffer(){};
+  virtual ~StackDataBuffer(){};
 
-    //! Is there any data in this buffer?
-    bool hasData() const
+  //! Is there any data in this buffer?
+  bool hasData() const
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    return buffer_.empty();
+  }
+
+  //! Is the buffer full?
+  bool isFull() const
+  {
+  boost::mutex::scoped_lock(mutex_);
+  return (buffer_.size() >= maxBufferSize_);
+  }
+  
+  /*!
+  *   \brief Get a StackDataSet from the queue
+  *
+  *  \return A boost::shared_ptr to a StackDataSet
+  */
+  boost::shared_ptr<StackDataSet> popDataSet() throw(boost::thread_interrupted)
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    while(buffer_.empty())
     {
-        boost::mutex::scoped_lock lock(mutex_);
-        return buffer_.empty();
+      notEmptyVariable_.wait(lock);
     }
+    boost::shared_ptr<StackDataSet> p = buffer_.front();
+    buffer_.pop();
+    lock.unlock();
+    notFullVariable_.notify_one();
+    return p;
+  };
 
-    //! Is the buffer full?
-    bool isFull() const
+  /*!
+  *   \brief Add a StackDataSet to a queue
+  *
+  *   \param set  A boost::shared_ptr to a StackDataSet
+  */
+  void pushDataSet( boost::shared_ptr<StackDataSet> set) throw(boost::thread_interrupted)
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    while(buffer_.size() >= maxBufferSize_)
     {
-    boost::mutex::scoped_lock(mutex_);
-    return (buffer_.size() >= maxBufferSize_);
+      notFullVariable_.wait(lock);
     }
-    
-    /*!
-    *   \brief Get a StackDataSet from the queue
-    *
-    *    \return A boost::shared_ptr to a StackDataSet
-    */
-    boost::shared_ptr<StackDataSet> popDataSet() throw(boost::thread_interrupted)
-    {
-        boost::mutex::scoped_lock lock(mutex_);
-        while(buffer_.empty())
-        {
-            notEmptyVariable_.wait(lock);
-        }
-        boost::shared_ptr<StackDataSet> p = buffer_.front();
-        buffer_.pop();
-        lock.unlock();
-        notFullVariable_.notify_one();
-        return p;
-    };
-
-    /*!
-    *   \brief Add a StackDataSet to a queue
-    *
-    *   \param set    A boost::shared_ptr to a StackDataSet
-    */
-    void pushDataSet( boost::shared_ptr<StackDataSet> set) throw(boost::thread_interrupted)
-    {
-        boost::mutex::scoped_lock lock(mutex_);
-        while(buffer_.size() >= maxBufferSize_)
-        {
-            notFullVariable_.wait(lock);
-        }
-        buffer_.push(set);
-        lock.unlock();
-        notEmptyVariable_.notify_one();
-    };
+    buffer_.push(set);
+    lock.unlock();
+    notEmptyVariable_.notify_one();
+  };
 };
 
 } /* namespace iris */

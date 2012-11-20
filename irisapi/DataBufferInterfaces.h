@@ -43,39 +43,39 @@ namespace iris
 
 /** The DataSet struct wraps a block of data being used within the IRIS system.
 *
-*    Each DataBuffer between two components will contain a vector of DataSets which can be written and read
-*    by those components.
+*  Each DataBuffer between two components will contain a vector of DataSets which can be written and read
+*  by those components.
 */
 template <typename T>
 struct DataSet{
-    std::vector< T, std::allocator<T> > data;    //We can change this to another container or
-                                                //use a custom allocator if we want
-    double sampleRate;
-    double timeStamp;
+  std::vector< T, std::allocator<T> > data;  //We can change this to another container or
+                        //use a custom allocator if we want
+  double sampleRate;
+  double timeStamp;
 
-    //! Constructor initializes our variables
-    DataSet(int l=10, double s=0, double t=0)
-        :data(l), sampleRate(s), timeStamp(t){}
+  //! Constructor initializes our variables
+  DataSet(int l=10, double s=0, double t=0)
+    :data(l), sampleRate(s), timeStamp(t){}
 };
 
 /** The DataBufferBase class allows us to store vectors of DataBuffers of different types
 *
-*    The DataBuffer class inherits from this base class. The typeIdentifier specifies
+*  The DataBuffer class inherits from this base class. The typeIdentifier specifies
 *   the type of the derived class.
 */
 class DataBufferBase : boost::noncopyable
 {
 public:
-    virtual ~DataBufferBase(){};
-    virtual int getTypeIdentifier() const = 0;
-    virtual void setLinkDescription(LinkDescription desc) = 0;
-    virtual LinkDescription getLinkDescription() const = 0;
-    virtual bool hasData() const = 0;
+  virtual ~DataBufferBase(){};
+  virtual int getTypeIdentifier() const = 0;
+  virtual void setLinkDescription(LinkDescription desc) = 0;
+  virtual LinkDescription getLinkDescription() const = 0;
+  virtual bool hasData() const = 0;
 };
 
 /** The ReadBufferBase class allows us to store vectors of ReadBuffers of different types
 *
-*    The ReadBuffer and DataBuffer inherit from this base class. The typeIdentifier specifies
+*  The ReadBuffer and DataBuffer inherit from this base class. The typeIdentifier specifies
 *   the type of the derived classes.
 */
 class ReadBufferBase:public virtual DataBufferBase
@@ -83,7 +83,7 @@ class ReadBufferBase:public virtual DataBufferBase
 
 /** The WriteBufferBase class allows us to store vectors of WriteBuffers of different types
 *
-*    The WriteBuffer and DataBuffer inherit from this base class. The typeIdentifier specifies
+*  The WriteBuffer and DataBuffer inherit from this base class. The typeIdentifier specifies
 *   the type of the derived classes.
 */
 class WriteBufferBase:public virtual DataBufferBase
@@ -94,9 +94,9 @@ template <typename T>
 class ReadBuffer:public virtual ReadBufferBase
 {
 public:
-    virtual ~ReadBuffer(){};
-    virtual void getReadData(DataSet<T>*& setPtr) = 0;
-    virtual void releaseReadData(DataSet<T>*& setPtr) = 0;
+  virtual ~ReadBuffer(){};
+  virtual void getReadData(DataSet<T>*& setPtr) = 0;
+  virtual void releaseReadData(DataSet<T>*& setPtr) = 0;
 };
 
 //! The WriteBuffer interface limits the use of a DataBuffer for a writing client.
@@ -104,9 +104,9 @@ template <typename T>
 class WriteBuffer:public virtual WriteBufferBase
 {
 public:
-    virtual ~WriteBuffer(){};
-    virtual void getWriteData(DataSet<T>*& setPtr, std::size_t size) = 0;
-    virtual void releaseWriteData(DataSet<T>*& setPtr) = 0;
+  virtual ~WriteBuffer(){};
+  virtual void getWriteData(DataSet<T>*& setPtr, std::size_t size) = 0;
+  virtual void releaseWriteData(DataSet<T>*& setPtr) = 0;
 };
 
 }

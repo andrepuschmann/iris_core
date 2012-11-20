@@ -62,150 +62,150 @@ class DataBuffer : public ReadBuffer<T>, public WriteBuffer<T>
 {
 public:
 
-    /*!
-    *   \brief Constructor
-    *
-    *   \param dataBufferLength     number of DataSets in the buffer
-    */
-    explicit DataBuffer(int dataBufferLength = 2) throw (InvalidDataTypeException)
-        :buffer_(dataBufferLength, DataSet<T>()),
-        isReadLocked_(false),
-        isWriteLocked_(false),
-        readIndex_(0),
-        writeIndex_(0),
-        notEmpty_(false),
-        notFull_(true)
-    {
-        //Set the type identifier for this buffer
-        typeIdentifier = TypeInfo<T>::identifier;
-        if( typeIdentifier == -1)
-            throw InvalidDataTypeException("Data type not supported");
-    };
+  /*!
+  *   \brief Constructor
+  *
+  *   \param dataBufferLength   number of DataSets in the buffer
+  */
+  explicit DataBuffer(int dataBufferLength = 2) throw (InvalidDataTypeException)
+    :buffer_(dataBufferLength, DataSet<T>()),
+    isReadLocked_(false),
+    isWriteLocked_(false),
+    readIndex_(0),
+    writeIndex_(0),
+    notEmpty_(false),
+    notFull_(true)
+  {
+    //Set the type identifier for this buffer
+    typeIdentifier = TypeInfo<T>::identifier;
+    if( typeIdentifier == -1)
+      throw InvalidDataTypeException("Data type not supported");
+  };
 
-    virtual ~DataBuffer(){};
-
-
-    //! Set the link description (with info on source and sink components) for this buffer
-    void setLinkDescription(LinkDescription desc)
-    {
-        linkDesc = desc;
-    };
+  virtual ~DataBuffer(){};
 
 
-    //! Get the link description for this buffer
-    LinkDescription getLinkDescription() const
-    {
-        return linkDesc;
-    };
+  //! Set the link description (with info on source and sink components) for this buffer
+  void setLinkDescription(LinkDescription desc)
+  {
+    linkDesc = desc;
+  };
 
-    //! Get the identifier for the data type of this buffer
-    int getTypeIdentifier() const
-    {
-        return typeIdentifier;
-    };
 
-    //! Is there any data in this buffer?
-    bool hasData() const
-    {
-        boost::mutex::scoped_lock lock(mutex_);
-        return is_not_empty();
-    }
+  //! Get the link description for this buffer
+  LinkDescription getLinkDescription() const
+  {
+    return linkDesc;
+  };
 
-    /*!
-    *   \brief Get the next DataSet to read
-    *
-    *   \param setPtr   A DataSet pointer which will be set by the buffer
-    */
-    void getReadData(DataSet<T>*& setPtr) throw(DataBufferReleaseException, boost::thread_interrupted)
-    {
-        boost::mutex::scoped_lock lock(mutex_);
-        if(isReadLocked_)
-            throw DataBufferReleaseException("getReadData() called before previous DataSet was released");
-        notEmptyCond_.wait(lock, boost::bind(&DataBuffer<T>::is_not_empty, this));
-        isReadLocked_ = true;
-        setPtr = &buffer_[readIndex_];
-    };
+  //! Get the identifier for the data type of this buffer
+  int getTypeIdentifier() const
+  {
+    return typeIdentifier;
+  };
 
-    /*!
-    *   \brief Get the next DataSet to be written
-    *
-    *   \param setPtr   A DataSet pointer which will be set by the buffer
-    *   \param size     The number of elements required in the DataSet
-    */
-    void getWriteData(DataSet<T>*& setPtr, std::size_t size) throw(DataBufferReleaseException, boost::thread_interrupted)
-    {
-        boost::mutex::scoped_lock lock(mutex_);
-        if(isWriteLocked_)
-            throw DataBufferReleaseException("getWriteData() called before previous DataSet was released");
-        notFullCond_.wait(lock, boost::bind(&DataBuffer<T>::is_not_full, this));
-        isWriteLocked_ = true;
-        if(buffer_[writeIndex_].data.size() != size)
-            buffer_[writeIndex_].data.resize(size);
-        buffer_[writeIndex_].timeStamp = 0;
-        setPtr = &buffer_[writeIndex_];
-    };
+  //! Is there any data in this buffer?
+  bool hasData() const
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    return is_not_empty();
+  }
 
-    /*!
-    *   \brief Release a read DataSet
-    *
-    *   \param setPtr   A pointer to the DataSet to be released
-    */
-    void releaseReadData(DataSet<T>*& setPtr)
-    {
-        boost::mutex::scoped_lock lock(mutex_);
-        if(++readIndex_ == buffer_.size())
-            readIndex_ = 0;
-        if(readIndex_ == writeIndex_)
-            notEmpty_ = false;
-        notFull_ = true;
-        notFullCond_.notify_one();
-        isReadLocked_ = false;
-        setPtr = NULL;
-    };
+  /*!
+  *   \brief Get the next DataSet to read
+  *
+  *   \param setPtr   A DataSet pointer which will be set by the buffer
+  */
+  void getReadData(DataSet<T>*& setPtr) throw(DataBufferReleaseException, boost::thread_interrupted)
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    if(isReadLocked_)
+      throw DataBufferReleaseException("getReadData() called before previous DataSet was released");
+    notEmptyCond_.wait(lock, boost::bind(&DataBuffer<T>::is_not_empty, this));
+    isReadLocked_ = true;
+    setPtr = &buffer_[readIndex_];
+  };
 
-    /*!
-    *   \brief Release a write DataSet
-    *
-    *   \param setPtr   A pointer to the DataSet to be released
-    */
-    void releaseWriteData(DataSet<T>*& setPtr)
-    {
-        boost::mutex::scoped_lock lock(mutex_);
-        if(++writeIndex_ == buffer_.size())
-            writeIndex_ = 0;
-        if(readIndex_ == writeIndex_)
-            notFull_ = false;
-        notEmpty_ = true;
-        notEmptyCond_.notify_one();
-        isWriteLocked_ = false;
-        setPtr = NULL;
-    };
+  /*!
+  *   \brief Get the next DataSet to be written
+  *
+  *   \param setPtr   A DataSet pointer which will be set by the buffer
+  *   \param size   The number of elements required in the DataSet
+  */
+  void getWriteData(DataSet<T>*& setPtr, std::size_t size) throw(DataBufferReleaseException, boost::thread_interrupted)
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    if(isWriteLocked_)
+      throw DataBufferReleaseException("getWriteData() called before previous DataSet was released");
+    notFullCond_.wait(lock, boost::bind(&DataBuffer<T>::is_not_full, this));
+    isWriteLocked_ = true;
+    if(buffer_[writeIndex_].data.size() != size)
+      buffer_[writeIndex_].data.resize(size);
+    buffer_[writeIndex_].timeStamp = 0;
+    setPtr = &buffer_[writeIndex_];
+  };
+
+  /*!
+  *   \brief Release a read DataSet
+  *
+  *   \param setPtr   A pointer to the DataSet to be released
+  */
+  void releaseReadData(DataSet<T>*& setPtr)
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    if(++readIndex_ == buffer_.size())
+      readIndex_ = 0;
+    if(readIndex_ == writeIndex_)
+      notEmpty_ = false;
+    notFull_ = true;
+    notFullCond_.notify_one();
+    isReadLocked_ = false;
+    setPtr = NULL;
+  };
+
+  /*!
+  *   \brief Release a write DataSet
+  *
+  *   \param setPtr   A pointer to the DataSet to be released
+  */
+  void releaseWriteData(DataSet<T>*& setPtr)
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    if(++writeIndex_ == buffer_.size())
+      writeIndex_ = 0;
+    if(readIndex_ == writeIndex_)
+      notFull_ = false;
+    notEmpty_ = true;
+    notEmptyCond_.notify_one();
+    isWriteLocked_ = false;
+    setPtr = NULL;
+  };
 
 private:
-    //! The source and sink component details for this DataBuffer
-    LinkDescription linkDesc;
+  //! The source and sink component details for this DataBuffer
+  LinkDescription linkDesc;
 
-    //! The data type of this buffer
-    int typeIdentifier;
+  //! The data type of this buffer
+  int typeIdentifier;
 
-    //! The vector of DataSets
-    std::vector< DataSet<T> > buffer_;
+  //! The vector of DataSets
+  std::vector< DataSet<T> > buffer_;
 
-    bool isReadLocked_;
-    bool isWriteLocked_;
+  bool isReadLocked_;
+  bool isWriteLocked_;
 
-    std::size_t readIndex_;
-    std::size_t writeIndex_;
+  std::size_t readIndex_;
+  std::size_t writeIndex_;
 
-    bool notEmpty_;
-    bool notFull_;
+  bool notEmpty_;
+  bool notFull_;
 
-    bool is_not_empty() const { return notEmpty_; }
-    bool is_not_full() const { return notFull_; }
+  bool is_not_empty() const { return notEmpty_; }
+  bool is_not_full() const { return notFull_; }
 
-    mutable boost::mutex mutex_;
-    boost::condition notEmptyCond_;
-    boost::condition notFullCond_;
+  mutable boost::mutex mutex_;
+  boost::condition notEmptyCond_;
+  boost::condition notFullCond_;
 
 };
 

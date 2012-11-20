@@ -42,20 +42,20 @@ namespace iris
 
 struct Command
 {
-    //! the data passed with the command
-    std::vector<boost::any> data;
+  //! the data passed with the command
+  std::vector<boost::any> data;
 
-    //! type of data passed with command
-    int typeId;
+  //! type of data passed with command
+  int typeId;
 
-    //! name of this command
-    std::string commandName;
+  //! name of this command
+  std::string commandName;
 
-    //! name of component targeted by this command
-    std::string componentName;
+  //! name of component targeted by this command
+  std::string componentName;
 
-    //! name of engine targeted by this command
-    std::string engineName;
+  //! name of engine targeted by this command
+  std::string engineName;
 };
 
 

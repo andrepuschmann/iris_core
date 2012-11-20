@@ -104,32 +104,32 @@ namespace detail
 template <typename T>
 struct _TypeInfo_Base
 {
-    //! whether we have a numeric type
-    IRIS_STATIC_CONSTANT(bool, isNumeric = boost::is_arithmetic<T>::value);
-    //! is the type a floating point type?
-    IRIS_STATIC_CONSTANT(bool, isFloat = boost::is_float<T>::value);
-    //! plain old integer types
-    IRIS_STATIC_CONSTANT(bool, isInteger = std::numeric_limits<T>::is_integer);
-    //! signed types (include floats and complex)
-    IRIS_STATIC_CONSTANT(bool, isSigned = boost::is_signed<T>::value);
-    //! whether type is a pointer
-    IRIS_STATIC_CONSTANT(bool, isPointer = boost::is_pointer<T>::value);
-    //! whether type is a class
-    IRIS_STATIC_CONSTANT(bool, isClass = boost::is_class<T>::value);
-    //! whether type is a reference
-    IRIS_STATIC_CONSTANT(bool, isReference = boost::is_reference<T>::value);
-    //! whether type is std::complex<sometype>
-    IRIS_STATIC_CONSTANT(bool, isComplex = boost::is_complex<T>::value);
-    //! whether type is a const type
-    IRIS_STATIC_CONSTANT(bool, isConst = boost::is_const<T>::value);
-    //! fundamental types are all plain old data types built into C++
-    IRIS_STATIC_CONSTANT(bool, isFundamental = boost::is_fundamental<T>::value);
-    //! whether type is polymorphic (base class pointer or ref to virtual)
-    IRIS_STATIC_CONSTANT(bool, isPolymorphic = boost::is_polymorphic<T>::value);
-    //! whether type is unsigned
-    IRIS_STATIC_CONSTANT(bool, isUnsigned = !boost::is_signed<T>::value);
-    //! whether type is void
-    IRIS_STATIC_CONSTANT(bool, isVoid = boost::is_void<T>::value);
+  //! whether we have a numeric type
+  IRIS_STATIC_CONSTANT(bool, isNumeric = boost::is_arithmetic<T>::value);
+  //! is the type a floating point type?
+  IRIS_STATIC_CONSTANT(bool, isFloat = boost::is_float<T>::value);
+  //! plain old integer types
+  IRIS_STATIC_CONSTANT(bool, isInteger = std::numeric_limits<T>::is_integer);
+  //! signed types (include floats and complex)
+  IRIS_STATIC_CONSTANT(bool, isSigned = boost::is_signed<T>::value);
+  //! whether type is a pointer
+  IRIS_STATIC_CONSTANT(bool, isPointer = boost::is_pointer<T>::value);
+  //! whether type is a class
+  IRIS_STATIC_CONSTANT(bool, isClass = boost::is_class<T>::value);
+  //! whether type is a reference
+  IRIS_STATIC_CONSTANT(bool, isReference = boost::is_reference<T>::value);
+  //! whether type is std::complex<sometype>
+  IRIS_STATIC_CONSTANT(bool, isComplex = boost::is_complex<T>::value);
+  //! whether type is a const type
+  IRIS_STATIC_CONSTANT(bool, isConst = boost::is_const<T>::value);
+  //! fundamental types are all plain old data types built into C++
+  IRIS_STATIC_CONSTANT(bool, isFundamental = boost::is_fundamental<T>::value);
+  //! whether type is polymorphic (base class pointer or ref to virtual)
+  IRIS_STATIC_CONSTANT(bool, isPolymorphic = boost::is_polymorphic<T>::value);
+  //! whether type is unsigned
+  IRIS_STATIC_CONSTANT(bool, isUnsigned = !boost::is_signed<T>::value);
+  //! whether type is void
+  IRIS_STATIC_CONSTANT(bool, isVoid = boost::is_void<T>::value);
 
 };
 
@@ -142,12 +142,12 @@ struct _TypeInfo_Base
 template <typename T>
 struct TypeInfo : public detail::_TypeInfo_Base<T>
 {
-    //! whether the type is supported by IRIS for data flow
-    IRIS_STATIC_CONSTANT(bool, isIrisSupported = false);
-    //! identifier number for supported IRIS data flow types for comparisons
-    IRIS_STATIC_CONSTANT(int, identifier = -1);
-    //! name of the data type (only for IRIS supported data flow types)
-    static std::string name() { return "unknown"; }
+  //! whether the type is supported by IRIS for data flow
+  IRIS_STATIC_CONSTANT(bool, isIrisSupported = false);
+  //! identifier number for supported IRIS data flow types for comparisons
+  IRIS_STATIC_CONSTANT(int, identifier = -1);
+  //! name of the data type (only for IRIS supported data flow types)
+  static std::string name() { return "unknown"; }
 };
 
 
@@ -157,15 +157,15 @@ struct TypeInfo : public detail::_TypeInfo_Base<T>
  * the name of the type.
  */
 #define MAKE_DATA_TYPE(dattype, identifier_) \
-    template <> \
-    struct TypeInfo<dattype> : public detail::_TypeInfo_Base<dattype> { \
-        IRIS_STATIC_CONSTANT(bool, isIrisSupported = true ); \
-        IRIS_STATIC_CONSTANT(int, identifier = identifier_ ); \
-        static std::string name() { return BOOST_PP_STRINGIZE(dattype); } \
-    }; \
-    namespace detail { \
-    typedef boost::mpl::push_back<data_types_tmp ## identifier_, dattype>::type BOOST_PP_CAT(data_types_tmp, BOOST_PP_INC(identifier_)); \
-    }
+  template <> \
+  struct TypeInfo<dattype> : public detail::_TypeInfo_Base<dattype> { \
+    IRIS_STATIC_CONSTANT(bool, isIrisSupported = true ); \
+    IRIS_STATIC_CONSTANT(int, identifier = identifier_ ); \
+    static std::string name() { return BOOST_PP_STRINGIZE(dattype); } \
+  }; \
+  namespace detail { \
+  typedef boost::mpl::push_back<data_types_tmp ## identifier_, dattype>::type BOOST_PP_CAT(data_types_tmp, BOOST_PP_INC(identifier_)); \
+  }
 
 namespace detail {
 //! initial empty vector of data types for macro
@@ -199,7 +199,7 @@ typedef detail::data_types_tmp14 IrisDataTypes;
 //! Return the number of iris data types supported
 static inline int getNumIrisDataTypes()
 {
-    return boost::mpl::size<IrisDataTypes>::value;
+  return boost::mpl::size<IrisDataTypes>::value;
 }
 
 } // end of iris namespace

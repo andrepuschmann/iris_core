@@ -39,27 +39,27 @@
 
 namespace iris{
 
-    //Forward declaration 
-    class DataBufferBase;
+  //Forward declaration 
+  class DataBufferBase;
 
-    //! A link between two components
-    struct LinkDescription
+  //! A link between two components
+  struct LinkDescription
+  {
+    boost::shared_ptr< DataBufferBase > theBuffer;
+    std::string sourceEngine;
+    std::string sinkEngine;
+    std::string sourceComponent;
+    std::string sinkComponent;
+    std::string sourcePort;
+    std::string sinkPort;
+
+    bool operator==(const LinkDescription& link) const
     {
-        boost::shared_ptr< DataBufferBase > theBuffer;
-        std::string sourceEngine;
-        std::string sinkEngine;
-        std::string sourceComponent;
-        std::string sinkComponent;
-        std::string sourcePort;
-        std::string sinkPort;
-
-        bool operator==(const LinkDescription& link) const
-        {
-            return (sourceEngine == link.sourceEngine && sinkEngine == link.sinkEngine &&
-                sourceComponent == link.sourceComponent && sinkComponent == link.sinkComponent &&
-                sourcePort == link.sourcePort && sinkPort == link.sinkPort);   
-        }
-    };
+      return (sourceEngine == link.sourceEngine && sinkEngine == link.sinkEngine &&
+        sourceComponent == link.sourceComponent && sinkComponent == link.sinkComponent &&
+        sourcePort == link.sourcePort && sinkPort == link.sinkPort);   
+    }
+  };
 
 } /* namespace iris */
 

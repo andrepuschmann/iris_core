@@ -41,12 +41,12 @@ namespace iris
 
 /** The EngineCallbackInterface interface is provided to all Engines by their owner
 *
-*    This interface allows an engine to pass events to their owner
+*  This interface allows an engine to pass events to their owner
 */
 class EngineCallbackInterface{
 public:
-    virtual ~EngineCallbackInterface(){};
-    virtual void activateEvent(Event &e) = 0;
+  virtual ~EngineCallbackInterface(){};
+  virtual void activateEvent(Event &e) = 0;
 };
 
 } // namespace iris

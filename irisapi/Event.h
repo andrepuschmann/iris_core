@@ -42,17 +42,17 @@ namespace iris
 
 struct Event
 {
-    //! the data passed with the event
-    std::vector<boost::any> data;
+  //! the data passed with the event
+  std::vector<boost::any> data;
 
-    //! type of data passed with event
-    int typeId;
+  //! type of data passed with event
+  int typeId;
 
-    //! name of the event
-    std::string eventName;
+  //! name of the event
+  std::string eventName;
 
-    //! name of the component which triggered the event
-    std::string componentName;
+  //! name of the component which triggered the event
+  std::string componentName;
 };
 
 

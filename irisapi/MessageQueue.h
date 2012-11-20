@@ -45,48 +45,48 @@ template<typename T>
 class MessageQueue
 {
 private:
-    std::queue<T> theQueue;
-    mutable boost::mutex theMutex;
-    boost::condition_variable theConditionVariable;
+  std::queue<T> theQueue;
+  mutable boost::mutex theMutex;
+  boost::condition_variable theConditionVariable;
 public:
-    void push(T const& data)
-    {
-        boost::mutex::scoped_lock lock(theMutex);
-        theQueue.push(data);
-        lock.unlock();
-        theConditionVariable.notify_one();
-    }
+  void push(T const& data)
+  {
+    boost::mutex::scoped_lock lock(theMutex);
+    theQueue.push(data);
+    lock.unlock();
+    theConditionVariable.notify_one();
+  }
 
-    bool empty() const
-    {
-        boost::mutex::scoped_lock lock(theMutex);
-        return theQueue.empty();
-    }
+  bool empty() const
+  {
+    boost::mutex::scoped_lock lock(theMutex);
+    return theQueue.empty();
+  }
 
-    bool tryPop(T& poppedValue)
+  bool tryPop(T& poppedValue)
+  {
+    boost::mutex::scoped_lock lock(theMutex);
+    if(theQueue.empty())
     {
-        boost::mutex::scoped_lock lock(theMutex);
-        if(theQueue.empty())
-        {
-            return false;
-        }
-        
-        poppedValue=theQueue.front();
-        theQueue.pop();
-        return true;
+      return false;
     }
+    
+    poppedValue=theQueue.front();
+    theQueue.pop();
+    return true;
+  }
 
-    void waitAndPop(T& poppedValue)
+  void waitAndPop(T& poppedValue)
+  {
+    boost::mutex::scoped_lock lock(theMutex);
+    while(theQueue.empty())
     {
-        boost::mutex::scoped_lock lock(theMutex);
-        while(theQueue.empty())
-        {
-            theConditionVariable.wait(lock);
-        }
-        
-        poppedValue=theQueue.front();
-        theQueue.pop();
+      theConditionVariable.wait(lock);
     }
+    
+    poppedValue=theQueue.front();
+    theQueue.pop();
+  }
 
 };
 

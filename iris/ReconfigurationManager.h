@@ -50,20 +50,20 @@ namespace iris
 class ReconfigurationManager
 {
   private:
-    //! ctor - all static functions so prevent creation of a ReconfigurationManager object
-    ReconfigurationManager();
+  //! ctor - all static functions so prevent creation of a ReconfigurationManager object
+  ReconfigurationManager();
 
-    static void checkParameters(const RadioRepresentation& first, const RadioRepresentation& second, ReconfigSet& reconfigs);
-    static void checkParameters(EngineDescription& first, EngineDescription& second, ReconfigSet& reconfigs);
-    static void checkParameters(ComponentDescription& first, ComponentDescription& second, ReconfigSet& reconfigs);
+  static void checkParameters(const RadioRepresentation& first, const RadioRepresentation& second, ReconfigSet& reconfigs);
+  static void checkParameters(EngineDescription& first, EngineDescription& second, ReconfigSet& reconfigs);
+  static void checkParameters(ComponentDescription& first, ComponentDescription& second, ReconfigSet& reconfigs);
   public:
 
-    /** Compare two radio representations and generate a set of reconfigurations
-    *
-    *   \param  currentRadio    The currently loaded radio configuration
-    *   \param  newRadio        The new radio configuration
-    */
-    static ReconfigSet compareRadios(const RadioRepresentation& currentRadio, const RadioRepresentation& newRadio);
+  /** Compare two radio representations and generate a set of reconfigurations
+  *
+  *   \param  currentRadio  The currently loaded radio configuration
+  *   \param  newRadio    The new radio configuration
+  */
+  static ReconfigSet compareRadios(const RadioRepresentation& currentRadio, const RadioRepresentation& newRadio);
 };
 
 } // namespace iris

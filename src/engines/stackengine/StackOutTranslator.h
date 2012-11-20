@@ -50,50 +50,50 @@ namespace iris
 {
 
 /** The StackOutTranslator class translates between the StackDataBuffers of the StackEngine
-*    and the DataBuffers of the Iris system
+*  and the DataBuffers of the Iris system
 *
 */
 class StackOutTranslator
 {
 private:
 
-    WriteBuffer<uint8_t>* outputBuffer_;
+  WriteBuffer<uint8_t>* outputBuffer_;
 
-    //! The StackDataBuffer for this Translator
-    StackDataBuffer buffer_;
+  //! The StackDataBuffer for this Translator
+  StackDataBuffer buffer_;
 
-    //! Handle for this StackComponent's thread of execution
-    boost::scoped_ptr< boost::thread > thread_;
+  //! Handle for this StackComponent's thread of execution
+  boost::scoped_ptr< boost::thread > thread_;
 
-    //! The main thread loop for this translator
-    virtual void threadLoop();
+  //! The main thread loop for this translator
+  virtual void threadLoop();
 
 public:
-    //! Constructor
-    StackOutTranslator();
+  //! Constructor
+  StackOutTranslator();
 
-    //! Destructor
-    virtual ~StackOutTranslator();
+  //! Destructor
+  virtual ~StackOutTranslator();
 
-    /** Set the output buffer for this translator
-    *
-    *   \param out   WriteBufferBase pointer
-    */
-    virtual void setOutputBuffer(WriteBufferBase* out);
+  /** Set the output buffer for this translator
+  *
+  *   \param out   WriteBufferBase pointer
+  */
+  virtual void setOutputBuffer(WriteBufferBase* out);
 
-    /** Get the buffer for this component
-    *
-    *   \return        Pointer to this component's buffer
-    */
-    virtual StackDataBuffer* getBuffer();
+  /** Get the buffer for this component
+  *
+  *   \return    Pointer to this component's buffer
+  */
+  virtual StackDataBuffer* getBuffer();
 
-    //! Create and start the thread for this translator
-    virtual void startTranslator();
+  //! Create and start the thread for this translator
+  virtual void startTranslator();
 
-    //! Stop the thread for this translator
-    virtual void stopTranslator();
+  //! Stop the thread for this translator
+  virtual void stopTranslator();
 
-    std::string getName(){return "StackOutTranslator";};
+  std::string getName(){return "StackOutTranslator";};
 };
 
 } /* namespace iris */

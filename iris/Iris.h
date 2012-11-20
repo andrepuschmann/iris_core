@@ -66,7 +66,7 @@ IRIS_DLL bool IRISSetLogLevel(std::string level);
 /*!
 *   \brief Load the radio
 *
-*   \param  radioConfig     The radio configuration to load
+*   \param  radioConfig   The radio configuration to load
 */
 IRIS_DLL bool IRISLoadRadio(std::string radioConfig);
 

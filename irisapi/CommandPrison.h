@@ -48,76 +48,76 @@ namespace iris
 class Cage
 {
 private:
-    mutable boost::mutex cageMutex;
-    boost::condition_variable theConditionVariable;
-    Command command;
-    bool locked;
+  mutable boost::mutex cageMutex;
+  boost::condition_variable theConditionVariable;
+  Command command;
+  bool locked;
 public:
-    Cage()
-    :locked(false)
-    {}
+  Cage()
+  :locked(false)
+  {}
 
-    Command trap(boost::mutex::scoped_lock &l)
+  Command trap(boost::mutex::scoped_lock &l)
+  {
+    boost::mutex::scoped_lock lock(cageMutex);
+    locked = true;
+    l.unlock();
+    while(locked)
     {
-        boost::mutex::scoped_lock lock(cageMutex);
-        locked = true;
-        l.unlock();
-        while(locked)
-        {
-            theConditionVariable.wait(lock);
-        }
-        return command;
+      theConditionVariable.wait(lock);
     }
+    return command;
+  }
 
-    void release(Command c)
-    {
-        boost::mutex::scoped_lock lock(cageMutex);
-        locked = false;
-        command = c;
-        lock.unlock();
-        theConditionVariable.notify_one();
-    }
+  void release(Command c)
+  {
+    boost::mutex::scoped_lock lock(cageMutex);
+    locked = false;
+    command = c;
+    lock.unlock();
+    theConditionVariable.notify_one();
+  }
 
 };
 
 class CommandPrison
 {
 private:
-    typedef std::multimap<std::string, boost::shared_ptr< Cage > > CageMM;
-    typedef std::pair<std::string, boost::shared_ptr< Cage > > CagePair;
-    mutable boost::mutex theMutex;
-    CageMM theCages;
+  typedef std::multimap<std::string, boost::shared_ptr< Cage > > CageMM;
+  typedef std::pair<std::string, boost::shared_ptr< Cage > > CagePair;
+  mutable boost::mutex theMutex;
+  CageMM theCages;
 
 public:
-    CommandPrison()
-    {}
+  CommandPrison()
+  {}
 
-    Command trap(std::string c)
-    {
-        boost::mutex::scoped_lock lock(theMutex);
-        boost::shared_ptr< Cage > cage(new Cage);
-        theCages.insert(CagePair(c,cage));
-        return cage->trap(lock);
-    }
+  Command trap(std::string c)
+  {
+    boost::mutex::scoped_lock lock(theMutex);
+    boost::shared_ptr< Cage > cage(new Cage);
+    theCages.insert(CagePair(c,cage));
+    return cage->trap(lock);
+  }
 
-    void release(Command c)
+  void release(Command c)
+  {
+    boost::mutex::scoped_lock lock(theMutex);
+    std::pair<CageMM::iterator, CageMM::iterator> found;
+    CageMM::iterator it;
+    found = theCages.equal_range(c.commandName);
+    for (it=found.first; it!=found.second; ++it)
     {
-        boost::mutex::scoped_lock lock(theMutex);
-        std::pair<CageMM::iterator, CageMM::iterator> found;
-        CageMM::iterator it;
-        found = theCages.equal_range(c.commandName);
-        for (it=found.first; it!=found.second; ++it)
-        {
-            it->second->release(c);
-        }
-        theCages.erase(found.first, found.second);
+      it->second->release(c);
     }
+    theCages.erase(found.first, found.second);
+  }
 
-    int size()
-    {
-        boost::mutex::scoped_lock lock(theMutex);
-        return theCages.size();
-    }
+  int size()
+  {
+    boost::mutex::scoped_lock lock(theMutex);
+    return theCages.size();
+  }
 
 };
 

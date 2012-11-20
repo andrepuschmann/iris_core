@@ -60,18 +60,18 @@
  *  \endcode
  */
 #define IRIS_COMPONENT_EXPORTS(ComponentType, ComponentClass) \
-    extern "C" EXPORT_DECLSPEC const char* GetApiVersion() \
-    { \
-        return Version::getApiVersion(); \
-    } \
-    extern "C" EXPORT_DECLSPEC ComponentType* CreateComponent(string name) \
-    { \
-        return new ComponentClass(name); \
-    } \
-    extern "C" EXPORT_DECLSPEC void ReleaseComponent(ComponentType* comp) \
-    { \
-        delete comp; \
-    }
+  extern "C" EXPORT_DECLSPEC const char* GetApiVersion() \
+  { \
+    return Version::getApiVersion(); \
+  } \
+  extern "C" EXPORT_DECLSPEC ComponentType* CreateComponent(string name) \
+  { \
+    return new ComponentClass(name); \
+  } \
+  extern "C" EXPORT_DECLSPEC void ReleaseComponent(ComponentType* comp) \
+  { \
+    delete comp; \
+  }
 
 namespace iris
 {
@@ -84,7 +84,7 @@ namespace iris
  */
 
 class ComponentBase : public ComponentParameters, public ComponentEvents, 
-    public ComponentInformation, public ComponentPorts
+  public ComponentInformation, public ComponentPorts
 {
 private:
 
@@ -92,73 +92,73 @@ protected:
 
 public:
 
-    virtual ~ComponentBase() {};
+  virtual ~ComponentBase() {};
 
-    /*!
-     * \brief Construct this component
-     *
-     * \param name          component name
-     * \param type          component type
-     * \param description   brief description of this component
-     * \param author        component author
-     * \param version       component version
-     */
+  /*!
+   * \brief Construct this component
+   *
+   * \param name      component name
+   * \param type      component type
+   * \param description   brief description of this component
+   * \param author    component author
+   * \param version     component version
+   */
 
-    ComponentBase(std::string name, std::string type, std::string description, std::string author, std::string version ):
-        ComponentInformation(name, type, description, author, version)
-    {};
+  ComponentBase(std::string name, std::string type, std::string description, std::string author, std::string version ):
+    ComponentInformation(name, type, description, author, version)
+  {};
 
-    /** Set the logging policy for this component
-    *
-    *   \param policy   The logging policy to set
-    */
-    virtual void setLoggingPolicy(LoggingPolicy* policy) const
-    {
-        Logger::getPolicy() = policy;
-    };
+  /** Set the logging policy for this component
+  *
+  *   \param policy   The logging policy to set
+  */
+  virtual void setLoggingPolicy(LoggingPolicy* policy) const
+  {
+    Logger::getPolicy() = policy;
+  };
 
-    /** Assign all parameters and events from another class
-     *  to this one
-     * \param other The instance to copy the data from
-     * \return A reference to *this.
-     */
-    ComponentBase& assign(const ComponentBase& other)
-        throw (ParameterNotFoundException, InvalidDataTypeException)
-    {
-        assignParameters(other);
-        assignEvents(other);
+  /** Assign all parameters and events from another class
+   *  to this one
+   * \param other The instance to copy the data from
+   * \return A reference to *this.
+   */
+  ComponentBase& assign(const ComponentBase& other)
+    throw (ParameterNotFoundException, InvalidDataTypeException)
+  {
+    assignParameters(other);
+    assignEvents(other);
 
-        return *this;
-    }
+    return *this;
+  }
 
-    //! Activate an event
-    template<typename T>
-    inline void activateEvent(std::string name, T &data) 
-        throw (EventNotFoundException, InvalidDataTypeException);
+  //! Activate an event
+  template<typename T>
+  inline void activateEvent(std::string name, T &data) 
+    throw (EventNotFoundException, InvalidDataTypeException);
 
-    //! Activate an event
-    template<typename T>
-    inline void activateEvent(std::string name, std::vector<T> &data) 
-        throw (EventNotFoundException, InvalidDataTypeException);
+  //! Activate an event
+  template<typename T>
+  inline void activateEvent(std::string name, std::vector<T> &data) 
+    throw (EventNotFoundException, InvalidDataTypeException);
 
 };
 
 // Get the name of this component and pass everything on to ComponentEvents
 template<typename T>
 inline void ComponentBase::activateEvent(std::string name, T &data) 
-    throw (EventNotFoundException, InvalidDataTypeException)
+  throw (EventNotFoundException, InvalidDataTypeException)
 {
-    boost::to_lower(name);
-    activateEventInternal(getName(), name, data);
+  boost::to_lower(name);
+  activateEventInternal(getName(), name, data);
 }
 
 // Get the name of this component and pass everything on to ComponentEvents
 template<typename T>
 inline void ComponentBase::activateEvent(std::string name, std::vector<T> &data)
-    throw (EventNotFoundException, InvalidDataTypeException)
+  throw (EventNotFoundException, InvalidDataTypeException)
 {
-    boost::to_lower(name);
-    activateEventInternal(getName(), name, data);
+  boost::to_lower(name);
+  activateEventInternal(getName(), name, data);
 }
 
 } /* namespace iris */

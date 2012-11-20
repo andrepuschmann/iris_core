@@ -46,27 +46,27 @@ namespace iris
  */
 struct Port
 {
-    //! name of port
-    std::string portName;
+  //! name of port
+  std::string portName;
 
-    //! types supported for this port
-    std::vector<int> supportedTypes;
+  //! types supported for this port
+  std::vector<int> supportedTypes;
 
-    //! default constructor
-    Port() :
-        portName("")
-    {
-    }
+  //! default constructor
+  Port() :
+    portName("")
+  {
+  }
 
-    /** Constructs a new Port object.
-     *
-     * \param name The name assigned to this port
-     * \param types The types supported for this port
-     */
-        Port(std::string name, const std::vector<int>& types) :
-        portName(name), supportedTypes(types)
-    {
-    }
+  /** Constructs a new Port object.
+   *
+   * \param name The name assigned to this port
+   * \param types The types supported for this port
+   */
+    Port(std::string name, const std::vector<int>& types) :
+    portName(name), supportedTypes(types)
+  {
+  }
 
 };
 
@@ -80,54 +80,54 @@ struct Port
 class ComponentPorts
 {
 private:
-    //! The input ports registered for this component
-    std::vector<Port> inputPorts;
+  //! The input ports registered for this component
+  std::vector<Port> inputPorts;
 
-    //! The output ports registered for this component
-    std::vector<Port> outputPorts;
+  //! The output ports registered for this component
+  std::vector<Port> outputPorts;
 
 protected:
-    /** Registers an input port of a child class.
-     *
-     * \param name Name of the port
-     * \param types Types supported by the port
-     */
-    void registerInputPort(std::string name, const std::vector<int>& types)
-    {
-        inputPorts.push_back(Port(name, types));
-    };
+  /** Registers an input port of a child class.
+   *
+   * \param name Name of the port
+   * \param types Types supported by the port
+   */
+  void registerInputPort(std::string name, const std::vector<int>& types)
+  {
+    inputPorts.push_back(Port(name, types));
+  };
 
-    /** Registers an output port of a child class.
-     *
-     * \param name Name of the port
-     * \param types Types supported by the port
-     */
-    void registerOutputPort(std::string name, std::vector<int> types)
-    {
-        outputPorts.push_back(Port(name, types));
-    };
+  /** Registers an output port of a child class.
+   *
+   * \param name Name of the port
+   * \param types Types supported by the port
+   */
+  void registerOutputPort(std::string name, std::vector<int> types)
+  {
+    outputPorts.push_back(Port(name, types));
+  };
 
 
 public:
-    //! ctor
-    ComponentPorts()
-    {};
+  //! ctor
+  ComponentPorts()
+  {};
 
-    /** Get the input ports of this component.
-     *
-     */
-    std::vector<Port> getInputPorts() const
-    {
-        return inputPorts;
-    };
+  /** Get the input ports of this component.
+   *
+   */
+  std::vector<Port> getInputPorts() const
+  {
+    return inputPorts;
+  };
 
-    /** Get the output ports of this component.
-     *
-     */
-    std::vector<Port> getOutputPorts() const
-    {
-        return outputPorts;
-    };
+  /** Get the output ports of this component.
+   *
+   */
+  std::vector<Port> getOutputPorts() const
+  {
+    return outputPorts;
+  };
 
 };
 

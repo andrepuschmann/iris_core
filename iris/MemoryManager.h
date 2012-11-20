@@ -58,38 +58,38 @@ typedef intr::list_base_hook< intr::tag<tag2>, intr::link_mode<intr::normal_link
 template <unsigned Alignment = 128>
 struct MemoryNode : public basehook1, public basehook2
 {
-    void *memory;
-    std::size_t size;
+  void *memory;
+  std::size_t size;
 
-    //! Constructor
-    MemoryNode(std::size_t size) : memory(NULL), size(size)
+  //! Constructor
+  MemoryNode(std::size_t size) : memory(NULL), size(size)
+  {
+#ifdef WIN32
+    memory = _aligned_malloc(size, Alignment);
+    if (memory == NULL)
+#else
+    if (posix_memalign(&memory, Alignment, size) != 0)
+#endif
     {
-#ifdef WIN32
-        memory = _aligned_malloc(size, Alignment);
-        if (memory == NULL)
-#else
-        if (posix_memalign(&memory, Alignment, size) != 0)
-#endif
-        {
-            size = 0;
-        }
+      size = 0;
     }
+  }
 
-    //! Copy constructor
-    MemoryNode(const MemoryNode<Alignment>& rhs) : memory(rhs.memory), size(rhs.size) {}
+  //! Copy constructor
+  MemoryNode(const MemoryNode<Alignment>& rhs) : memory(rhs.memory), size(rhs.size) {}
 
-    //! Destructor
-    ~MemoryNode() {
+  //! Destructor
+  ~MemoryNode() {
 #ifdef WIN32
-        if (size != 0) _aligned_free(memory);
+    if (size != 0) _aligned_free(memory);
 #else
-        if (size != 0) free(memory);
+    if (size != 0) free(memory);
 #endif
-    }
+  }
 
 private:
-    // No default constructor
-    MemoryNode() {};
+  // No default constructor
+  MemoryNode() {};
 
 };
 
@@ -106,61 +106,61 @@ private:
 class MemoryManager
 {
 private:
-    //! The size used for memory alignment
-    const static int ALIGNMENT_SIZE = 128;
+  //! The size used for memory alignment
+  const static int ALIGNMENT_SIZE = 128;
 
-    //! A memory node
-    typedef MemoryNode<ALIGNMENT_SIZE> memnode;
+  //! A memory node
+  typedef MemoryNode<ALIGNMENT_SIZE> memnode;
 
-    //! Type for list of allocated nodes
-    typedef intr::list< memnode, intr::base_hook< basehook1 > > allocnodelist;
-    //! Type for list of free nodes
-    typedef intr::list< memnode, intr::base_hook< basehook2 > > availnodelist;
+  //! Type for list of allocated nodes
+  typedef intr::list< memnode, intr::base_hook< basehook1 > > allocnodelist;
+  //! Type for list of free nodes
+  typedef intr::list< memnode, intr::base_hook< basehook2 > > availnodelist;
 
-    //! List of allocated nodes
-    allocnodelist allocated;
-    //! List of free nodes
-    availnodelist available;
+  //! List of allocated nodes
+  allocnodelist allocated;
+  //! List of free nodes
+  availnodelist available;
 
-    //! Iterator types
-    typedef allocnodelist::iterator alloc_it;
-    typedef availnodelist::iterator avail_it;
+  //! Iterator types
+  typedef allocnodelist::iterator alloc_it;
+  typedef availnodelist::iterator avail_it;
 
-    //! To protect shared access to the MemoryManager
-    boost::mutex memoryMutex;
+  //! To protect shared access to the MemoryManager
+  boost::mutex memoryMutex;
 
-    //! Counts total memory used
-    std::size_t totalMemoryRequested;
+  //! Counts total memory used
+  std::size_t totalMemoryRequested;
 
 public:
-    //! Ctor
-    MemoryManager();
-    //! Dtor
-    ~MemoryManager();
+  //! Ctor
+  MemoryManager();
+  //! Dtor
+  ~MemoryManager();
 
-    //! Locks size bytes of memory and returns a pointer to it
-    void* allocateBlock(std::size_t size) throw(OutOfMemoryException);
+  //! Locks size bytes of memory and returns a pointer to it
+  void* allocateBlock(std::size_t size) throw(OutOfMemoryException);
 
-    //! Releases the specified memory
-    void releaseBlock(void* mem);
+  //! Releases the specified memory
+  void releaseBlock(void* mem);
 
-    //! Returns the total amount of memory being used by the manager in bytes
-    std::size_t getTotalMemoryUsed();
+  //! Returns the total amount of memory being used by the manager in bytes
+  std::size_t getTotalMemoryUsed();
 
-    //! Returns the total amount of locked memory
-    std::size_t getTotalMemoryLocked();
+  //! Returns the total amount of locked memory
+  std::size_t getTotalMemoryLocked();
 
-    //! Returns the total amount of memory that has been requested
-    std::size_t getTotalMemoryRequested();
+  //! Returns the total amount of memory that has been requested
+  std::size_t getTotalMemoryRequested();
 
-    //! Returns the size of the specified memory location
-    std::size_t getBlockSize(void* mem);
+  //! Returns the size of the specified memory location
+  std::size_t getBlockSize(void* mem);
 
-    //! Resets the memory manager by unlocking and freeing all memory
-    void reset();
+  //! Resets the memory manager by unlocking and freeing all memory
+  void reset();
 
-    //! Utility function for debugging
-    void printBlockInfo();
+  //! Utility function for debugging
+  void printBlockInfo();
 };
 
 } // namespace iris

@@ -62,69 +62,69 @@ class StackComponentManager;
 class StackEngine:public EngineInterface, public ComponentCallbackInterface
 {
 private:
-    //! The graph representing the components within the engine and the links between them
-    RadioGraph engineGraph_;
+  //! The graph representing the components within the engine and the links between them
+  RadioGraph engineGraph_;
 
-    //! The StackComponents running within this engine
-    std::vector< boost::shared_ptr<StackComponent> > components_;
+  //! The StackComponents running within this engine
+  std::vector< boost::shared_ptr<StackComponent> > components_;
 
-    //! The StackInTranslators running within this engine
-    std::vector< boost::shared_ptr<StackInTranslator> > inTranslators_;
+  //! The StackInTranslators running within this engine
+  std::vector< boost::shared_ptr<StackInTranslator> > inTranslators_;
 
-    //! The StackOutTranslators running within this engine
-    std::vector< boost::shared_ptr<StackOutTranslator> > outTranslators_;
+  //! The StackOutTranslators running within this engine
+  std::vector< boost::shared_ptr<StackOutTranslator> > outTranslators_;
 
-    //! The DataBuffers for the external links into and out of this engine
-    std::vector< boost::shared_ptr< DataBufferBase > > engInputBuffers_;
-    std::vector< boost::shared_ptr< DataBufferBase > > engOutputBuffers_;
+  //! The DataBuffers for the external links into and out of this engine
+  std::vector< boost::shared_ptr< DataBufferBase > > engInputBuffers_;
+  std::vector< boost::shared_ptr< DataBufferBase > > engOutputBuffers_;
 
-    //! Name of this engine
-    std::string engineName_;
+  //! Name of this engine
+  std::string engineName_;
 
-    //! The component manager for this engine
-    boost::scoped_ptr< StackComponentManager > compManager_;
+  //! The component manager for this engine
+  boost::scoped_ptr< StackComponentManager > compManager_;
 
-    //! The interface to the owner of this engine
-    EngineCallbackInterface *engineManager_;
+  //! The interface to the owner of this engine
+  EngineCallbackInterface *engineManager_;
 
-    // Helper functions
-    void createExternalLink(LinkDescription& l);
-    bool sameLink(LinkDescription first, LinkDescription second) const;
-    boost::shared_ptr< StackComponent > findComponent(std::string name);
+  // Helper functions
+  void createExternalLink(LinkDescription& l);
+  bool sameLink(LinkDescription first, LinkDescription second) const;
+  boost::shared_ptr< StackComponent > findComponent(std::string name);
 
-    //! Check that a given graph complies with the policies of this engine
-    void checkGraph(RadioGraph& graph);
-    //! Build a given graph
-    void buildEngineGraph(EngineDescription& eng)
-        throw (IrisException);
+  //! Check that a given graph complies with the policies of this engine
+  void checkGraph(RadioGraph& graph);
+  //! Build a given graph
+  void buildEngineGraph(EngineDescription& eng)
+    throw (IrisException);
 
-    //! Reconfigure a parameter within a component running in the engine
-    void reconfigureParameter(ParametricReconfig reconfig);
-    //! Reconfigure the structure of this engine
-    void reconfigureStructure();
+  //! Reconfigure a parameter within a component running in the engine
+  void reconfigureParameter(ParametricReconfig reconfig);
+  //! Reconfigure the structure of this engine
+  void reconfigureStructure();
 public:
-    //! ctor
-    StackEngine(std::string name, std::string repository)
-        throw (IrisException);
-    //! dtor
-    ~StackEngine();
+  //! ctor
+  StackEngine(std::string name, std::string repository)
+    throw (IrisException);
+  //! dtor
+  ~StackEngine();
 
-    void setEngineManager(EngineCallbackInterface *e);
+  void setEngineManager(EngineCallbackInterface *e);
 
-    /** Load the engine
-    *   \param eng          Description of the engine
-    *   \param inputLinks   The input DataBuffers for this engine
-    *   \returns The output DataBuffers for this engine
-    */
-    std::vector< boost::shared_ptr< DataBufferBase > > loadEngine(EngineDescription eng, std::vector< boost::shared_ptr< DataBufferBase > > inputLinks)
-        throw (IrisException);
-    void unloadEngine();
-    void startEngine();
-    void stopEngine();
-    std::string getName() const;
-    void addReconfiguration(ReconfigSet reconfigs);
-    void postCommand(Command command);
-    void activateEvent(Event &e);
+  /** Load the engine
+  *   \param eng      Description of the engine
+  *   \param inputLinks   The input DataBuffers for this engine
+  *   \returns The output DataBuffers for this engine
+  */
+  std::vector< boost::shared_ptr< DataBufferBase > > loadEngine(EngineDescription eng, std::vector< boost::shared_ptr< DataBufferBase > > inputLinks)
+    throw (IrisException);
+  void unloadEngine();
+  void startEngine();
+  void stopEngine();
+  std::string getName() const;
+  void addReconfiguration(ReconfigSet reconfigs);
+  void postCommand(Command command);
+  void activateEvent(Event &e);
 
 };
 

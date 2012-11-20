@@ -55,12 +55,12 @@ namespace iris
 template <typename T>
 struct ParameterTypeInfo
 {
-    //! whether the type is allowed as a Component parameter
-    IRIS_STATIC_CONSTANT(bool, isAllowed = false);
-    //! The identifier number for this parameter type (can be used for comparisons)
-    IRIS_STATIC_CONSTANT(int, identifier = -1);
-    //! The name of the type
-    static std::string name() { return "unknown"; }
+  //! whether the type is allowed as a Component parameter
+  IRIS_STATIC_CONSTANT(bool, isAllowed = false);
+  //! The identifier number for this parameter type (can be used for comparisons)
+  IRIS_STATIC_CONSTANT(int, identifier = -1);
+  //! The name of the type
+  static std::string name() { return "unknown"; }
 };
 
 /** Macro to add a new parameter type to the list of allowed ones. Calls
@@ -75,13 +75,13 @@ struct ParameterTypeInfo
 template <> \
 struct ParameterTypeInfo<partype> \
 { \
-    IRIS_STATIC_CONSTANT(bool, isAllowed = true); \
-    IRIS_STATIC_CONSTANT(int, identifier = identifier_); \
-    static const std::string name() { return BOOST_PP_STRINGIZE(partype); } \
+  IRIS_STATIC_CONSTANT(bool, isAllowed = true); \
+  IRIS_STATIC_CONSTANT(int, identifier = identifier_); \
+  static const std::string name() { return BOOST_PP_STRINGIZE(partype); } \
 }; \
 namespace detail { \
 typedef boost::mpl::push_back<parameter_types_tmp ## identifier_,partype>::type \
-    BOOST_PP_CAT(parameter_types_tmp , BOOST_PP_INC(identifier_) ); \
+  BOOST_PP_CAT(parameter_types_tmp , BOOST_PP_INC(identifier_) ); \
 }
 
 namespace detail {

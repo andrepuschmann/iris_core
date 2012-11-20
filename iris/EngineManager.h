@@ -51,10 +51,10 @@ namespace iris
 //! A container for component repository strings
 struct Repositories
 {
-    std::string stackRepository;
-    std::string pnRepository;
-    std::string sdfRepository;
-    std::string contRepository;
+  std::string stackRepository;
+  std::string pnRepository;
+  std::string sdfRepository;
+  std::string contRepository;
 };
 
 /*!
@@ -62,59 +62,59 @@ struct Repositories
  *  architecture.
  */
 class EngineManager:
-    public EngineCallbackInterface,
-    public ControllerManagerCallbackInterface
+  public EngineCallbackInterface,
+  public ControllerManagerCallbackInterface
 {
 private:
-    //! The ControllerManager for this radio
-    ControllerManager controllerManager_;
+  //! The ControllerManager for this radio
+  ControllerManager controllerManager_;
 
-    //! The engines of the current radio
-    boost::ptr_vector<EngineInterface> engines_;
+  //! The engines of the current radio
+  boost::ptr_vector<EngineInterface> engines_;
 
-    //! The paths to the radio component repositories
-    Repositories reps_;
+  //! The paths to the radio component repositories
+  Repositories reps_;
 
-    //! A graph representing each of the radio engines and the links between them
-    EngineGraph engineGraph_;
+  //! A graph representing each of the radio engines and the links between them
+  EngineGraph engineGraph_;
 
-    //! The current radio representation - updated with any reconfigurations which occur
-    RadioRepresentation radioRep_;
+  //! The current radio representation - updated with any reconfigurations which occur
+  RadioRepresentation radioRep_;
 
-    /*!
-    *   \brief Create an engine
-    *
-    *   \param  d    An EngineDescription containing the details of the engine
-    *                to be created
-    *
-    *   \returns A pointer to the engine which is created
-    */
-    EngineInterface* createEngine(EngineDescription& d)
-        throw (ResourceNotFoundException);
+  /*!
+  *   \brief Create an engine
+  *
+  *   \param  d  An EngineDescription containing the details of the engine
+  *        to be created
+  *
+  *   \returns A pointer to the engine which is created
+  */
+  EngineInterface* createEngine(EngineDescription& d)
+    throw (ResourceNotFoundException);
 
-    /*!
-    *   \brief Check are both links equivalent
-    *
-    *   \param  first    The first link to be compared
-    *   \param  second   The second link to be compared
-    *
-    *   \returns Whether the links are equivalent
-    */
-    bool sameLink(LinkDescription first, LinkDescription second);
+  /*!
+  *   \brief Check are both links equivalent
+  *
+  *   \param  first  The first link to be compared
+  *   \param  second   The second link to be compared
+  *
+  *   \returns Whether the links are equivalent
+  */
+  bool sameLink(LinkDescription first, LinkDescription second);
 
 public:
-    EngineManager();
-    void setRepositories(Repositories reps){reps_ = reps;}
-    Repositories getRepositories() const {return reps_;}
-    void loadRadio(RadioRepresentation rad);
-    void startRadio();
-    void stopRadio();
-    void unloadRadio();
-    RadioRepresentation& getCurrentRadio();
-    void reconfigureRadio(ReconfigSet reconfigs);
-    void postCommand(Command command);
-    std::string getParameterValue(std::string paramName, std::string componentName);
-    void activateEvent(Event &e);
+  EngineManager();
+  void setRepositories(Repositories reps){reps_ = reps;}
+  Repositories getRepositories() const {return reps_;}
+  void loadRadio(RadioRepresentation rad);
+  void startRadio();
+  void stopRadio();
+  void unloadRadio();
+  RadioRepresentation& getCurrentRadio();
+  void reconfigureRadio(ReconfigSet reconfigs);
+  void postCommand(Command command);
+  std::string getParameterValue(std::string paramName, std::string componentName);
+  void activateEvent(Event &e);
 };
 
 } // namespace iris

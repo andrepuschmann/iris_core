@@ -41,14 +41,14 @@ namespace iris
 {
 
 /** The ComponentCallbackInterface interface is provided to all components by their owner
-*    
-*    This interface is used by components to pass events to their owner
+*  
+*  This interface is used by components to pass events to their owner
 */
 class ComponentCallbackInterface{
 public:
-    virtual ~ComponentCallbackInterface(){};
+  virtual ~ComponentCallbackInterface(){};
 
-    virtual void activateEvent(Event &e) = 0;
+  virtual void activateEvent(Event &e) = 0;
 };
 
 } /* namespace iris */

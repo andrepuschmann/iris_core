@@ -50,15 +50,15 @@ namespace iris
 */
 class EngineInterface{
 public:
-    virtual ~EngineInterface(){};
-    virtual void setEngineManager(EngineCallbackInterface *e) =0;
-    virtual std::vector< boost::shared_ptr< DataBufferBase > > loadEngine(EngineDescription eng, std::vector< boost::shared_ptr< DataBufferBase > > inputLinks) = 0;
-    virtual void unloadEngine() = 0;
-    virtual void startEngine() = 0;
-    virtual void stopEngine() = 0;
-    virtual std::string getName() const = 0;
-    virtual void addReconfiguration(ReconfigSet reconfigs) = 0;
-    virtual void postCommand(Command command) = 0;
+  virtual ~EngineInterface(){};
+  virtual void setEngineManager(EngineCallbackInterface *e) =0;
+  virtual std::vector< boost::shared_ptr< DataBufferBase > > loadEngine(EngineDescription eng, std::vector< boost::shared_ptr< DataBufferBase > > inputLinks) = 0;
+  virtual void unloadEngine() = 0;
+  virtual void startEngine() = 0;
+  virtual void stopEngine() = 0;
+  virtual std::string getName() const = 0;
+  virtual void addReconfiguration(ReconfigSet reconfigs) = 0;
+  virtual void postCommand(Command command) = 0;
 
 };
 

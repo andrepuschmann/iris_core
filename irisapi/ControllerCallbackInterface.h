@@ -44,17 +44,17 @@ class Controller;
 
 /** ControllerCallbackInterface is used by controllers to access functions on their owner
 *
-*    This interface allows the controller to subscribe to events on its owner and pass
-*    reconfigurations to its owner.
+*  This interface allows the controller to subscribe to events on its owner and pass
+*  reconfigurations to its owner.
 */
 class ControllerCallbackInterface{
 public:
-    virtual ~ControllerCallbackInterface(){};
+  virtual ~ControllerCallbackInterface(){};
 
-    virtual void reconfigureRadio(ReconfigSet reconfigs) = 0;
-    virtual void postCommand(Command command) = 0;
-    virtual std::string getParameterValue(std::string paramName, std::string componentName) = 0;
-    virtual void subscribeToEvent(std::string eventName, std::string componentName, Controller *cont) = 0;
+  virtual void reconfigureRadio(ReconfigSet reconfigs) = 0;
+  virtual void postCommand(Command command) = 0;
+  virtual std::string getParameterValue(std::string paramName, std::string componentName) = 0;
+  virtual void subscribeToEvent(std::string eventName, std::string componentName, Controller *cont) = 0;
 };
 
 } /* namespace iris */
