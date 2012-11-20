@@ -193,7 +193,7 @@ void Launcher::parseOptions(int argc, char* argv[]) throw (po::error, LauncherEx
 
     // help option was given - print usage and set running to false
     if (vm.count("help")) {
-        cout << "IRIS2 software radio" << endl << endl;
+        cout << "Iris software radio" << endl << endl;
         cout << "Usage: " << argv[0] << " [OPTIONS] xmlconfigfile" << endl << endl;
         cout << desc << endl << general << endl;
         d_isRunning = false;
@@ -202,7 +202,7 @@ void Launcher::parseOptions(int argc, char* argv[]) throw (po::error, LauncherEx
 
     // print version number and exit
     if (vm.count("version")) {
-        cout << "IRIS2, version " << VERSION << endl;
+        cout << "Iris, version " << VERSION << endl;
         d_isRunning = false;
         return;
     }
@@ -330,8 +330,8 @@ void Launcher::printMenu()
     }
 
     cout << endl
-         << "\t    IRIS version 2 Software Radio" << endl
-         << "\t    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl << endl
+         << "\t    Iris Software Radio" << endl
+         << "\t    ~~~~~~~~~~~~~~~~~~~" << endl << endl
          << line1 << endl
          << "\tR  Reconfigure\t\tQ  Quit" << endl << endl
          << "(Radio " << state << "), Selection: ";
@@ -340,6 +340,6 @@ void Launcher::printMenu()
 void Launcher::printBanner()
 {
     cout << endl
-         << "\t    IRIS version 2 Software Radio" << endl
-         << "\t    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl << endl;
+         << "\t    Iris Software Radio" << endl
+         << "\t    ~~~~~~~~~~~~~~~~~~~" << endl << endl;
 }
