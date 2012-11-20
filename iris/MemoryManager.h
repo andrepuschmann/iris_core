@@ -32,8 +32,8 @@
  * deallocation of memory for the DataBuffers within the Iris system.
  */
 
-#ifndef MEMORYMANAGER_H_
-#define MEMORYMANAGER_H_
+#ifndef IRIS_MEMORYMANAGER_H_
+#define IRIS_MEMORYMANAGER_H_
 
 #include <boost/intrusive/list.hpp>
 #include <boost/thread/thread.hpp>
@@ -163,6 +163,6 @@ public:
     void printBlockInfo();
 };
 
-} /* namespace iris */
+} // namespace iris
 
-#endif /* MEMORYMANAGER_H_ */
+#endif // IRIS_MEMORYMANAGER_H_

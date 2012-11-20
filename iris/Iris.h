@@ -31,8 +31,8 @@
  * Iris.h provides the top level C interface to the Iris architecture.
  */
 
-#ifndef _IRIS_H
-#define _IRIS_H
+#ifndef IRIS_IRIS_H_
+#define IRIS_IRIS_H_
 
 #ifdef WIN32
 #ifdef IRIS_EXPORT
@@ -91,7 +91,7 @@ IRIS_DLL bool IRISisRadioSuspended();
 //! Reconfigure the radio
 IRIS_DLL bool IRISReconfigureRadio(std::string radioConfig);
 
-#endif //_IRIS_H
+#endif //IRIS_IRIS_H_
 
 
 

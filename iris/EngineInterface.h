@@ -31,8 +31,8 @@
  * Interface implemented by all IRIS engines
  */
 
-#ifndef ENGINEINTERFACE_H_
-#define ENGINEINTERFACE_H_
+#ifndef IRIS_ENGINEINTERFACE_H_
+#define IRIS_ENGINEINTERFACE_H_
 
 #include <boost/shared_ptr.hpp>
 
@@ -62,6 +62,6 @@ public:
 
 };
 
-} /* namespace iris */
+} // namespace iris
 
-#endif /* ENGINEINTERFACE_H_ */
+#endif // IRIS_ENGINEINTERFACE_H_

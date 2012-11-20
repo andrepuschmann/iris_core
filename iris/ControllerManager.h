@@ -31,8 +31,8 @@
  * The ControllerManager manages all controllers running within the Iris architecture.
  */
 
-#ifndef CONTROLLERMANAGER_H_
-#define CONTROLLERMANAGER_H_
+#ifndef IRIS_CONTROLLERMANAGER_H_
+#define IRIS_CONTROLLERMANAGER_H_
 
 #include <vector>
 #include <string>
@@ -159,6 +159,6 @@ public:
 
 };
 
-} /* namespace iris */
+} // namespace iris
 
-#endif /* CONTROLLERMANAGER_H_ */
+#endif // IRIS_CONTROLLERMANAGER_H_

@@ -31,8 +31,8 @@
  * Interface provided to all engines.
  */
 
-#ifndef ENGINECALLBACKINTERFACE_H_
-#define ENGINECALLBACKINTERFACE_H_
+#ifndef IRIS_ENGINECALLBACKINTERFACE_H_
+#define IRIS_ENGINECALLBACKINTERFACE_H_
 
 #include "irisapi/Event.h"
 
@@ -49,7 +49,7 @@ public:
     virtual void activateEvent(Event &e) = 0;
 };
 
-} /* namespace iris */
+} // namespace iris
 
 
-#endif /* ENGINECALLBACKINTERFACE_H_ */
+#endif // IRIS_ENGINECALLBACKINTERFACE_H_

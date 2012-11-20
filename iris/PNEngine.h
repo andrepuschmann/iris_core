@@ -31,8 +31,8 @@
  * The PNEngine implements a process network engine for the Iris framework.
  */
 
-#ifndef PNENGINE_H_
-#define PNENGINE_H_
+#ifndef IRIS_PNENGINE_H_
+#define IRIS_PNENGINE_H_
 
 #include <deque>
 
@@ -134,5 +134,6 @@ class PNEngine:public EngineInterface, public ComponentCallbackInterface
 };
 
 
-}
-#endif
+} // namespace iris
+
+#endif // IRIS_PNENGINE_H_

@@ -31,8 +31,8 @@
  * The DataBuffer which exists on all links between components in Iris.
  */
 
-#ifndef DATABUFFER_H_
-#define DATABUFFER_H_
+#ifndef IRIS_DATABUFFER_H_
+#define IRIS_DATABUFFER_H_
 
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition.hpp>
@@ -212,4 +212,4 @@ private:
 } /* namespace iris */
 
 
-#endif /* DATABUFFER_H_ */
+#endif /* IRIS_DATABUFFER_H_ */

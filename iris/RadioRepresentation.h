@@ -32,8 +32,8 @@
  * Iris system to build a radio.
  */
 
-#ifndef RADIOREPRESENTATION_H_
-#define RADIOREPRESENTATION_H_
+#ifndef IRIS_RADIOREPRESENTATION_H_
+#define IRIS_RADIOREPRESENTATION_H_
 
 #include <cstdlib>
 #include <string>
@@ -252,6 +252,6 @@ inline std::ostream& operator <<(std::ostream& os, const RadioRepresentation& rg
               << "Engine Graph: " << std::endl << rg.printEngineGraph();
 }
 
-} /* namespace iris */
+} // namespace iris
 
-#endif /* RADIOREPRESENTATION_H_ */
+#endif // IRIS_RADIOREPRESENTATION_H_

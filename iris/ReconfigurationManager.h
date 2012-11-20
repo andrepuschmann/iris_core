@@ -31,8 +31,8 @@
  * The Reconfiguration Manager handles all Iris radio reconfigurations.
  */
 
-#ifndef RECONFIGURATIONMANAGER_H_
-#define RECONFIGURATIONMANAGER_H_
+#ifndef IRIS_RECONFIGURATIONMANAGER_H_
+#define IRIS_RECONFIGURATIONMANAGER_H_
 
 #include <cstdlib>
 #include <string>
@@ -43,30 +43,29 @@
 namespace iris
 {
 
-    /*! \class ReconfigurationManager
-     *  \brief The ReconfigurationManager allows us to compare radio configurations and
-     *  generate reconfiguration sets to be carried out.
-     */
-    class ReconfigurationManager
-    {
-    private:
-        //! ctor - all static functions so prevent creation of a ReconfigurationManager object
-        ReconfigurationManager();
+/*! \class ReconfigurationManager
+ *  \brief The ReconfigurationManager allows us to compare radio configurations and
+ *  generate reconfiguration sets to be carried out.
+ */
+class ReconfigurationManager
+{
+  private:
+    //! ctor - all static functions so prevent creation of a ReconfigurationManager object
+    ReconfigurationManager();
 
-        static void checkParameters(const RadioRepresentation& first, const RadioRepresentation& second, ReconfigSet& reconfigs);
-        static void checkParameters(EngineDescription& first, EngineDescription& second, ReconfigSet& reconfigs);
-        static void checkParameters(ComponentDescription& first, ComponentDescription& second, ReconfigSet& reconfigs);
-    public:
+    static void checkParameters(const RadioRepresentation& first, const RadioRepresentation& second, ReconfigSet& reconfigs);
+    static void checkParameters(EngineDescription& first, EngineDescription& second, ReconfigSet& reconfigs);
+    static void checkParameters(ComponentDescription& first, ComponentDescription& second, ReconfigSet& reconfigs);
+  public:
 
-        /** Compare two radio representations and generate a set of reconfigurations
-        *
-        *   \param  currentRadio    The currently loaded radio configuration
-        *   \param  newRadio        The new radio configuration
-        */
-        static ReconfigSet compareRadios(const RadioRepresentation& currentRadio, const RadioRepresentation& newRadio);
+    /** Compare two radio representations and generate a set of reconfigurations
+    *
+    *   \param  currentRadio    The currently loaded radio configuration
+    *   \param  newRadio        The new radio configuration
+    */
+    static ReconfigSet compareRadios(const RadioRepresentation& currentRadio, const RadioRepresentation& newRadio);
+};
 
-    };
+} // namespace iris
 
-}
-
-#endif
+#endif // IRIS_RECONFIGURATIONMANAGER_H_
