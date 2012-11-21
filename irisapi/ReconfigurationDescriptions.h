@@ -32,8 +32,8 @@
  * a running radio.
  */
 
-#ifndef RECONFIGURATIONDESCRIPTIONS_H_
-#define RECONFIGURATIONDESCRIPTIONS_H_
+#ifndef IRISAPI_RECONFIGURATIONDESCRIPTIONS_H_
+#define IRISAPI_RECONFIGURATIONDESCRIPTIONS_H_
 
 #include <string>
 #include <vector>
@@ -86,4 +86,4 @@ struct ReconfigSet
 
 } /* namespace iris */
 
-#endif /* RECONFIGURATIONDESCRIPTIONS_H_ */
+#endif /* IRISAPI_RECONFIGURATIONDESCRIPTIONS_H_ */

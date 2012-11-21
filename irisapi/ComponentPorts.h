@@ -31,8 +31,8 @@
  * Contains classes for the port interface of an Iris component.
  */
 
-#ifndef COMPONENTPORTS_H_
-#define COMPONENTPORTS_H_
+#ifndef IRISAPI_COMPONENTPORTS_H_
+#define IRISAPI_COMPONENTPORTS_H_
 
 #include <string>
 #include <vector>
@@ -46,37 +46,28 @@ namespace iris
  */
 struct Port
 {
-  //! name of port
   std::string portName;
-
-  //! types supported for this port
   std::vector<int> supportedTypes;
-
-  //! default constructor
-  Port() :
-    portName("")
-  {
-  }
+  Port()
+    : portName("")
+  {}
 
   /** Constructs a new Port object.
    *
    * \param name The name assigned to this port
    * \param types The types supported for this port
    */
-    Port(std::string name, const std::vector<int>& types) :
-    portName(name), supportedTypes(types)
-  {
-  }
+  Port(std::string name, const std::vector<int>& types)
+    : portName(name), supportedTypes(types)
+  {}
 
 };
 
-/*!
- * \brief The ports interface for all components
+/** The ports interface for all components
  *
  * The ComponentPorts class allows components to register their input and output ports along with supported
  * data types.
  */
-
 class ComponentPorts
 {
 private:
@@ -109,29 +100,18 @@ protected:
 
 
 public:
-  //! ctor
   ComponentPorts()
   {};
 
-  /** Get the input ports of this component.
-   *
-   */
   std::vector<Port> getInputPorts() const
-  {
-    return inputPorts;
-  };
+  {return inputPorts;};
 
-  /** Get the output ports of this component.
-   *
-   */
   std::vector<Port> getOutputPorts() const
-  {
-    return outputPorts;
-  };
+  {return outputPorts;};
 
 };
 
 
-} // end iris namespace
+} // namespace iris
 
-#endif /* COMPONENTPORTS_H_ */
+#endif // IRISAPI_COMPONENTPORTS_H_

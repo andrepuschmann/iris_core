@@ -31,8 +31,8 @@
  * Interface provided to Controllers (by the ControllerManager).
  */
 
-#ifndef CONTROLLERCALLBACKINTERFACE_H_
-#define CONTROLLERCALLBACKINTERFACE_H_
+#ifndef IRISAPI_CONTROLLERCALLBACKINTERFACE_H_
+#define IRISAPI_CONTROLLERCALLBACKINTERFACE_H_
 
 #include "irisapi/ReconfigurationDescriptions.h"
 #include "irisapi/Command.h"
@@ -60,4 +60,4 @@ public:
 } /* namespace iris */
 
 
-#endif /* CONTROLLERCALLBACKINTERFACE_H_ */
+#endif /* IRISAPI_CONTROLLERCALLBACKINTERFACE_H_ */

@@ -32,8 +32,8 @@
  * in Iris.
  */
 
-#ifndef TYPEINFO_H_
-#define TYPEINFO_H_
+#ifndef IRISAPI_TYPEINFO_H_
+#define IRISAPI_TYPEINFO_H_
 
 #include <complex>
 #include <string>
@@ -202,8 +202,6 @@ static inline int getNumIrisDataTypes()
   return boost::mpl::size<IrisDataTypes>::value;
 }
 
-} // end of iris namespace
+} // namespace iris
 
-
-
-#endif /* TYPEINFO_H_ */
+#endif /* IRISAPI_TYPEINFO_H_ */

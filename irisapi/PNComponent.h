@@ -31,8 +31,8 @@
  * The Process Network Component base class.
  */
 
-#ifndef PNCOMPONENT_H_
-#define PNCOMPONENT_H_
+#ifndef IRISAPI_PNCOMPONENT_H_
+#define IRISAPI_PNCOMPONENT_H_
 
 #include <irisapi/ComponentBase.h>
 #include <irisapi/DataBufferInterfaces.h>
@@ -146,6 +146,6 @@ public:
 
 };
 
-}
-#endif
+} // namespace iris
+#endif //IRISAPI_PNCOMPONENT_H_
 

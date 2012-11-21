@@ -54,14 +54,14 @@ struct tag2;
 typedef intr::list_base_hook< intr::tag<tag1>, intr::link_mode<intr::normal_link>, intr::constant_time_size<false> > basehook1;
 typedef intr::list_base_hook< intr::tag<tag2>, intr::link_mode<intr::normal_link>, intr::constant_time_size<false> > basehook2;
 
-//! The MemoryNode struct wraps an allocated block of memory within the MemoryManager.
+/// The MemoryNode struct wraps an allocated block of memory within the MemoryManager.
 template <unsigned Alignment = 128>
 struct MemoryNode : public basehook1, public basehook2
 {
   void *memory;
   std::size_t size;
 
-  //! Constructor
+  /// Constructor
   MemoryNode(std::size_t size) : memory(NULL), size(size)
   {
 #ifdef WIN32
@@ -75,10 +75,10 @@ struct MemoryNode : public basehook1, public basehook2
     }
   }
 
-  //! Copy constructor
+  /// Copy constructor
   MemoryNode(const MemoryNode<Alignment>& rhs) : memory(rhs.memory), size(rhs.size) {}
 
-  //! Destructor
+  /// Destructor
   ~MemoryNode() {
 #ifdef WIN32
     if (size != 0) _aligned_free(memory);
@@ -93,9 +93,9 @@ private:
 
 };
 
-/** \class MemoryManager
- *  \brief The MemoryManager provides a single point for allocation and
+/** The MemoryManager provides a single point for allocation and
  *  deallocation of memory for the DataBuffers within the IRIS system.
+ *
  *  In this way, we can ensure correct memory alignment for optimized
  *  instructions and can reduce the danger of memory leaks. MemoryManager
  *  keeps two linked lists of memory nodes (both referencing the same chunks
@@ -106,60 +106,58 @@ private:
 class MemoryManager
 {
 private:
-  //! The size used for memory alignment
+  /// The size used for memory alignment
   const static int ALIGNMENT_SIZE = 128;
 
-  //! A memory node
+  /// A memory node
   typedef MemoryNode<ALIGNMENT_SIZE> memnode;
 
-  //! Type for list of allocated nodes
+  /// Type for list of allocated nodes
   typedef intr::list< memnode, intr::base_hook< basehook1 > > allocnodelist;
-  //! Type for list of free nodes
+  /// Type for list of free nodes
   typedef intr::list< memnode, intr::base_hook< basehook2 > > availnodelist;
 
-  //! List of allocated nodes
+  /// List of allocated nodes
   allocnodelist allocated;
-  //! List of free nodes
+  /// List of free nodes
   availnodelist available;
 
-  //! Iterator types
+  /// Iterator types
   typedef allocnodelist::iterator alloc_it;
   typedef availnodelist::iterator avail_it;
 
-  //! To protect shared access to the MemoryManager
+  /// To protect shared access to the MemoryManager
   boost::mutex memoryMutex;
 
-  //! Counts total memory used
+  /// Counts total memory used
   std::size_t totalMemoryRequested;
 
 public:
-  //! Ctor
   MemoryManager();
-  //! Dtor
   ~MemoryManager();
 
-  //! Locks size bytes of memory and returns a pointer to it
+  /// Locks size bytes of memory and returns a pointer to it
   void* allocateBlock(std::size_t size) throw(OutOfMemoryException);
 
-  //! Releases the specified memory
+  /// Releases the specified memory
   void releaseBlock(void* mem);
 
-  //! Returns the total amount of memory being used by the manager in bytes
+  /// Returns the total amount of memory being used by the manager in bytes
   std::size_t getTotalMemoryUsed();
 
-  //! Returns the total amount of locked memory
+  /// Returns the total amount of locked memory
   std::size_t getTotalMemoryLocked();
 
-  //! Returns the total amount of memory that has been requested
+  /// Returns the total amount of memory that has been requested
   std::size_t getTotalMemoryRequested();
 
-  //! Returns the size of the specified memory location
+  /// Returns the size of the specified memory location
   std::size_t getBlockSize(void* mem);
 
-  //! Resets the memory manager by unlocking and freeing all memory
+  /// Resets the memory manager by unlocking and freeing all memory
   void reset();
 
-  //! Utility function for debugging
+  /// Utility function for debugging
   void printBlockInfo();
 };
 

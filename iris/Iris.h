@@ -45,50 +45,53 @@
 #endif
 #include <string>
 
-//! Initialize the system
+/// Initialize the system
 IRIS_DLL void IRISInitSystem();
 
-//! Set the Stack component repository
+/// Set the Stack component repository
 IRIS_DLL bool IRISSetStackRepository(std::string rep);
 
-//! Set the PN component repository
+/// Set the PN component repository
 IRIS_DLL bool IRISSetPnRepository(std::string rep);
 
-//! Set the SDF component repository
+/// Set the SDF component repository
 IRIS_DLL bool IRISSetSdfRepository(std::string rep);
 
-//! Set the controller repository
+/// Set the controller repository
 IRIS_DLL bool IRISSetContRepository(std::string rep);
 
-//! Set the log level
+/// Set the log level
 IRIS_DLL bool IRISSetLogLevel(std::string level);
 
-/*!
-*   \brief Load the radio
+/** Load the radio
 *
-*   \param  radioConfig   The radio configuration to load
+*   \param  radioConfig   The radio configuration to load.
 */
 IRIS_DLL bool IRISLoadRadio(std::string radioConfig);
 
-//! Start the radio
+/// Start the radio
 IRIS_DLL bool IRISStartRadio();
 
-//! Stop the radio
+/// Stop the radio
 IRIS_DLL bool IRISStopRadio();
 
-//! Unload the radio
+/// Unload the radio
 IRIS_DLL bool IRISUnloadRadio();
 
-//! Check whether the radio is loaded
+/// Check whether the radio is loaded
 IRIS_DLL bool IRISisRadioLoaded();
 
-//! Check whether the radio is running
+/// Check whether the radio is running
 IRIS_DLL bool IRISisRadioRunning();
 
-//! Check whether the radio is suspended
+/// Check whether the radio is suspended
 IRIS_DLL bool IRISisRadioSuspended();
 
-//! Reconfigure the radio
+/** Reconfigure the radio
+ *
+ * @param radioConfig   The new radio configuration
+ * @return  Was the reconfiguration successful?
+ */
 IRIS_DLL bool IRISReconfigureRadio(std::string radioConfig);
 
 #endif //IRIS_IRIS_H_

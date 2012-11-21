@@ -32,8 +32,8 @@
  * Iris StackEngine.
  */
 
-#ifndef STACKDATABUFFER_H_
-#define STACKDATABUFFER_H_
+#ifndef IRISAPI_STACKDATABUFFER_H_
+#define IRISAPI_STACKDATABUFFER_H_
 
 #include <boost/shared_ptr.hpp>
 #include <boost/thread/mutex.hpp>
@@ -156,4 +156,4 @@ public:
 
 } /* namespace iris */
 
-#endif /* STACKDATABUFFER_H_ */
+#endif /* IRISAPI_STACKDATABUFFER_H_ */

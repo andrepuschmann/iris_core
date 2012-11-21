@@ -40,9 +40,12 @@
 namespace iris
 {
 
-/**
- * The ControllerManagerCallbackInterface interface is provided to the ControllerManager by its owner
- * This interface allows a ControllerManager to pass reconfigurations to its owner
+/** The ControllerManagerCallbackInterface interface is provided to the
+ * ControllerManager by its owner.
+ *
+ * This interface allows a ControllerManager to pass reconfigurations
+ * and commands to its owner and to forward parameter value queries from
+ * controllers.
  */
 class ControllerManagerCallbackInterface{
 public:
@@ -55,7 +58,7 @@ public:
   virtual std::string getParameterValue(std::string paramName, std::string componentName) = 0;
 };
 
-} /* namespace iris */
+} // namespace iris
 
 
-#endif /* IRIS_CONTROLLERMANAGERCALLBACKINTERFACE_H_ */
+#endif // IRIS_CONTROLLERMANAGERCALLBACKINTERFACE_H_

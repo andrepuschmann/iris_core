@@ -31,8 +31,8 @@
  * The SharedLibrary manages shared libraries in a portable fashion.
  */
 
-#ifndef _IRIS_SHAREDLIBRARY_H
-#define _IRIS_SHAREDLIBRARY_H
+#ifndef IRIS_SHAREDLIBRARY_H
+#define IRIS_SHAREDLIBRARY_H
 
 #include <boost/filesystem.hpp>
 #include <boost/config.hpp>
@@ -48,7 +48,7 @@
 namespace iris
 {
 
-/** \brief Manages shared libraries in a portable fashion.
+/** Manages shared libraries in a portable fashion.
  *
  * Multiple implementations of this class must be provided for each platform with
  * different native functions. Instances of this class cannot be copied because
@@ -60,12 +60,12 @@ namespace iris
  */
 class SharedLibrary : boost::noncopyable
 {
-  public:
+public:
 
 #ifdef BOOST_WINDOWS
-    typedef FARPROC SymbolPointer;   //!< Type that can hold a pointer to a library symbol
+    typedef FARPROC SymbolPointer;   ///< Type that can hold a pointer to a library symbol
 #else
-    typedef void* SymbolPointer;   //!< Type that can hold a pointer to a library symbol
+    typedef void* SymbolPointer;   ///< Type that can hold a pointer to a library symbol
 #endif
 
   // ---------- standard usage
@@ -87,7 +87,7 @@ class SharedLibrary : boost::noncopyable
    */
   SymbolPointer getSymbol(std::string symbolName) throw (LibrarySymbolException);
 
-  /** Destructor. Closes the library.  */
+  /// Destructor. Closes the library.
   ~SharedLibrary();
 
   std::string getName(){return "SharedLibrary";}
@@ -96,28 +96,34 @@ class SharedLibrary : boost::noncopyable
 
   // ---------- Usage without giving filename to constructor
 
-  //! Default constructor. Does not open a library.
+  /// Default constructor. Does not open a library.
   SharedLibrary() : library_(NULL) {};
 
-  //! \brief Opens a shared library.
-  //! If a different library is already open and held by this object, it is closed
-  //! automatically before opening the new one. See constructor for description
-  //! of parameters.
+  /** Opens a shared library.
+   *
+   * If a different library is already open and held by this object, it is closed
+   * automatically before opening the new one. See constructor for description
+   * of parameters.
+   *
+   * \param filename    The path of the file to open.
+   */
   void open(boost::filesystem::path filename) throw (LibraryLoadException,
       FileNotFoundException);
 
-  //! Check whether the library has been loaded
+  /// Check whether the library has been loaded.
   bool isLoaded() {return library_ == NULL;};
 
   // ----------- Accessors
 
-  //! retrieves filename of currently open file
+  /// Retrieve filename of currently open file.
   boost::filesystem::path getFilename() const {  return filename_; }
 
   // ----------- Information
 
-  //! Returns the standard system extension for shared libraries.
-  //! That is, in Windows, returns "dll", Linux: "so", Mac: "dylib", etc.
+  /** Returns the standard system extension for shared libraries.
+   *
+   * That is, in Windows, returns "dll", Linux: "so", Mac: "dylib", etc.
+   */
   static std::string getSystemExtension()
   {
     #if defined(_WIN32) || defined(__CYGWIN__)
@@ -129,8 +135,10 @@ class SharedLibrary : boost::noncopyable
     #endif
   }
 
-  //! Returns the standard system prefix for shared libraries.
-  //! That is, in Windows, returns "", Linux: "lib", Mac: "", etc.
+  /** Returns the standard system prefix for shared libraries.
+   *
+   * That is, in Windows, returns "", Linux: "lib", Mac: "", etc.
+   */
   static std::string getSystemPrefix()
   {
     #if defined(_WIN32) || defined(__CYGWIN__)
@@ -142,23 +150,17 @@ class SharedLibrary : boost::noncopyable
     #endif
   }
 
-  private:
+private:
 
 #ifdef BOOST_WINDOWS
-  typedef HMODULE LibraryHandle;  //!< Handle for library
+  typedef HMODULE LibraryHandle;  ///< Handle for library
 #else
-  typedef void* LibraryHandle;  //!< Handle for library
+  typedef void* LibraryHandle;  ///< Handle for library
 #endif
 
-  //! holds the name of the library file
-  boost::filesystem::path filename_;
-
-  //! handle to the library
-  LibraryHandle library_;
+  boost::filesystem::path filename_;    ///< Name of library file.
+  LibraryHandle library_;               ///< Handle to library.
 };
 
-
-}
-
-
-#endif
+} // namespace iris
+#endif // IRIS_SHAREDLIBRARY_H

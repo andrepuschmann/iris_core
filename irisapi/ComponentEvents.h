@@ -31,8 +31,8 @@
  * Contains classes for the event interface of an Iris Component.
  */
 
-#ifndef COMPONENTEVENTS_H_
-#define COMPONENTEVENTS_H_
+#ifndef IRISAPI_COMPONENTEVENTS_H_
+#define IRISAPI_COMPONENTEVENTS_H_
 
 #include "irisapi/Event.h"
 #include "irisapi/Exceptions.h"
@@ -48,34 +48,27 @@ namespace iris
  */
 struct EventDescription
 {
-  //! description of the event
   std::string description;
-
-  //! name of the event
   std::string name;
+  int typeId;       ///< Type of data passed with event.
 
-  //! type of data to be passed with event
-  int typeId;
-
-  //! default constructor
   EventDescription(std::string n="", std::string d="", int t=0) :
     description(d), name(n), typeId(t)
-  {
-  }
+  {}
 };
 
-/*!
- * \brief An interface to the events of a component
+/** An interface to the events of a component
  *
  * The ComponentEvents class permits components to register events of different types. 
  * These events can then be triggered by the component together with relevent data.
- *
  */
 class ComponentEvents : boost::noncopyable
 {
-private:
-  std::map<std::string, EventDescription> events_;
-  ComponentCallbackInterface* engine_;
+public:
+  ComponentEvents():engine_(NULL){}
+  void setEngine(ComponentCallbackInterface* e){engine_ = e;}
+  size_t getNumEvents(){return events_.size();}
+  std::map<std::string, EventDescription> getEvents(){return events_;}
 
 protected:
   ComponentEvents& assignEvents(const ComponentEvents& other)
@@ -104,11 +97,9 @@ protected:
   inline void activateEventInternal(std::string compName, std::string name, std::vector<T> &data) 
     throw (EventNotFoundException, InvalidDataTypeException);
 
-public:
-  ComponentEvents():engine_(NULL){}
-  void setEngine(ComponentCallbackInterface* e){engine_ = e;}
-  size_t getNumEvents(){return events_.size();}
-  std::map<std::string, EventDescription> getEvents(){return events_;}
+private:
+  std::map<std::string, EventDescription> events_;
+  ComponentCallbackInterface* engine_;
 };
 
 template<typename T>
@@ -177,6 +168,6 @@ inline void ComponentEvents::activateEventInternal(std::string compName, std::st
   }
 }
 
-} /* namespace iris */
+} // namespace iris
 
-#endif /* COMPONENTEVENTS_H_ */
+#endif // IRISAPI_COMPONENTEVENTS_H_

@@ -31,8 +31,8 @@
  *  Represents an interval: [Interval<T>().min, Interval<T>().max]
  */
 
-#ifndef INTERVAL_H_
-#define INTERVAL_H_
+#ifndef IRISAPI_INTERVAL_H_
+#define IRISAPI_INTERVAL_H_
 
 #include <boost/assert.hpp>
 #include <boost/numeric/conversion/bounds.hpp>
@@ -106,4 +106,4 @@ std::ostream& operator<<(std::ostream& os, const Interval<T> i)
 
 } // end of iris namespace
 
-#endif /* INTERVAL_H_ */
+#endif /* IRISAPI_INTERVAL_H_ */

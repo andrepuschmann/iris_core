@@ -31,8 +31,8 @@
  * Define a link between components of a radio flowgraph.
  */
 
-#ifndef LINKDESCRIPTION_H_
-#define LINKDESCRIPTION_H_
+#ifndef IRISAPI_LINKDESCRIPTION_H_
+#define IRISAPI_LINKDESCRIPTION_H_
 
 #include <string>
 #include <boost/shared_ptr.hpp>
@@ -63,4 +63,4 @@ namespace iris{
 
 } /* namespace iris */
 
-#endif /* LINKDESCRIPTION_H_ */
+#endif /* IRISAPI_LINKDESCRIPTION_H_ */

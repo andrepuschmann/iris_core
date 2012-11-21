@@ -31,8 +31,8 @@
  * The StackEngine class implements a network stack engine for the Iris framework.
  */
 
-#ifndef STACKENGINE_H_
-#define STACKENGINE_H_
+#ifndef IRIS_STACKENGINE_H_
+#define IRIS_STACKENGINE_H_
 
 #include <deque>
 
@@ -50,63 +50,23 @@
 
 namespace iris
 {
+
 //Forward declarations to avoid inter-element dependencies
 class StackComponent;
 class StackInTranslator;
 class StackOutTranslator;
 class StackComponentManager;
 
-/**
- * The StackEngine class implements a stack engine for the IRIS framework.
+/** The StackEngine can be used to build a network stack in Iris.
+ *
+ * Components in a StackEngine run their own thread and pass messages
+ * up and down to other components above and below them.
  */
-class StackEngine:public EngineInterface, public ComponentCallbackInterface
+class StackEngine
+  : public EngineInterface, public ComponentCallbackInterface
 {
-private:
-  //! The graph representing the components within the engine and the links between them
-  RadioGraph engineGraph_;
-
-  //! The StackComponents running within this engine
-  std::vector< boost::shared_ptr<StackComponent> > components_;
-
-  //! The StackInTranslators running within this engine
-  std::vector< boost::shared_ptr<StackInTranslator> > inTranslators_;
-
-  //! The StackOutTranslators running within this engine
-  std::vector< boost::shared_ptr<StackOutTranslator> > outTranslators_;
-
-  //! The DataBuffers for the external links into and out of this engine
-  std::vector< boost::shared_ptr< DataBufferBase > > engInputBuffers_;
-  std::vector< boost::shared_ptr< DataBufferBase > > engOutputBuffers_;
-
-  //! Name of this engine
-  std::string engineName_;
-
-  //! The component manager for this engine
-  boost::scoped_ptr< StackComponentManager > compManager_;
-
-  //! The interface to the owner of this engine
-  EngineCallbackInterface *engineManager_;
-
-  // Helper functions
-  void createExternalLink(LinkDescription& l);
-  bool sameLink(LinkDescription first, LinkDescription second) const;
-  boost::shared_ptr< StackComponent > findComponent(std::string name);
-
-  //! Check that a given graph complies with the policies of this engine
-  void checkGraph(RadioGraph& graph);
-  //! Build a given graph
-  void buildEngineGraph(EngineDescription& eng)
-    throw (IrisException);
-
-  //! Reconfigure a parameter within a component running in the engine
-  void reconfigureParameter(ParametricReconfig reconfig);
-  //! Reconfigure the structure of this engine
-  void reconfigureStructure();
 public:
-  //! ctor
-  StackEngine(std::string name, std::string repository)
-    throw (IrisException);
-  //! dtor
+  StackEngine(std::string name, std::string repository) throw (IrisException);
   ~StackEngine();
 
   void setEngineManager(EngineCallbackInterface *e);
@@ -126,9 +86,50 @@ public:
   void postCommand(Command command);
   void activateEvent(Event &e);
 
+private:
+  /// The graph representing the components within the engine and the links between them
+  RadioGraph engineGraph_;
+
+  /// The StackComponents running within this engine
+  std::vector< boost::shared_ptr<StackComponent> > components_;
+
+  /// The StackInTranslators running within this engine
+  std::vector< boost::shared_ptr<StackInTranslator> > inTranslators_;
+
+  /// The StackOutTranslators running within this engine
+  std::vector< boost::shared_ptr<StackOutTranslator> > outTranslators_;
+
+  /// The DataBuffers for the external links into and out of this engine
+  std::vector< boost::shared_ptr< DataBufferBase > > engInputBuffers_;
+  std::vector< boost::shared_ptr< DataBufferBase > > engOutputBuffers_;
+
+  /// Name of this engine
+  std::string engineName_;
+
+  /// The component manager for this engine
+  boost::scoped_ptr< StackComponentManager > compManager_;
+
+  /// The interface to the owner of this engine
+  EngineCallbackInterface *engineManager_;
+
+  // Helper functions
+  void createExternalLink(LinkDescription& l);
+  bool sameLink(LinkDescription first, LinkDescription second) const;
+  boost::shared_ptr< StackComponent > findComponent(std::string name);
+
+  /// Check that a given graph complies with the policies of this engine
+  void checkGraph(RadioGraph& graph);
+  /// Build a given graph
+  void buildEngineGraph(EngineDescription& eng)
+    throw (IrisException);
+
+  /// Reconfigure a parameter within a component running in the engine
+  void reconfigureParameter(ParametricReconfig reconfig);
+  /// Reconfigure the structure of this engine
+  void reconfigureStructure();
+
 };
 
+} // namespace iris
 
-} /* namespace iris */
-
-#endif /* STACKENGINE_H_ */
+#endif // IRIS_STACKENGINE_H_

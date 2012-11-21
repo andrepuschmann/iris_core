@@ -32,8 +32,8 @@
  * by Iris.
  */
 
-#ifndef PARAMETERTYPEINFO_H_
-#define PARAMETERTYPEINFO_H_
+#ifndef IRISAPI_PARAMETERTYPEINFO_H_
+#define IRISAPI_PARAMETERTYPEINFO_H_
 
 #include <string>
 #include <limits.h>
@@ -132,6 +132,6 @@ typedef detail::parameter_types_tmp14 IrisParameterTypes;
 
 #undef MAKE_PARAMETER_TYPE
 
-}
+} // namespace iris
 
-#endif /* PARAMETERTYPEINFO_H_ */
+#endif /* IRISAPI_PARAMETERTYPEINFO_H_ */

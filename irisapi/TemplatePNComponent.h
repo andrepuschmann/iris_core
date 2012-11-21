@@ -31,8 +31,8 @@
  * Base class for templated PN Components + template helper functions.
  */
 
-#ifndef TEMPLATEPNCOMPONENT_H_
-#define TEMPLATEPNCOMPONENT_H_
+#ifndef IRISAPI_TEMPLATEPNCOMPONENT_H_
+#define IRISAPI_TEMPLATEPNCOMPONENT_H_
 
 #include <boost/mpl/vector.hpp>
 #include <boost/mpl/push_back.hpp>
@@ -428,7 +428,6 @@ namespace detail
     };
 }
 
-
 template <class Comp>
 inline PNComponent*
 TemplatePNComponent<Comp>::registerTemplateComponent(const std::vector<int>& inputTypes, const std::vector<int>& outputTypes)
@@ -442,9 +441,5 @@ TemplatePNComponent<Comp>::registerTemplateComponent(const std::vector<int>& inp
    return TemplateHelperCaller<Comp>::EXEC(tmpIn, tmpOut, this);
 }
 
-
-
-}
-
-
-#endif
+} // namespace iris
+#endif // IRISAPI_TEMPLATEPNCOMPONENT_H_

@@ -45,9 +45,7 @@
 namespace iris
 {
 
-/** The EngineInterface interface is implemented by all engines within the IRIS framework
-*
-*/
+/// The EngineInterface interface is implemented by all engines within the IRIS framework
 class EngineInterface{
 public:
   virtual ~EngineInterface(){};

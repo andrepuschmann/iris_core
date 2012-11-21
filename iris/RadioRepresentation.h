@@ -46,206 +46,196 @@
 
 namespace iris
 {
-  //Forward declarations
-  class DataBufferBase; 
-  struct ReconfigSet;
-  struct ParametricReconfig;
+// Forward declarations
+class DataBufferBase;
+struct ReconfigSet;
+struct ParametricReconfig;
 
-  //! A controller
-  struct ControllerDescription
+/// A controller
+struct ControllerDescription
+{
+  std::string type;
+};
+
+/// A component input or output port
+struct PortDescription
+{
+  std::string name;
+  std::string type;
+
+  bool operator==(const PortDescription& port) const
   {
-    std::string type;
-  };
+    return (name == port.name && type == port.type);
+  }
+};
 
-  //! A component input or output port
-  struct PortDescription
+/// A component parameter
+struct ParameterDescription
+{
+  std::string name;
+  std::string value;
+
+  bool operator==(const ParameterDescription& param) const
   {
-    std::string name;
-    std::string type;
+    return (name == param.name && value == param.value);
+  }
+};
 
-    bool operator==(const PortDescription& port) const
-    {
-      return (name == port.name && type == port.type);   
-    }
-  };
+/// A component
+struct ComponentDescription
+{
+  std::string name;
+  std::string type;
+  std::string engineName;
+  std::vector<ParameterDescription> parameters;
+  std::vector<PortDescription> ports;
 
-  //! A component parameter
-  struct ParameterDescription
+  /// == operator only looks at name, type and engineName
+  bool operator==(const ComponentDescription& comp) const
   {
-    std::string name;
-    std::string value;
+    return (name == comp.name && type == comp.type && engineName == comp.engineName);
+  }
+};
 
-    bool operator==(const ParameterDescription& param) const
-    {
-      return (name == param.name && value == param.value);   
-    }
-  };
+/** The graph used to represent the radio structure of components and links
+ *
+ *  We use a directed graph which allows us to access both the
+ *  in-edges and out-edges of each vertex (boost::bidirectionalS).
+ *  Vectors are used for internal storage and the ComponentDescription
+ *  and LinkDescription structs are added as bundled properties of
+ *  vertices and edges respectively.
+ */
+typedef boost::adjacency_list< \
+  boost::vecS, boost::vecS, boost::bidirectionalS, \
+  ComponentDescription, \
+  LinkDescription \
+> RadioGraph;
+typedef boost::graph_traits < RadioGraph >::vertex_descriptor  Vertex;
+typedef boost::graph_traits < RadioGraph >::edge_descriptor    Edge;
+typedef boost::graph_traits < RadioGraph >::vertex_iterator    VertexIterator;
+typedef boost::graph_traits < RadioGraph >::edge_iterator      EdgeIterator;
+typedef boost::graph_traits < RadioGraph >::out_edge_iterator  OutEdgeIterator;
+typedef boost::graph_traits < RadioGraph >::in_edge_iterator   InEdgeIterator;
 
-  //! A component
-  struct ComponentDescription
+ /// An Iris v2.0 engine
+struct EngineDescription
+{
+  std::string name;
+  std::string type;
+  RadioGraph engineGraph;
+  std::vector<ComponentDescription> components;
+  std::vector<LinkDescription> links;
+
+  /// == operator only looks at name and type
+  bool operator==(const EngineDescription& eng) const
   {
-    std::string name;
-    std::string type;
-    std::string engineName;
-    std::vector<ParameterDescription> parameters;
-    std::vector<PortDescription> ports;
+    return (name == eng.name && type == eng.type);
+  }
+};
 
-    //! == operator only looks at name, type and engineName
-    bool operator==(const ComponentDescription& comp) const
-    {
-      return (name == comp.name && type == comp.type && engineName == comp.engineName);
-    }
-  };
-
-  /** The graph used to represent the radio structure of components and links
-   *
-   *  We use a directed graph which allows us to access both the
-   *  in-edges and out-edges of each vertex (boost::bidirectionalS).
-   *  Vectors are used for internal storage and the ComponentDescription
-   *  and LinkDescription structs are added as bundled properties of
-   *  vertices and edges respectively.
-   */
-  typedef boost::adjacency_list< \
-    boost::vecS, boost::vecS, boost::bidirectionalS, \
-    ComponentDescription, \
-    LinkDescription \
-  > RadioGraph;
-  typedef boost::graph_traits < RadioGraph >::vertex_descriptor  Vertex;
-  typedef boost::graph_traits < RadioGraph >::edge_descriptor    Edge;
-  typedef boost::graph_traits < RadioGraph >::vertex_iterator    VertexIterator;
-  typedef boost::graph_traits < RadioGraph >::edge_iterator    EdgeIterator;
-  typedef boost::graph_traits < RadioGraph >::out_edge_iterator  OutEdgeIterator;
-  typedef boost::graph_traits < RadioGraph >::in_edge_iterator   InEdgeIterator;
-
-   //! An Iris v2.0 engine
-  struct EngineDescription
-  {
-    std::string name;
-    std::string type;
-    RadioGraph engineGraph;
-    std::vector<ComponentDescription> components;
-    std::vector<LinkDescription> links;
-
-    //! == operator only looks at name and type
-    bool operator==(const EngineDescription& eng) const
-    {
-      return (name == eng.name && type == eng.type);
-    }
-  };
-
-  /** The graph used to represent the radio structure of engines and links
-   *
-   *  We use a directed graph which allows us to access both the
-   *  in-edges and out-edges of each vertex (boost::bidirectionalS).
-   *  Vectors are used for internal storage and the EngineDescription
-   *  and LinkDescription structs are added as bundled properties of
-   *  vertices and edges respectively.
-   */
-  typedef boost::adjacency_list< \
-    boost::vecS, boost::vecS, boost::bidirectionalS, \
-    EngineDescription, \
-    LinkDescription \
-  > EngineGraph;
-  typedef boost::graph_traits < EngineGraph >::vertex_descriptor  EngVertex;
-  typedef boost::graph_traits < EngineGraph >::edge_descriptor    EngEdge;
-  typedef boost::graph_traits < EngineGraph >::vertex_iterator    EngVertexIterator;
-  typedef boost::graph_traits < EngineGraph >::edge_iterator    EngEdgeIterator;
-  typedef boost::graph_traits < EngineGraph >::out_edge_iterator  EngOutEdgeIterator;
-  typedef boost::graph_traits < EngineGraph >::in_edge_iterator   EngInEdgeIterator;
+/** The graph used to represent the radio structure of engines and links
+ *
+ *  We use a directed graph which allows us to access both the
+ *  in-edges and out-edges of each vertex (boost::bidirectionalS).
+ *  Vectors are used for internal storage and the EngineDescription
+ *  and LinkDescription structs are added as bundled properties of
+ *  vertices and edges respectively.
+ */
+typedef boost::adjacency_list< \
+  boost::vecS, boost::vecS, boost::bidirectionalS, \
+  EngineDescription, \
+  LinkDescription \
+> EngineGraph;
+typedef boost::graph_traits < EngineGraph >::vertex_descriptor  EngVertex;
+typedef boost::graph_traits < EngineGraph >::edge_descriptor    EngEdge;
+typedef boost::graph_traits < EngineGraph >::vertex_iterator    EngVertexIterator;
+typedef boost::graph_traits < EngineGraph >::edge_iterator    EngEdgeIterator;
+typedef boost::graph_traits < EngineGraph >::out_edge_iterator  EngOutEdgeIterator;
+typedef boost::graph_traits < EngineGraph >::in_edge_iterator   EngInEdgeIterator;
 
 
 
 
-/*! \class RadioRepresentation
- *  \brief The RadioRepresentation contains all the information needed by the
- *  Iris v2.0 system to build a radio.
+/** The RadioRepresentation contains all the information needed by the
+ *  Iris system to build a radio.
  */
 class RadioRepresentation
 {
-  private:
-    //! A graph of all components and their links
-    RadioGraph theRadioGraph;
-    //! A graph of all engines and their links
-    EngineGraph theEngineGraph;
+public:
+  /// Constructor
+  RadioRepresentation();
 
-    //! All the controllers in this RadioRepresentation
-    std::vector<ControllerDescription> controllers;
-    //! All the links in this RadioRepresentation
-    std::vector<LinkDescription> links;
-    //! All the engines in this RadioRepresentation
-    std::vector<EngineDescription> engines;
-    //! All the external links (from one engine to another) in this RadioRepresentation
-    std::vector<LinkDescription> externalLinks;
+  /// Copy constructor
+  RadioRepresentation(const RadioRepresentation& r);
 
-    //! Have the graphs been built?
-    bool isBuilt;
+  /// Assignment operator
+  RadioRepresentation& operator= (const RadioRepresentation& r);
 
-    //! A mutex to ensure thread-safe access
-    mutable boost::mutex mutex_;
+  /// Copy a RadioRepresentation
+  void copy(const RadioRepresentation& r);
 
-    //! Reconfigure a parameter within the representation
-    void reconfigureParameter(ParametricReconfig reconfig);
+  /// Add a ControllerDescription to this RadioRepresentation
+  void addControllerDescription(ControllerDescription con);
+  /// Add an EngineDescription to this RadioRepresentation
+  void addEngineDescription(EngineDescription eng);
+  /// Add a LinkDescription to this RadioRepresentation
+  void addLinkDescription(LinkDescription link);
 
-    //! Build an engine graph
-    void buildEngineDescriptionGraph(EngineDescription& eng) const throw (GraphStructureErrorException);
+  /** Build the graphs of this RadioRepresentation
+  *
+  *   Every RadioRepresentation holds two graphs - theRadioGraph and theEngineGraph.
+  *   theRadioGraph contains all components and the links between them.
+  *   theEngineGraph contains all engines and the links between them.
+  *   This function uses the EngineDescriptions and LinkDescriptions to build these graphs
+  */
+  void buildGraphs() throw (GraphStructureErrorException);
+  /// Have the graphs for this RadioRepresentation been built?
+  bool isGraphBuilt() const;
 
-  public:
-    //! Constructor
-    RadioRepresentation();
+  /// Reconfigure the representation
+  void reconfigureRepresentation(ReconfigSet reconfigs);
 
-    //! Copy constructor
-    RadioRepresentation(const RadioRepresentation& r);
+  /// Get the current value of a parameter
+  std::string getParameterValue(std::string paramName, std::string componentName);
 
-    //! Assignment operator
-    RadioRepresentation& operator= (const RadioRepresentation& r);
+  /// Print the structure of theRadioGraph to a string
+  std::string printRadioGraph() const;
+  /// Print the structure of theEngineGraph to a string
+  std::string printEngineGraph() const;
 
-    //! Copy a RadioRepresentation
-    void copy(const RadioRepresentation& r);
+  std::vector<ControllerDescription> getControllers() const;
+  std::vector<EngineDescription> getEngines() const;
+  std::vector<LinkDescription> getLinks() const;
+  std::vector<LinkDescription> getExternalLinks() const;
 
-    //! Add a ControllerDescription to this RadioRepresentation
-    void addControllerDescription(ControllerDescription con);
-    //! Add an EngineDescription to this RadioRepresentation
-    void addEngineDescription(EngineDescription eng);
-    //! Add a LinkDescription to this RadioRepresentation
-    void addLinkDescription(LinkDescription link);
+  RadioGraph getRadioGraph() const;
+  EngineGraph getEngineGraph() const;
 
-    /** Build the graphs of this RadioRepresentation
-    *
-    *   Every RadioRepresentation holds two graphs - theRadioGraph and theEngineGraph.
-    *   theRadioGraph contains all components and the links between them.
-    *   theEngineGraph contains all engines and the links between them.
-    *   This function uses the EngineDescriptions and LinkDescriptions to build these graphs
-    */
-    void buildGraphs() throw (GraphStructureErrorException);
-    //! Have the graphs for this RadioRepresentation been built?
-    bool isGraphBuilt() const;
+  /// Find a component in a RadioGraph
+  static bool findComponent(std::string name, const RadioGraph& graph, Vertex& ver);
+  /// Find an engine in an EngineGraph
+  static bool findEngine(std::string name, const EngineGraph& graph, EngVertex& ver);
 
-    //! Reconfigure the representation
-    void reconfigureRepresentation(ReconfigSet reconfigs);
+private:
+  /// Reconfigure a parameter within the representation
+  void reconfigureParameter(ParametricReconfig reconfig);
 
-    //! Get the current value of a parameter
-    std::string getParameterValue(std::string paramName, std::string componentName);
+  /// Build an engine graph
+  void buildEngineDescriptionGraph(EngineDescription& eng) const throw (GraphStructureErrorException);
 
-    //! Print the structure of theRadioGraph to a string
-    std::string printRadioGraph() const;
-    //! Print the structure of theEngineGraph to a string
-    std::string printEngineGraph() const;
+  RadioGraph theRadioGraph;     ///< Graph of all components and links
+  EngineGraph theEngineGraph;   ///< Graph of all engines and links
 
-    std::vector<ControllerDescription> getControllers() const;
-    std::vector<EngineDescription> getEngines() const;
-    std::vector<LinkDescription> getLinks() const;
-    std::vector<LinkDescription> getExternalLinks() const;
+  std::vector<ControllerDescription> controllers;
+  std::vector<LinkDescription> links;
+  std::vector<EngineDescription> engines;
+  std::vector<LinkDescription> externalLinks;   ///< All links between engines
 
-    RadioGraph getRadioGraph() const;
-    EngineGraph getEngineGraph() const;
-
-    //! Find a component in a RadioGraph
-    static bool findComponent(std::string name, const RadioGraph& graph, Vertex& ver);
-    //! Find an engine in an EngineGraph
-    static bool findEngine(std::string name, const EngineGraph& graph, EngVertex& ver);
+  bool isBuilt; ///< Have the graphs been built?
+  mutable boost::mutex mutex_;
 };
 
-//! output to an ostream
+/// Output a RadioRepresentation to a stream
 inline std::ostream& operator <<(std::ostream& os, const RadioRepresentation& rg)
 {
   return os << "Radio Graph: " << std::endl << rg.printRadioGraph() << std::endl

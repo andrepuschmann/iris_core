@@ -31,8 +31,8 @@
  * Simple logging for Iris.
  */
 
-#ifndef IRIS_LOGGING_H_
-#define IRIS_LOGGING_H_
+#ifndef IRISAPI_LOGGING_H_
+#define IRISAPI_LOGGING_H_
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
   //boost::date_time uses windows.h - need to define the following to avoid socket and macro issues
@@ -232,4 +232,4 @@ inline std::string NowTime()
 
 } /* namespace iris */
 
-#endif /* IRIS_LOGGING_H_ */
+#endif /* IRISAPI_LOGGING_H_ */

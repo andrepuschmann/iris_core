@@ -32,22 +32,23 @@
  * against the same API.
  */
 
-#ifndef VERSION_H_
-#define VERSION_H_
+#ifndef IRISAPI_VERSION_H_
+#define IRISAPI_VERSION_H_
 
 namespace iris
 {
-  class Version
-  {
-  public:
-    static const char* getApiVersion()
-    {
-      return "0.0.16";
-    };
 
+class Version
+{
+public:
+  static const char* getApiVersion()
+  {
+    return "0.0.16";
   };
+
+};
 
 } /* namespace iris */
 
-#endif /* VERSION_H_ */
+#endif /* IRISAPI_VERSION_H_ */
 

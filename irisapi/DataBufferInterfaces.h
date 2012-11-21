@@ -31,8 +31,8 @@
  * Interfaces to the DataBuffer class for reading and writing clients.
  */
 
-#ifndef DATABUFFERINTERFACES_H_
-#define DATABUFFERINTERFACES_H_
+#ifndef IRISAPI_DATABUFFERINTERFACES_H_
+#define IRISAPI_DATABUFFERINTERFACES_H_
 
 #include <boost/utility.hpp>
 #include <vector>
@@ -109,7 +109,6 @@ public:
   virtual void releaseWriteData(DataSet<T>*& setPtr) = 0;
 };
 
-}
+} // namespace iris
 
-
-#endif
+#endif // IRISAPI_DATABUFFERINTERFACES_H_

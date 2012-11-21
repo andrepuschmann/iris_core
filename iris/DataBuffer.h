@@ -46,26 +46,26 @@
 namespace iris
 {
 
-/*!
-*   \brief The DataBuffer class implements a buffer which exists between two IRIS components in different engines.
-*
-* The buffer consists of a number of DataSet objects which can be written and read by the components.
-* Components can get a DataSet to write to by calling GetWriteSet(). When finished writing, the component
-* releases the DataSet by calling ReleaseWriteSet().
-* Components can get a DataSet to read from by calling GetReadSet(). When finished reading, the component
-* releases the DataSet by calling ReleaseReadSet().
-* The DataBuffer is thread-safe. In the event that the buffer is full, GetWriteSet() will block.
-* In the event that the buffer is empty, GetReadSet() will block.
-*/
+/** The DataBuffer class implements a buffer which exists between two
+ * Iris components in different engines.
+ *
+ * The buffer consists of a number of DataSet objects which can be written
+ * and read by the components. Components can get a DataSet to write to by
+ * calling GetWriteSet(). When finished writing, the component releases the
+ * DataSet by calling ReleaseWriteSet(). Components can get a DataSet to read
+ * from by calling GetReadSet(). When finished reading, the component releases
+ * the DataSet by calling ReleaseReadSet(). The DataBuffer is thread-safe. In
+ * the event that the buffer is full, GetWriteSet() will block. In the event
+ * that the buffer is empty, GetReadSet() will block.
+ */
 template <typename T>
 class DataBuffer : public ReadBuffer<T>, public WriteBuffer<T>
 {
 public:
 
-  /*!
-  *   \brief Constructor
+  /** Constructor
   *
-  *   \param dataBufferLength   number of DataSets in the buffer
+  *   \param dataBufferLength   Number of DataSets in the buffer.
   */
   explicit DataBuffer(int dataBufferLength = 2) throw (InvalidDataTypeException)
     :buffer_(dataBufferLength, DataSet<T>()),
@@ -85,36 +85,39 @@ public:
   virtual ~DataBuffer(){};
 
 
-  //! Set the link description (with info on source and sink components) for this buffer
+  /** Set the link description (with info on source and sink components)
+   * for this buffer
+   *
+   * @param desc    Description of the link.
+   */
   void setLinkDescription(LinkDescription desc)
   {
     linkDesc = desc;
   };
 
 
-  //! Get the link description for this buffer
+  /// Get the link description for this buffer
   LinkDescription getLinkDescription() const
   {
     return linkDesc;
   };
 
-  //! Get the identifier for the data type of this buffer
+  /// Get the identifier for the data type of this buffer
   int getTypeIdentifier() const
   {
     return typeIdentifier;
   };
 
-  //! Is there any data in this buffer?
+  /// Is there any data in this buffer?
   bool hasData() const
   {
     boost::mutex::scoped_lock lock(mutex_);
     return is_not_empty();
   }
 
-  /*!
-  *   \brief Get the next DataSet to read
+  /** Get the next DataSet to read.
   *
-  *   \param setPtr   A DataSet pointer which will be set by the buffer
+  *   \param setPtr   A DataSet pointer which will be set by the buffer.
   */
   void getReadData(DataSet<T>*& setPtr) throw(DataBufferReleaseException, boost::thread_interrupted)
   {
@@ -126,11 +129,10 @@ public:
     setPtr = &buffer_[readIndex_];
   };
 
-  /*!
-  *   \brief Get the next DataSet to be written
+  /** Get the next DataSet to be written.
   *
   *   \param setPtr   A DataSet pointer which will be set by the buffer
-  *   \param size   The number of elements required in the DataSet
+  *   \param size     The number of elements required in the DataSet
   */
   void getWriteData(DataSet<T>*& setPtr, std::size_t size) throw(DataBufferReleaseException, boost::thread_interrupted)
   {
@@ -145,10 +147,9 @@ public:
     setPtr = &buffer_[writeIndex_];
   };
 
-  /*!
-  *   \brief Release a read DataSet
+  /** Release a read DataSet.
   *
-  *   \param setPtr   A pointer to the DataSet to be released
+  *   \param setPtr   A pointer to the DataSet to be released.
   */
   void releaseReadData(DataSet<T>*& setPtr)
   {
@@ -163,8 +164,7 @@ public:
     setPtr = NULL;
   };
 
-  /*!
-  *   \brief Release a write DataSet
+  /** Release a write DataSet.
   *
   *   \param setPtr   A pointer to the DataSet to be released
   */
@@ -182,14 +182,12 @@ public:
   };
 
 private:
-  //! The source and sink component details for this DataBuffer
-  LinkDescription linkDesc;
+  bool is_not_empty() const { return notEmpty_; }
+  bool is_not_full() const { return notFull_; }
 
-  //! The data type of this buffer
-  int typeIdentifier;
-
-  //! The vector of DataSets
-  std::vector< DataSet<T> > buffer_;
+  LinkDescription linkDesc; ///< Info about readers and writers of this buffer.
+  int typeIdentifier;       ///< The data type of this buffer
+  std::vector< DataSet<T> > buffer_;    ///< The vector of DataSets
 
   bool isReadLocked_;
   bool isWriteLocked_;
@@ -199,9 +197,6 @@ private:
 
   bool notEmpty_;
   bool notFull_;
-
-  bool is_not_empty() const { return notEmpty_; }
-  bool is_not_full() const { return notFull_; }
 
   mutable boost::mutex mutex_;
   boost::condition notEmptyCond_;

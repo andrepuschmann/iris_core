@@ -1,9 +1,7 @@
-/** @mainpage Iris 2.0 Core
-*
-* @authors Paul Sutton
+/** @mainpage Iris Core
 *
 * @section intro Introduction
-* This package contains the core elements of the Iris 2.0 software radio
+* This package contains the core elements of the Iris software radio
 * framework.
 *
 *

@@ -31,8 +31,8 @@
  * Platform-dependent preprocessor defs required for exporting libraries.
  */
 
-#ifndef LIBRARYDEFS_H_
-#define LIBRARYDEFS_H_
+#ifndef IRISAPI_LIBRARYDEFS_H_
+#define IRISAPI_LIBRARYDEFS_H_
 
 // Platform-dependent library declaration
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
@@ -41,5 +41,5 @@
 #   define EXPORT_DECLSPEC
 #endif // _WIN32
 
-#endif // LIBRARYDEFS_H_
+#endif // IRISAPI_LIBRARYDEFS_H_
 

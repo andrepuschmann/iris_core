@@ -32,8 +32,8 @@
  * adjustable from XML or controller).
  */
 
-#ifndef COMPONENTPARAMETERS_H_
-#define COMPONENTPARAMETERS_H_
+#ifndef IRISAPI_COMPONENTPARAMETERS_H_
+#define IRISAPI_COMPONENTPARAMETERS_H_
 
 #include <string>
 #include <map>
@@ -58,34 +58,21 @@ namespace iris
  */
 struct Parameter
 {
-  //! holds a pointer to the actual parameter
-  boost::any parameter;
-
-  //! description of the component
+  boost::any parameter;     ///< Pointer to actual parameter
   std::string description;
-
-  //! default value as a string
   std::string defaultValue;
-
-  //! whether the parameter is dynamically changeable
-  bool isDynamic;
-
-  //! Parameter identifier
-  int identifier;
-
-  //! This is the data type id as in ParameterTypeInfo<Type>::id
-  int typeIdentifier;
-
-  //! Name of the data type
+  bool isDynamic;           ///< Can this parameter be dynamically changed?
+  int identifier;           ///< Unique ID.
+  int typeIdentifier;       ///< ParameterTypeInfo<Type>::id
   std::string typeName;
 
-  //! Whether a list of possibilities was given (true), or an interval (false) for allowedValues
+  /// Whether a list of possibilities was given (true), or an interval (false) for allowedValues
   bool isList;
 
-  //! holds either the list<T> or the Interval<T> struct (min,max)
+  /// holds either the list<T> or the Interval<T> struct (min,max)
   boost::any allowedValues;
 
-  //! default constructor - initialises all values to 0/false/empty, and identifier to -1
+  /// default constructor - initialises all values to 0/false/empty, and identifier to -1
   Parameter() :
     parameter(), description(""), defaultValue(""), isDynamic(false), identifier(-1),
     typeIdentifier(0), typeName(""), isList(false)
@@ -111,27 +98,24 @@ struct Parameter
 };
 
 
-/*!
- * \brief An interface to the parameters of a component
+/** An interface to the parameters of a component
  *
  * The ComponentParameters class permits components to register parameters of different types along with
  * permitted values. These parameters may be accessed through setValue and getValue functions.
- *
  */
-
 class ComponentParameters : boost::noncopyable
 {
 private:
-  //! Map holding all registered parameters. The key is the parameter name.
+  /// Map holding all registered parameters. The key is the parameter name.
   std::map<std::string, Parameter> parameterMap_;
 
-  //! Helper method called by the registerParameter methods
+  /// Helper method called by the registerParameter methods
   template<typename T>
   void registerParameterHelper(std::string name, std::string description,
       std::string defaultValue, bool isDynamic, T& parameter);
 
-  //! Returns a const reference to a Parameter object given by name.
-  //! \throw ParameterNotFoundException if the parameter does not exist
+  /// Returns a const reference to a Parameter object given by name.
+  /// \throw ParameterNotFoundException if the parameter does not exist
   const Parameter& getParameterReference(std::string name) const
     throw (ParameterNotFoundException)
   {
@@ -141,8 +125,8 @@ private:
     return it->second;
   }
 
-  //! Return a reference to a Parameter object given by name.
-  //! \throw ParameterNotFoundException if the parameter does not exist
+  /// Return a reference to a Parameter object given by name.
+  /// \throw ParameterNotFoundException if the parameter does not exist
   Parameter& getParameterReference(std::string name)
     throw (ParameterNotFoundException)
   {
@@ -202,7 +186,7 @@ protected:
 
 public:
 
-  //! Constructs an instance of ComponentParameters
+  /// Constructs an instance of ComponentParameters
   ComponentParameters() : parameterMap_() {}
 
   virtual ~ComponentParameters() {}
@@ -239,7 +223,7 @@ public:
     return ret.str();
   }
 
-  //! returns the number of registered parameters
+  /// returns the number of registered parameters
   size_t getNumParameters() const { return parameterMap_.size(); }
 
   /** Get the value of parameter 'name' in a std::string.
@@ -293,8 +277,8 @@ public:
     return getParameterReference(name).defaultValue;
   }
 
-  //! Returns the data type of a registered parameter.
-  //! \throw ParameterNotFoundException if no parameter with the given name exists.
+  /// Returns the data type of a registered parameter.
+  /// \throw ParameterNotFoundException if no parameter with the given name exists.
   std::string getParameterDataType(std::string name) const
     throw(ParameterNotFoundException)
   {
@@ -303,9 +287,9 @@ public:
     return getParameterReference(name).typeName;
   }
 
-  //! Returns true if the parameter with the given name is dynamically
-  //! reconfigurable.
-  //! \throw ParameterNotFoundException if the parameter could not be found.
+  /// Returns true if the parameter with the given name is dynamically
+  /// reconfigurable.
+  /// \throw ParameterNotFoundException if the parameter could not be found.
   bool isParameterDynamic(std::string name) const
     throw (ParameterNotFoundException)
   {
@@ -351,8 +335,8 @@ inline void ComponentParameters::setValue(std::string name, T value)
   boost::to_lower(name);
 
   Parameter& par = getParameterReference(name);
-  //! \todo check if parameter is convertible to the parameter type with boost::is_convertible<from,to>
-  //!     and convert if possible
+  /// \todo check if parameter is convertible to the parameter type with boost::is_convertible<from,to>
+  ///     and convert if possible
   T** x = boost::any_cast<T*>(&par.parameter);
   if (x == NULL)
   {
@@ -387,8 +371,9 @@ inline void ComponentParameters::setValue(std::string name, T value)
 namespace internal
 {
 
-//! struct for metaprogramming loop to go through all iris types and try to set the value
-//! of the parameter to the given one (as a string)
+/** Struct for metaprogramming loop to go through all iris types and try to set the value
+ *  of the parameter to the given one (as a string)
+ */
 template <int N = boost::mpl::size<IrisParameterTypes>::value>
 struct setParameterValue
 {
@@ -429,7 +414,7 @@ struct setParameterValue<0>
   }
 };
 
-//! convert an arbitrary type into a string
+/// convert an arbitrary type into a string
 template <typename T>
 inline std::string TypeToString(const T& val)
 {
@@ -438,22 +423,22 @@ inline std::string TypeToString(const T& val)
   return sstr.str();
 }
 
-//! boolean template specialisation -> output true/false instead of 1/0
+/// boolean template specialisation -> output true/false instead of 1/0
 template <>
 inline std::string TypeToString<bool>(const bool& val)
 {
   return val ? "true" : "false";
 }
 
-//! specialisation for strings -> we can simply return the value
+/// specialisation for strings -> we can simply return the value
 template <>
 inline std::string TypeToString<std::string>(const std::string& val)
 {
   return val;
 }
 
-//! template class to extract the value of a boost::any field into a string,
-//! using a metaprogramming loop (will be unrolled by compiler)
+/// template class to extract the value of a boost::any field into a string,
+/// using a metaprogramming loop (will be unrolled by compiler)
 template <int N>
 struct GetStringParTmp {
 
@@ -473,7 +458,7 @@ struct GetStringParTmp {
 
 };
 
-//! specialisation for exit condition of the recursion
+/// specialisation for exit condition of the recursion
 template<>
 struct GetStringParTmp<0>
 {
@@ -484,8 +469,8 @@ static std::string EXEC(const boost::any& val) throw (InvalidDataTypeException)
 }
 };
 
-//! Function to convert the value held by the given boost::any into a string.
-//! Checks all iris data types by using the GetStringParTmp template class.
+/// Function to convert the value held by the given boost::any into a string.
+/// Checks all iris data types by using the GetStringParTmp template class.
 inline std::string getStringParameter(const boost::any& val) throw (InvalidDataTypeException)
 {
   return GetStringParTmp< boost::mpl::size<IrisParameterTypes>::value>::EXEC(val);
@@ -595,7 +580,7 @@ inline void ComponentParameters::registerParameter(std::string name, std::string
 }
 
 /** Specialistaion for std::string - intervals don't make sense here.
-*
+ *
  * \todo It should be possible for string parameters to give a list of allowed values,
  *     but an interval does not make sense (and string parameters without an allowedValues
  *     list are of course possible)
@@ -666,17 +651,17 @@ inline void ComponentParameters::registerParameter(std::string name, std::string
 
 
 inline ComponentParameters& ComponentParameters::assignParameters(const ComponentParameters& other)
-      throw (ParameterNotFoundException, InvalidDataTypeException)
+  throw (ParameterNotFoundException, InvalidDataTypeException)
+{
+  for (std::map<std::string, Parameter>::iterator i = parameterMap_.begin();
+     i != parameterMap_.end();
+     ++i)
   {
-    for (std::map<std::string, Parameter>::iterator i = parameterMap_.begin();
-       i != parameterMap_.end();
-       ++i)
-    {
-      setValue(i->first, other.getValue(i->first));
-    }
-    return *this;
+    setValue(i->first, other.getValue(i->first));
   }
+  return *this;
+}
 
-} // end iris namespace
+} // iris namespace
 
-#endif /* COMPONENTPARAMETERS_H_ */
+#endif // IRISAPI_COMPONENTPARAMETERS_H_

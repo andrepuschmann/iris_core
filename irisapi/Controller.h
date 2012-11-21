@@ -31,8 +31,8 @@
  * Contains base class for all Iris controllers.
  */
 
-#ifndef CONTROLLER_H_
-#define CONTROLLER_H_
+#ifndef IRISAPI_CONTROLLER_H_
+#define IRISAPI_CONTROLLER_H_
 
 #include <vector>
 #include <boost/any.hpp>
@@ -308,4 +308,4 @@ public:
 } /* namespace iris */
 
 
-#endif /* COMPONENTBASE_H_ */
+#endif /* IRISAPI_COMPONENTBASE_H_ */

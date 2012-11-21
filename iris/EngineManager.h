@@ -48,7 +48,7 @@
 namespace iris
 {
 
-//! A container for component repository strings
+/// A container for component repository strings
 struct Repositories
 {
   std::string stackRepository;
@@ -57,47 +57,32 @@ struct Repositories
   std::string contRepository;
 };
 
-/*!
- *  \brief The EngineManager controls all engines running within the Iris
- *  architecture.
- */
+/// The EngineManager controls all engines running within the Iris architecture.
 class EngineManager:
   public EngineCallbackInterface,
   public ControllerManagerCallbackInterface
 {
 private:
-  //! The ControllerManager for this radio
-  ControllerManager controllerManager_;
+  ControllerManager controllerManager_;   ///< The single ControllerManager for this radio.
+  boost::ptr_vector<EngineInterface> engines_;  ///< Engines of the current radio.
+  Repositories reps_;         ///< The paths to the radio component repositories
+  EngineGraph engineGraph_;   ///< Graph of all radio engines and the links between them.
 
-  //! The engines of the current radio
-  boost::ptr_vector<EngineInterface> engines_;
-
-  //! The paths to the radio component repositories
-  Repositories reps_;
-
-  //! A graph representing each of the radio engines and the links between them
-  EngineGraph engineGraph_;
-
-  //! The current radio representation - updated with any reconfigurations which occur
+  /// The current radio representation - gets updated with any reconfigurations which occur.
   RadioRepresentation radioRep_;
 
-  /*!
-  *   \brief Create an engine
-  *
-  *   \param  d  An EngineDescription containing the details of the engine
-  *        to be created
-  *
-  *   \returns A pointer to the engine which is created
-  */
+  /** Create an engine
+   *
+   *   \param  d    Description of the engine to be created.
+   *   \returns     Pointer to the created engine.
+   */
   EngineInterface* createEngine(EngineDescription& d)
     throw (ResourceNotFoundException);
 
-  /*!
-  *   \brief Check are both links equivalent
+  /** Check whether two links are equivalent
   *
-  *   \param  first  The first link to be compared
-  *   \param  second   The second link to be compared
-  *
+  *   \param  first     The first link to be compared.
+  *   \param  second    The second link to be compared.
   *   \returns Whether the links are equivalent
   */
   bool sameLink(LinkDescription first, LinkDescription second);

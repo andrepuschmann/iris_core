@@ -50,14 +50,14 @@
 namespace iris
 {
 
-//! Function pointer for "GetApiVersion" in controller library
+/// Function pointer for "GetApiVersion" in controller library
 typedef const char* (*GETAPIVERSIONFUNCTION)();
-//! Function pointer for "CreateController" in controller library
+/// Function pointer for "CreateController" in controller library
 typedef Controller* (*CREATECONTROLLERFUNCTION)();
-//! Function pointer for "ReleaseController" in controller library
+/// Function pointer for "ReleaseController" in controller library
 typedef void (*DESTROYCONTROLLERFUNCTION)(Controller*);
 
-//! A loaded controller object
+/// A loaded controller object
 struct LoadedController
 {
   std::string name;
@@ -67,95 +67,123 @@ struct LoadedController
     :name(name), contPtr(contPtr){}
 };
 
-//! A controller library - contains the library (used to create a controller object)
+/// A controller library - contains the library (used to create a controller object)
 struct ControllerLibrary
 {
   boost::filesystem::path path;
   std::string name;
   boost::shared_ptr< SharedLibrary > libPtr;
 
-  //! Constructor initializes our variables
+  /// Constructor initializes our variables
   ControllerLibrary()
     :name(""){}
 };
 
-//! A repository containing a number of controller libraries
+/// A repository containing a number of controller libraries
 struct ControllerRepository
 {
   boost::filesystem::path path;
   std::vector< ControllerLibrary > controllerLibs;
 };
 
-/*!
- *  \brief The ControllerManager manages all controllers running within the IRIS architecture.
- */
-class ControllerManager: public ControllerCallbackInterface
+
+/// The ControllerManager manages all controllers running within the IRIS architecture.
+class ControllerManager
+  : public ControllerCallbackInterface
 {
-private:
-  std::vector< LoadedController > loadedControllers_;
-  std::vector<ControllerRepository> repositories_;
-  ControllerManagerCallbackInterface* engineManager_;
-
-  /** Map of events to subscribed controllers
-  *
-  *  The keys for the map are formed by concatonating the component name with the event name.
-  *  Each key is associated with a vector of Controller* - these are the controllers that have
-  *  subscribed to that event.
-  */
-  std::map< std::string, std::vector<Controller*> >eventMap_;
-
 public:
 
   ControllerManager();
 
-  //! Set a pointer to the EngineManager which owns this ControllerManager
+  /** Set a pointer to the EngineManager which owns this ControllerManager.
+   *
+   * @param e   Pointer to the callback interface on the EngineManager.
+   */
   void setCallbackInterface(ControllerManagerCallbackInterface* e);
 
   /** Add a repository
-  *   Multiple repositories can be specified by separating paths with ";"
-  *   \param repoPath   Path to the controller repository
-  */
+   *
+   *   Multiple repositories can be specified by separating paths with ";"
+   *   \param repoPath   Path to the controller repository
+   */
   void addRepository(std::string repoPath) throw (ResourceNotFoundException);
 
   /** Load a Controller
-  *   \param  name   Name of Controller to be loaded
-  */
+   *
+   *   \param  name   Name of Controller to be loaded
+   */
   void loadController(std::string name) throw (IrisException);
 
-  //! Start all Controllers
+  /// Start all Controllers
   void startControllers() throw (IrisException);
 
-  //! Stop all Controllers
+  /// Stop all Controllers
   void stopControllers() throw (IrisException);
 
-  //! Unload all Controllers
+  /// Unload all Controllers
   void unloadControllers() throw (IrisException);
 
   /** Check whether a controller exists
-  *   \param  name  The name of the component to look for
+   *
+  *   \param  name  The name of the controller to look for.
   */
   bool controllerExists(std::string name);
 
-  //! Get all the repositories which are available
+  /** Get all the repositories which are available
+   *
+   * @return Vector of paths to the repositories
+   */
   std::vector<boost::filesystem::path> getRepositories();
 
-  //! Activate an event
+  /** Activate an event
+   *
+   * @param e   The event to activate.
+   */
   void activateEvent(Event &e);
 
-  //! Reconfigure the radio
+  /** Reconfigure the radio
+   *
+   * @param reconfigs   A set of reconfigurations.
+   */
   virtual void reconfigureRadio(ReconfigSet reconfigs);
 
-  //! Post a command to a component
+  /** Post a command to a component
+   *
+   * @param command   The command to post.
+   */
   virtual void postCommand(Command command);
 
-  //! Get the value of a parameter
+  /** Get the value of a parameter
+   *
+   * @param paramName       The name of the parameter.
+   * @param componentName   The name of the component containing the parameter.
+   * @return
+   */
   std::string getParameterValue(std::string paramName, std::string componentName);
 
-  //! Subscribe to an event (Called by controllers)
+  /** Subscribe to an event (Called by controllers)
+   *
+   * @param eventName       The event name.
+   * @param componentName   The name of the component triggering the event.
+   * @param cont            A pointer to the subscribing controller.
+   */
   virtual void subscribeToEvent(std::string eventName, std::string componentName, Controller* cont);
 
-  //! Utility function used for logging
+  /// Utility function used for logging
   std::string getName(){return "ControllerManager";}
+
+private:
+  std::vector< LoadedController > loadedControllers_; ///< Our loaded controllers
+  std::vector<ControllerRepository> repositories_;    ///< Our repositories
+  ControllerManagerCallbackInterface* engineManager_; ///< The EngineManager which owns this
+
+  /** Map of events to subscribed controllers
+  *
+  *  The keys for the map are formed by concatenating the component name with the event name.
+  *  Each key is associated with a vector of Controller* - these are the controllers that have
+  *  subscribed to that event.
+  */
+  std::map< std::string, std::vector<Controller*> >eventMap_;
 
 };
 

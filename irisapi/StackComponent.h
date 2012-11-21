@@ -31,8 +31,8 @@
  * The Stack Component base class.
  */
 
-#ifndef STACKCOMPONENT_H_
-#define STACKCOMPONENT_H_
+#ifndef IRISAPI_STACKCOMPONENT_H_
+#define IRISAPI_STACKCOMPONENT_H_
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
@@ -286,5 +286,5 @@ public:
 };
 
 } /* namespace iris */
-#endif /* STACKCOMPONENT_H_ */
+#endif /* IRISAPI_STACKCOMPONENT_H_ */
 

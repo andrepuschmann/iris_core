@@ -32,8 +32,8 @@
  * etc for use in Components.
  */
 
-#ifndef TYPEVECTORS_H_
-#define TYPEVECTORS_H_
+#ifndef IRISAPI_TYPEVECTORS_H_
+#define IRISAPI_TYPEVECTORS_H_
 
 #include <string>
 #include <complex>
@@ -169,5 +169,4 @@ static inline std::vector<int> convertToTypeIdVector()
 
 } // end of namespace iris
 
-
-#endif /* TYPEVECTORS_H_ */
+#endif /* IRISAPI_TYPEVECTORS_H_ */

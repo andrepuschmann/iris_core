@@ -32,8 +32,8 @@
  * generate RadioRepresentation objects for use in the Iris engine.
  */
 
-#ifndef XMLPARSER_H_
-#define XMLPARSER_H_
+#ifndef IRIS_XMLPARSER_H_
+#define IRIS_XMLPARSER_H_
 
 #include "iris/RadioRepresentation.h"
 #include "irisapi/Exceptions.h"
@@ -42,56 +42,54 @@
 namespace iris
 {
 
-  /*! \class XmlParser
-   *  \brief The XmlParser allows us to parse xml radio configuration files and
-   *  generate RadioRepresentation objects for use in the Iris v2.0 engine.
-   *  It also supports the generation of xml files and strings from RadioRepresentation
-   *  objects.
-   */
-  class XmlParser
-  {
-  private:
-    //! ctor - all static function, so we can't construct this
-    XmlParser() {};
+/** The XmlParser allows us to parse xml radio configuration files and
+ *  generate RadioRepresentation objects for use in Iris.
+ *
+ *  It also supports the generation of xml files and strings from RadioRepresentation
+ *  objects.
+ */
+class XmlParser
+{
+public:
+  /** Parse an xml file and generate a RadioRepresentation
+  *
+  *   \param  filename  The configuration file to parse
+  *   \param  radio     The RadioRepresentation object to be filled in
+  *
+  *   \throw  XMLParsingException       Thrown if an error exists in the xml configuration
+  *   \throw  GraphStructureErrorException  Thrown if the radio graphs cannot be built
+  */
+  static void parseXmlFile( std::string filename, RadioRepresentation &radio) throw (XmlParsingException, GraphStructureErrorException);
 
-  public:
+  /** Generate an xml file from a given RadioRepresentation
+  *
+  *   \param  radio     The RadioRepresentation object for the radio
+  *   \param  filename  The configuration file to generate
+  */
+  static void generateXmlFile( RadioRepresentation &radio, std::string filename);
 
+  /** Parse an xml string and generate a RadioRepresentation
+  *
+  *   \param  xml     The string containing the xml to parse
+  *   \param  radio     The RadioRepresentation object to be filled in
+  *
+  *   \throw  XMLParsingException       Thrown if an error exists in the xml configuration
+  *   \throw  GraphStructureErrorException  Thrown if the radio graphs cannot be built
+  */
+  static void parseXmlString( std::string &xml, RadioRepresentation &radio) throw (XmlParsingException, GraphStructureErrorException);
 
-    /** Parse an xml file and generate a RadioRepresentation
-    *
-    *   \param  filename  The configuration file to parse
-    *   \param  radio     The RadioRepresentation object to be filled in
-    *
-    *   \throw  XMLParsingException       Thrown if an error exists in the xml configuration
-    *   \throw  GraphStructureErrorException  Thrown if the radio graphs cannot be built
-    */
-    static void parseXmlFile( std::string filename, RadioRepresentation &radio) throw (XmlParsingException, GraphStructureErrorException);
+  /** Generate an xml string from a given RadioRepresentation
+  *
+  *   \param  radio     The RadioRepresentation object for the radio
+  *   \param  xml      The string to hold the generated xml configuration
+  */
+  static void generateXmlString( RadioRepresentation &radio, std::string &xml);
 
-    /** Generate an xml file from a given RadioRepresentation
-    *
-    *   \param  radio     The RadioRepresentation object for the radio
-    *   \param  filename  The configuration file to generate
-    */
-    static void generateXmlFile( RadioRepresentation &radio, std::string filename);
+private:
+  /// Disable constructor - all functions are static
+  XmlParser() {};
+};
 
-    /** Parse an xml string and generate a RadioRepresentation
-    *
-    *   \param  xml     The string containing the xml to parse
-    *   \param  radio     The RadioRepresentation object to be filled in
-    *
-    *   \throw  XMLParsingException       Thrown if an error exists in the xml configuration
-    *   \throw  GraphStructureErrorException  Thrown if the radio graphs cannot be built
-    */
-    static void parseXmlString( std::string &xml, RadioRepresentation &radio) throw (XmlParsingException, GraphStructureErrorException);
+} // namespace iris
 
-    /** Generate an xml string from a given RadioRepresentation
-    *
-    *   \param  radio     The RadioRepresentation object for the radio
-    *   \param  xml      The string to hold the generated xml configuration
-    */
-    static void generateXmlString( RadioRepresentation &radio, std::string &xml);
-  };
-
-} /* namespace iris */
-
-#endif /* XMLPARSER_H_ */
+#endif // IRIS_XMLPARSER_H_

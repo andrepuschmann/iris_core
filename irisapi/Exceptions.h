@@ -31,8 +31,8 @@
  *  Declaration of all Exceptions used in Iris.
  */
 
-#ifndef EXCEPTIONS_H_
-#define EXCEPTIONS_H_
+#ifndef IRISAPI_EXCEPTIONS_H_
+#define IRISAPI_EXCEPTIONS_H_
 
 
 #include <string>
@@ -189,4 +189,4 @@ public:
 
 } // iris namespace
 
-#endif /* EXCEPTIONS_H_ */
+#endif /* IRISAPI_EXCEPTIONS_H_ */

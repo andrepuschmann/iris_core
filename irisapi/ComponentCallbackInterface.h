@@ -31,8 +31,8 @@
  * Interface provided to Iris Components by their owner.
  */
 
-#ifndef COMPONENTCALLBACKINTERFACE_H_
-#define COMPONENTCALLBACKINTERFACE_H_
+#ifndef IRISAPI_COMPONENTCALLBACKINTERFACE_H_
+#define IRISAPI_COMPONENTCALLBACKINTERFACE_H_
 
 #include <string>
 #include "irisapi/Event.h"
@@ -51,7 +51,7 @@ public:
   virtual void activateEvent(Event &e) = 0;
 };
 
-} /* namespace iris */
+} // namespace iris
 
 
-#endif /* COMPONENTCALLBACKINTERFACE_H_ */
+#endif // IRISAPI_COMPONENTCALLBACKINTERFACE_H_

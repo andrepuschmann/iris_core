@@ -31,32 +31,19 @@
  * Holds information about an Iris Component.
  */
 
-#ifndef COMPONENTINFORMATION_H_
-#define COMPONENTINFORMATION_H_
+#ifndef IRISAPI_COMPONENTINFORMATION_H_
+#define IRISAPI_COMPONENTINFORMATION_H_
 
 #include <string>
 
 namespace iris {
 
-/*!
- * \brief Hold information about this component
+/** Holds information about this component
  *
  * The ComponentInformation is initialized in the ComponentBase constructor.
- *
  */
-
 class ComponentInformation
 {
-private:
-  const std::string name_;
-  const std::string type_;
-  const std::string description_;
-  const std::string author_;
-  const std::string version_;
-
-  //! private default constructor -> cannot be called
-  ComponentInformation() {};
-
 public:
 
   /** Constructs a ComponentInformation object.
@@ -73,25 +60,34 @@ public:
   {
   }
 
-  //! Return the component name
+  /// Return the component name
   std::string getName() const { return name_; }
 
-  //! Return the component type
+  /// Return the component type
   std::string getType() const { return type_; }
 
-  //! Return the author of the component
+  /// Return the author of the component
   std::string getAuthor() const { return author_; }
 
-  //! Return the description of what the component does
+  /// Return the description of what the component does
   std::string getDescription() const {return description_; }
 
-  //! Return component version information
+  /// Return component version information
   std::string getVersion() const { return version_; }
+
+private:
+  const std::string name_;
+  const std::string type_;
+  const std::string description_;
+  const std::string author_;
+  const std::string version_;
+
+  /// private default constructor -> cannot be called
+  ComponentInformation() {};
 
 };
 
 
-} // end of namespace iris
+} // namespace iris
 
-
-#endif /* COMPONENTINFORMATION_H_ */
+#endif // IRISAPI_COMPONENTINFORMATION_H_

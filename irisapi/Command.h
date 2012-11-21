@@ -31,8 +31,8 @@
  * The command object used to pass commands within the Iris system
  */
 
-#ifndef COMMAND_H_
-#define COMMAND_H_
+#ifndef IRISAPI_COMMAND_H_
+#define IRISAPI_COMMAND_H_
 
 #include <vector>
 #include <boost/any.hpp>
@@ -42,24 +42,15 @@ namespace iris
 
 struct Command
 {
-  //! the data passed with the command
-  std::vector<boost::any> data;
-
-  //! type of data passed with command
-  int typeId;
-
-  //! name of this command
-  std::string commandName;
-
-  //! name of component targeted by this command
-  std::string componentName;
-
-  //! name of engine targeted by this command
-  std::string engineName;
+  std::vector<boost::any> data;   ///< Data passed with this command.
+  int typeId;                     ///< Type of the data.
+  std::string commandName;        ///< Name of this command.
+  std::string componentName;      ///< Target component.
+  std::string engineName;         ///< Target engine.
 };
 
 
-} /* namespace iris */
+} // namespace iris
 
-#endif /* COMMAND_H_ */
+#endif // IRISAPI_COMMAND_H_
 

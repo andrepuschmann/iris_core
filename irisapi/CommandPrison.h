@@ -32,8 +32,8 @@
  * named Commands.
  */
 
-#ifndef COMMANDPRISON_H_
-#define COMMANDPRISON_H_
+#ifndef IRISAPI_COMMANDPRISON_H_
+#define IRISAPI_COMMANDPRISON_H_
 
 #include <irisapi/Command.h>
 
@@ -47,11 +47,6 @@ namespace iris
 
 class Cage
 {
-private:
-  mutable boost::mutex cageMutex;
-  boost::condition_variable theConditionVariable;
-  Command command;
-  bool locked;
 public:
   Cage()
   :locked(false)
@@ -78,16 +73,16 @@ public:
     theConditionVariable.notify_one();
   }
 
+private:
+  mutable boost::mutex cageMutex;
+  boost::condition_variable theConditionVariable;
+  Command command;
+  bool locked;
+
 };
 
 class CommandPrison
 {
-private:
-  typedef std::multimap<std::string, boost::shared_ptr< Cage > > CageMM;
-  typedef std::pair<std::string, boost::shared_ptr< Cage > > CagePair;
-  mutable boost::mutex theMutex;
-  CageMM theCages;
-
 public:
   CommandPrison()
   {}
@@ -119,8 +114,14 @@ public:
     return theCages.size();
   }
 
+private:
+  typedef std::multimap<std::string, boost::shared_ptr< Cage > > CageMM;
+  typedef std::pair<std::string, boost::shared_ptr< Cage > > CagePair;
+  mutable boost::mutex theMutex;
+  CageMM theCages;
+
 };
 
-} /* namespace iris */
+} // namespace iris
 
-#endif /* COMMANDPRISON_H_ */
+#endif // IRISAPI_COMMANDPRISON_H_

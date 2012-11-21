@@ -31,8 +31,8 @@
  * The base class for all Iris Components.
  */
 
-#ifndef COMPONENTBASE_H_
-#define COMPONENTBASE_H_
+#ifndef IRISAPI_COMPONENTBASE_H_
+#define IRISAPI_COMPONENTBASE_H_
 
 #include <irisapi/ComponentParameters.h>
 #include <irisapi/ComponentEvents.h>
@@ -83,13 +83,12 @@ namespace iris
  * its parent classes.
  */
 
-class ComponentBase : public ComponentParameters, public ComponentEvents, 
-  public ComponentInformation, public ComponentPorts
+class ComponentBase
+  : public ComponentParameters,
+    public ComponentEvents,
+    public ComponentInformation,
+    public ComponentPorts
 {
-private:
-
-protected:
-
 public:
 
   virtual ~ComponentBase() {};
@@ -161,7 +160,7 @@ inline void ComponentBase::activateEvent(std::string name, std::vector<T> &data)
   activateEventInternal(getName(), name, data);
 }
 
-} /* namespace iris */
+} // namespace iris
 
 
-#endif /* COMPONENTBASE_H_ */
+#endif // IRISAPI_COMPONENTBASE_H_

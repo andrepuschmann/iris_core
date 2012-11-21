@@ -31,8 +31,8 @@
  * A thread-safe queue for passing messages between threads.
  */
 
-#ifndef MESSAGEQUEUE_H_
-#define MESSAGEQUEUE_H_
+#ifndef IRISAPI_MESSAGEQUEUE_H_
+#define IRISAPI_MESSAGEQUEUE_H_
 
 #include <queue>
 #include <boost/thread/mutex.hpp>
@@ -93,4 +93,4 @@ public:
 
 } /* namespace iris */
 
-#endif /* MESSAGEQUEUE_H_ */
+#endif /* IRISAPI_MESSAGEQUEUE_H_ */

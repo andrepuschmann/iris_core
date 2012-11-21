@@ -31,8 +31,8 @@
  * The Event object used to pass events within the Iris system
  */
 
-#ifndef EVENT_H_
-#define EVENT_H_
+#ifndef IRISAPI_EVENT_H_
+#define IRISAPI_EVENT_H_
 
 #include <vector>
 #include <boost/any.hpp>
@@ -58,5 +58,5 @@ struct Event
 
 } /* namespace iris */
 
-#endif /* EVENT_H_ */
+#endif /* IRISAPI_EVENT_H_ */
 
