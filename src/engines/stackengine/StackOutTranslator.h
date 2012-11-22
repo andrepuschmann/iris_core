@@ -59,20 +59,20 @@ private:
 
   WriteBuffer<uint8_t>* outputBuffer_;
 
-  //! The StackDataBuffer for this Translator
+  /// The StackDataBuffer for this Translator
   StackDataBuffer buffer_;
 
-  //! Handle for this StackComponent's thread of execution
+  /// Handle for this StackComponent's thread of execution
   boost::scoped_ptr< boost::thread > thread_;
 
-  //! The main thread loop for this translator
+  /// The main thread loop for this translator
   virtual void threadLoop();
 
 public:
-  //! Constructor
+  /// Constructor
   StackOutTranslator();
 
-  //! Destructor
+  /// Destructor
   virtual ~StackOutTranslator();
 
   /** Set the output buffer for this translator
@@ -87,10 +87,10 @@ public:
   */
   virtual StackDataBuffer* getBuffer();
 
-  //! Create and start the thread for this translator
+  /// Create and start the thread for this translator
   virtual void startTranslator();
 
-  //! Stop the thread for this translator
+  /// Stop the thread for this translator
   virtual void stopTranslator();
 
   std::string getName(){return "StackOutTranslator";};
