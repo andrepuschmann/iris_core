@@ -40,9 +40,10 @@
 namespace iris
 {
 
-/** The ComponentCallbackInterface interface is provided to all components by their owner
+/** The ComponentCallbackInterface interface is provided to all
+ * components by their owner (Usually an Iris engine).
 *  
-*  This interface is used by components to pass events to their owner
+*  This interface is used by components to pass events to their owner.
 */
 class ComponentCallbackInterface{
 public:

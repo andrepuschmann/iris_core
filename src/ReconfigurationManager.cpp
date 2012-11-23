@@ -103,7 +103,7 @@ namespace iris
                         r.componentName = first.name;
                         r.parameterName = it1->name;
                         r.parameterValue = it2->value;
-                        reconfigs.paramReconfigs_.push_back(r);
+                        reconfigs.paramReconfigs.push_back(r);
                     }
                 }
             }

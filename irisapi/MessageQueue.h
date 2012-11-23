@@ -41,52 +41,58 @@
 namespace iris
 {
 
+/// A thread-safe queue used to pass messages between threads.
 template<typename T>
 class MessageQueue
 {
-private:
-  std::queue<T> theQueue;
-  mutable boost::mutex theMutex;
-  boost::condition_variable theConditionVariable;
 public:
+  /// Push an object into the queue
   void push(T const& data)
   {
-    boost::mutex::scoped_lock lock(theMutex);
-    theQueue.push(data);
+    boost::mutex::scoped_lock lock(mutex_);
+    queue_.push(data);
     lock.unlock();
-    theConditionVariable.notify_one();
+    conditionVariable_.notify_one();
   }
 
+  /// Check if the queue is empty
   bool empty() const
   {
-    boost::mutex::scoped_lock lock(theMutex);
-    return theQueue.empty();
+    boost::mutex::scoped_lock lock(mutex_);
+    return queue_.empty();
   }
 
+  /// Try to pop an object from the queue - returns false if queue is empty.
   bool tryPop(T& poppedValue)
   {
-    boost::mutex::scoped_lock lock(theMutex);
-    if(theQueue.empty())
+    boost::mutex::scoped_lock lock(mutex_);
+    if(queue_.empty())
     {
       return false;
     }
     
-    poppedValue=theQueue.front();
-    theQueue.pop();
+    poppedValue=queue_.front();
+    queue_.pop();
     return true;
   }
 
+  /// Pop an object from the queue - block if the queue is empty.
   void waitAndPop(T& poppedValue)
   {
-    boost::mutex::scoped_lock lock(theMutex);
-    while(theQueue.empty())
+    boost::mutex::scoped_lock lock(mutex_);
+    while(queue_.empty())
     {
-      theConditionVariable.wait(lock);
+      conditionVariable_.wait(lock);
     }
     
-    poppedValue=theQueue.front();
-    theQueue.pop();
+    poppedValue=queue_.front();
+    queue_.pop();
   }
+
+private:
+  std::queue<T> queue_;         ///< Our internal queue container.
+  mutable boost::mutex mutex_;  ///< Mutex used for thread safety.
+  boost::condition_variable conditionVariable_;   ///< Used for blocking threads.
 
 };
 

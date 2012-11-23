@@ -43,7 +43,7 @@
 namespace iris
 {
 
-//! A parametric reconfiguration 
+/// A parametric reconfiguration
 struct ParametricReconfig
 {
   std::string engineName;
@@ -52,14 +52,14 @@ struct ParametricReconfig
   std::string parameterValue;
 };
 
-//! An altered link
+/// An altered link
 struct AlteredLink
 {
   LinkDescription oldLink;
   LinkDescription newLink;
 };
 
-//! A structural reconfiguration
+/// A structural reconfiguration
 struct StructuralReconfig
 {
   std::string engineName;
@@ -70,18 +70,18 @@ struct StructuralReconfig
   std::vector< AlteredLink > alteredLinks;
 };
 
-/** A set of radio reconfigurations
+/** A set of radio reconfigurations.
 *
-*   A ReconfigSet contains a number of reconfigurations which must be carried out 
-*   atomically by an engine with respect to the data flow.
+*   A ReconfigSet contains a number of reconfigurations which must be carried
+*   out atomically by an engine with respect to the data flow.
 */
 struct ReconfigSet
 {
-  //! A set of parametric reconfigurations 
-  std::vector< ParametricReconfig > paramReconfigs_;
+  /// A set of parametric reconfigurations
+  std::vector< ParametricReconfig > paramReconfigs;
 
-  //! The set of structural reconfigurations
-  std::vector< StructuralReconfig > structReconfigs_;
+  /// The set of structural reconfigurations
+  std::vector< StructuralReconfig > structReconfigs;
 };
 
 } /* namespace iris */

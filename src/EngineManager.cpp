@@ -165,21 +165,21 @@ namespace iris
 
             //Find parametric reconfigs for this engine
             vector<ParametricReconfig>::iterator parmIt;
-            for(parmIt = reconfigs.paramReconfigs_.begin(); parmIt != reconfigs.paramReconfigs_.end(); ++parmIt)
+            for(parmIt = reconfigs.paramReconfigs.begin(); parmIt != reconfigs.paramReconfigs.end(); ++parmIt)
             {
                 if(parmIt->engineName == current)
-                    currentReconfigs.paramReconfigs_.push_back(*parmIt);
+                    currentReconfigs.paramReconfigs.push_back(*parmIt);
             }
             //Find structural reconfigs for this engine
             vector<StructuralReconfig>::iterator structIt;
-            for(structIt = reconfigs.structReconfigs_.begin(); structIt != reconfigs.structReconfigs_.end(); ++structIt)
+            for(structIt = reconfigs.structReconfigs.begin(); structIt != reconfigs.structReconfigs.end(); ++structIt)
             {
                 if(structIt->engineName == current)
-                    currentReconfigs.structReconfigs_.push_back(*structIt);
+                    currentReconfigs.structReconfigs.push_back(*structIt);
             }
 
             //Apply reconfigurations to the relevent engine if non-empty
-            if(!(currentReconfigs.paramReconfigs_.empty() && currentReconfigs.structReconfigs_.empty()))
+            if(!(currentReconfigs.paramReconfigs.empty() && currentReconfigs.structReconfigs.empty()))
                 engIt->addReconfiguration(currentReconfigs);
 
             //Apply reconfigurations to the radio representation

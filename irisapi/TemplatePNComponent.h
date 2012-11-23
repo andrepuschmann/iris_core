@@ -50,6 +50,10 @@
 namespace iris
 {
 
+/** Base class for template PNComponents.
+ *
+ * Template PNComponents can operate on multiple input and/or output data types.
+ */
 template <class Comp>
 class TemplatePNComponent : public PNComponent
 {
@@ -73,6 +77,7 @@ public:
   }
 
   /** Sets up input and output types.
+   *
    * \param inputTypes Vector of input type identifiers, each element represents a port
    * \param outputTypes Vector of output type identifiers, each element represents a port
    * \return A PNComponent* with the input and output correctly setup, i.e., an instance of
@@ -86,7 +91,6 @@ public:
 protected:
   /** Called by derived class's setupIO() function as a helper for figuring out which types a
    *  templated component should be instantiated with.
-   *
    *
    * \param inputTypes Vector of input type identifiers, each element represents a port
    * \param outputTypes Vector of output type identifiers, each element represents a port
@@ -102,9 +106,11 @@ namespace detail
 {
   namespace mpl = boost::mpl;
 
-  //! \brief Meta-functor to find if the tremplate type is a sequence of sequences.
-  //! Examples are boost::mpl::vector< boost::mpl::vector<int, float>, boost::mpl::vector<double, char> >
-  //! isMultiSequence<T>::value evaluates to true or false.
+  /** Meta-functor to find if the template type is a sequence of sequences.
+   *
+   * Examples are boost::mpl::vector< boost::mpl::vector<int, float>,
+   * boost::mpl::vector<double, char> > isMultiSequence<T>::value evaluates to true or false.
+   */
   template <class T, class Enabled = void>
   struct isMultiSequence :  public mpl::false_
   {};
@@ -117,7 +123,7 @@ namespace detail
   {};
 
 
-  /** \brief Helper class for iterating through all supported input and output types of a given
+  /** Helper class for iterating through all supported input and output types of a given
    * Component, build up template parameters for the current configuration, and create a new
    * Template component with the correct template parameters.
    *
@@ -195,7 +201,7 @@ namespace detail
   };
 
 
-  //! specialisation, enable if empty(iIn) && !empty(In)
+  /// specialisation, enable if empty(iIn) && !empty(In)
   template <class Derived,
         class In,
         class Out,
@@ -214,7 +220,7 @@ namespace detail
     }
   };
 
-  //! specialisation enabled if !empty(iIn)
+  /// specialisation enabled if !empty(iIn)
   template <class Derived,
         class In,
         class Out,
@@ -251,7 +257,7 @@ namespace detail
     }
   };
 
-  //! specialisation, enabled if empty(iIn) &&& empty(In) && empty(iOut) && !empty(Out)
+  /// specialisation, enabled if empty(iIn) &&& empty(In) && empty(iOut) && !empty(Out)
   template <class Derived,
         class In,
         class Out,
@@ -274,7 +280,7 @@ namespace detail
     }
   };
 
-  //! specialisation, enabled if empty(In) && empty(iIn) && !empty(iOut)
+  /// specialisation, enabled if empty(In) && empty(iIn) && !empty(iOut)
   template <class Derived,
         class In,
         class Out,
@@ -314,7 +320,7 @@ namespace detail
     }
   };
 
-  //! all empty => ready
+  /// all empty => ready
   template <class Derived,
         class In,
         class Out,
@@ -336,7 +342,7 @@ namespace detail
   };
 
 
-  /** \brief This is a helper meta-functor, which sets up the appropriate template parameters and calls
+  /** This is a helper meta-functor, which sets up the appropriate template parameters and calls
    *  TemplateHelper<...>::EXEC.
    *
    *  The main reason is to allow DerivedComponent::supportedInputTypes to be a singe sequence of types
@@ -363,7 +369,7 @@ namespace detail
     }
   };
 
-  //! Specialisation if DerivedComponent::supportedInputTypes is not a multisequence
+  /// Specialisation if DerivedComponent::supportedInputTypes is not a multisequence
   template <class DerivedComponent>
     struct TemplateHelperCaller<DerivedComponent,
     typename boost::enable_if< mpl::and_< mpl::not_<detail::isMultiSequence< typename DerivedComponent::supportedInputTypes > >,
@@ -384,8 +390,9 @@ namespace detail
       }
     };
 
-  //! Specialisation if both DerivedComponent::supportedInputTypes and DerivedComponent::supportedOutputTypes
-  //! are not multisequences
+  /** Specialisation if neither DerivedComponent::supportedInputTypes or
+   * DerivedComponent::supportedOutputTypes are multisequences.
+   */
   template <class DerivedComponent>
     struct TemplateHelperCaller<DerivedComponent,
     typename boost::enable_if< mpl::and_< mpl::not_<detail::isMultiSequence< typename DerivedComponent::supportedInputTypes > >,
@@ -406,7 +413,7 @@ namespace detail
       }
     };
 
-  //! Specialisation enabled if DerivedComponent::supportedOutputTypes is not a multisequence
+  /// Specialisation enabled if DerivedComponent::supportedOutputTypes is not a multisequence
   template <class DerivedComponent>
     struct TemplateHelperCaller<DerivedComponent,
     typename boost::enable_if< mpl::and_< detail::isMultiSequence< typename DerivedComponent::supportedInputTypes > ,

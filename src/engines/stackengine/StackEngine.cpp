@@ -143,8 +143,8 @@ namespace iris
     {
         //Go through parametric reconfigurations and give them to the relevent components
         vector< ParametricReconfig >::iterator paramIt;
-        for(paramIt = reconfigs.paramReconfigs_.begin();
-            paramIt != reconfigs.paramReconfigs_.end();
+        for(paramIt = reconfigs.paramReconfigs.begin();
+            paramIt != reconfigs.paramReconfigs.end();
             ++paramIt)
         {
             reconfigureParameter(*paramIt);

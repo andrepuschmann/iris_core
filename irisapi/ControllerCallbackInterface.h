@@ -44,8 +44,8 @@ class Controller;
 
 /** ControllerCallbackInterface is used by controllers to access functions on their owner
 *
-*  This interface allows the controller to subscribe to events on its owner and pass
-*  reconfigurations to its owner.
+*  This interface allows the controller to subscribe to events on and pass
+*  reconfigurations to its owner (usually a ControllerManager).
 */
 class ControllerCallbackInterface{
 public:

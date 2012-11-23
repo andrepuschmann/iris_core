@@ -52,9 +52,9 @@
 // will be used by TypeInfo<T> class
 namespace boost
 {
-//! make complex doubles also floats (is_float should be true)
-//! \todo shall we really do that??
-//! probably bad practise to change to boost defined behaviour
+// make complex doubles also floats (is_float should be true)
+// \todo shall we really do that??
+// probably bad practise to change to boost defined behaviour
 template<>
 struct is_float< std::complex<float> > : public true_type {};
 template<>
@@ -62,7 +62,7 @@ struct is_float< std::complex<double> > : public true_type {};
 template<>
 struct is_float< std::complex<long double> > : public true_type {};
 
-//! make all floats signed
+// make all floats signed
 template<>
 struct is_signed< float > : public true_type {};
 template<>
@@ -70,7 +70,7 @@ struct is_signed< double > : public true_type {};
 template<>
 struct is_signed< long double > : public true_type {};
 
-//! make the complex types signed
+// make the complex types signed
 template<>
 struct is_signed< std::complex<float> > : public true_type {};
 template<>
@@ -78,7 +78,7 @@ struct is_signed< std::complex<double> > : public true_type {};
 template<>
 struct is_signed< std::complex<long double> > : public true_type {};
 
-}
+} // namespace boost
 
 namespace iris
 {
@@ -94,8 +94,8 @@ using boost::uint64_t;
 using boost::int64_t;
 
 
-//! namespace for internal use, for functions which are not part of the
-//! interface
+// namespace for internal use, for functions which are not part of the
+// interface
 namespace detail
 {
 /** Base class used internally, simply for avoiding retyping too much
@@ -133,10 +133,11 @@ struct _TypeInfo_Base
 
 };
 
-} // end namespace detail
+} // namespace detail
 
 /** The general template to get a type id.
- *  All supported types for IRIS should have a template
+ *
+ *  All supported types for Iris should have a template
  *  specialisation with a different id field.
  */
 template <typename T>
@@ -151,7 +152,8 @@ struct TypeInfo : public detail::_TypeInfo_Base<T>
 };
 
 
-/** Macro to define new data types to be supported by IRIS components.
+/** Macro to define new data types to be supported by Iris components.
+ *
  * It sets TypeInfo<dattype>::isIrisSupported to true, gives it the
  * id given as a macro parameter, and sets the name() function to return
  * the name of the type.
@@ -168,7 +170,7 @@ struct TypeInfo : public detail::_TypeInfo_Base<T>
   }
 
 namespace detail {
-//! initial empty vector of data types for macro
+/// initial empty vector of data types for macro
 typedef boost::mpl::vector<> data_types_tmp0;
 }
 
@@ -190,13 +192,13 @@ MAKE_DATA_TYPE(std::complex<long double>, 13);
 
 // Note: the number after data_types_tmp is the number types supported (number of calls
 // to MAKE_DATA_TYPE macro)
-//! boost::mpl::vector containing all data types supported for IRIS data flow.
+/// boost::mpl::vector containing all data types supported for IRIS data flow.
 typedef detail::data_types_tmp14 IrisDataTypes;
 
 // undefine to avoid conflicts
 #undef MAKE_DATA_TYPE
 
-//! Return the number of iris data types supported
+/// Return the number of Iris data types supported
 static inline int getNumIrisDataTypes()
 {
   return boost::mpl::size<IrisDataTypes>::value;
@@ -204,4 +206,4 @@ static inline int getNumIrisDataTypes()
 
 } // namespace iris
 
-#endif /* IRISAPI_TYPEINFO_H_ */
+#endif // IRISAPI_TYPEINFO_H_

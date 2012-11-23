@@ -53,36 +53,39 @@
 namespace boost {
 namespace mpl {
 
-//! wrapper struct for iris TypeInfo member to conform with boost::mpl types,
-//! which have to have members like value, type, value_type, etc.
+/** Wrapper struct for iris TypeInfo member to conform with boost::mpl types,
+ * which have to have members like value, type, value_type, etc.
+ */
 template <typename T>
 struct isIrisNumeric : public bool_< iris::TypeInfo<T>::isNumeric> { };
 
-//! Vector of all numeric data types in in IrisDataTypes
+/// Vector of all numeric data types in in IrisDataTypes
 typedef accumulate<
 iris::IrisDataTypes,         // vector of all allowed data types
 vector<>,              // initialise to empty output vector
 if_< isIrisNumeric<_2>, push_back<_1,_2>, _1 > // if cond for type, add to output vector, otherwise leave as is
 >::type NumericDataTypes;    // define the new vector data type name
 
-//! wrapper struct for iris TypeInfo member to conform with boost::mpl types,
-//! which have to have members like value, type, value_type, etc.
+/** Wrapper struct for iris TypeInfo member to conform with boost::mpl types,
+ * which have to have members like value, type, value_type, etc.
+ */
 template <typename T>
 struct isIrisFloat : public bool_<iris::TypeInfo<T>::isFloat> { };
 
-//! Vector of all floating point data types in in iris_data_types
+/// Vector of all floating point data types in in iris_data_types
 typedef accumulate<
 iris::IrisDataTypes,
 vector<>,
 if_<isIrisFloat<_2>, push_back<_1,_2>, _1 >
 >::type FloatDataTypes;
 
-//! wrapper struct for iris TypeInfo member to conform with boost::mpl types,
-//! which have to have members like value, type, value_type, etc.
+/** Wrapper struct for iris TypeInfo member to conform with boost::mpl types,
+ * which have to have members like value, type, value_type, etc.
+ */
 template <typename T>
 struct isIrisInteger : public bool_<iris::TypeInfo<T>::isInteger> { };
 
-//! Vector of all integer data types in iris_data_types
+/// Vector of all integer data types in iris_data_types
 typedef accumulate<
 iris::IrisDataTypes,
 vector<>,
@@ -90,19 +93,20 @@ if_< isIrisInteger<_2>, push_back<_1,_2>, _1 >
 >::type IntegerDataTypes;
 
 
-//! wrapper struct for iris TypeInfo member to conform with boost::mpl types,
-//! which have to have members like value, type, value_type, etc.
+/** Wrapper struct for iris TypeInfo member to conform with boost::mpl types,
+ * which have to have members like value, type, value_type, etc.
+ */
 template <typename T>
 struct isIrisSigned : public bool_<iris::TypeInfo<T>::isSigned> { };
 
-//! Vector of all signed integer data types in iris_data_types
+/// Vector of all signed integer data types in iris_data_types
 typedef accumulate<
 iris::IrisDataTypes,
 vector<>,
 if_< and_<isIrisSigned<_2>, isIrisInteger<_2> >, push_back<_1,_2>, _1 >
 >::type SignedIntegerDataTypes;
 
-//! Vector of all signed data types in iris_data_types
+/// Vector of all signed data types in iris_data_types
 typedef accumulate<
 iris::IrisDataTypes,
 vector<>,
@@ -110,12 +114,13 @@ if_< isIrisSigned<_2>, push_back<_1,_2>, _1 >
 >::type SignedDataTypes;
 
 
-//! wrapper struct for iris TypeInfo member to conform with boost::mpl types,
-//! which have to have members like value, type, value_type, etc.
+/** Wrapper struct for iris TypeInfo member to conform with boost::mpl types,
+ * which have to have members like value, type, value_type, etc.
+ */
 template <typename T>
 struct isIrisComplex : public bool_<iris::TypeInfo<T>::isComplex> { };
 
-//! Vector of all signed integer data types in iris_data_types
+/// Vector of all signed integer data types in iris_data_types
 typedef accumulate<
 iris::IrisDataTypes,
 vector<>,
@@ -136,8 +141,9 @@ using boost::mpl::ComplexDataTypes;
 
 namespace detail
 {
-  //! helper meta-functor which iterates through all types in the boost::mpl::vector
-  //! Tvect and adds the type identifiers into a std::vector
+  /** Helper meta-functor which iterates through all types in the boost::mpl::vector
+   * Tvect and adds the type identifiers into a std::vector
+   */
   template <class Tvect, int N = boost::mpl::size<Tvect>::value >
   struct convertToTypeIdVectorHelper
   {
@@ -150,7 +156,7 @@ namespace detail
     }
   };
 
-  //! specialisation to end recursion
+  /// Specialisation to end recursion
   template <class Tvect>
   struct convertToTypeIdVectorHelper<Tvect, 0>
   {
@@ -158,7 +164,7 @@ namespace detail
   };
 }
 
-//! convert a type vector into a std::vector of type identifiers
+/// Convert a type vector into a std::vector of type identifiers
 template <class Tvect>
 static inline std::vector<int> convertToTypeIdVector()
 {
@@ -169,4 +175,4 @@ static inline std::vector<int> convertToTypeIdVector()
 
 } // end of namespace iris
 
-#endif /* IRISAPI_TYPEVECTORS_H_ */
+#endif // IRISAPI_TYPEVECTORS_H_

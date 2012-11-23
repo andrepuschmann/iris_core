@@ -34,7 +34,7 @@
 #ifndef IRISAPI_LIBRARYDEFS_H_
 #define IRISAPI_LIBRARYDEFS_H_
 
-// Platform-dependent library declaration
+/// Platform-dependent library declaration
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
 #   define EXPORT_DECLSPEC   __declspec (dllexport)
 #else

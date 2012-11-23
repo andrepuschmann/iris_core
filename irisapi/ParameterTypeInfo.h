@@ -48,23 +48,26 @@ namespace iris
 {
 
 /** Traits class for checking whether a type can be used as a XML parameter
- *  exposed to the engine. Should be used as ParameterTypeInfo<T>::isAllowed , which
- *  evaluates to true or false. New types can be added with the MAKE_IS_IRIS_PARAMETER
+ *  exposed to the engine.
+ *
+ *  Should be used as ParameterTypeInfo<T>::isAllowed , which evaluates to
+ *  true or false. New types can be added with the MAKE_IS_IRIS_PARAMETER
  *  macro.
  */
 template <typename T>
 struct ParameterTypeInfo
 {
-  //! whether the type is allowed as a Component parameter
+  /// whether the type is allowed as a Component parameter
   IRIS_STATIC_CONSTANT(bool, isAllowed = false);
-  //! The identifier number for this parameter type (can be used for comparisons)
+  /// The identifier number for this parameter type (can be used for comparisons)
   IRIS_STATIC_CONSTANT(int, identifier = -1);
-  //! The name of the type
+  /// The name of the type
   static std::string name() { return "unknown"; }
 };
 
-/** Macro to add a new parameter type to the list of allowed ones. Calls
- *  to this macro should be made inside this header file only. Suitable
+/** Macro to add a new parameter type to the list of allowed ones.
+ *
+ *  Calls to this macro should be made inside this header file only. Suitable
  *  types must be convertible to a string in some way, and back to the
  *  original type in order to allow specifying them in the XML file.
  *
@@ -85,7 +88,7 @@ typedef boost::mpl::push_back<parameter_types_tmp ## identifier_,partype>::type 
 }
 
 namespace detail {
-//! initial metavector for parameter types
+/// initial metavector for parameter types
 typedef boost::mpl::vector<> parameter_types_tmp0;
 }
 
@@ -118,20 +121,19 @@ MAKE_PARAMETER_TYPE(int64_t, 15);
 
 // Note: the number after parameter_types_tmp has to be the number of times the
 // MAKE_PARAMETER_TYPE macro has been called.
-//! boost::mpl::vector of all types supported for Component parameters
+/// boost::mpl::vector of all types supported for Component parameters
 typedef detail::parameter_types_tmp16 IrisParameterTypes;
 
 #else
 
-//! boost::mpl::vector of all types supported for Component parameters
+/// boost::mpl::vector of all types supported for Component parameters
 typedef detail::parameter_types_tmp14 IrisParameterTypes;
 
 #  endif
-
 
 
 #undef MAKE_PARAMETER_TYPE
 
 } // namespace iris
 
-#endif /* IRISAPI_PARAMETERTYPEINFO_H_ */
+#endif // IRISAPI_PARAMETERTYPEINFO_H_

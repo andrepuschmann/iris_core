@@ -47,55 +47,44 @@
 namespace iris
 {
 
-//! Property of a StackDataSet to determine source
+/// Property of a StackDataSet to determine where it came from.
 enum Source { ABOVE, BELOW };
 
-/*!
-*   \brief The StackDataSet class implements a set of data which is passed between StackComponents.
+/** The StackDataSet class implements a set of data which is passed
+ * between StackComponents.
 *
-*  A dequeue of uint8_t is used to store data - this provides efficient addition of data at the front and back.
+*  A dequeue of uint8_t is used to store data - this provides efficient
+*  addition of data at the front and back.
 */
 struct StackDataSet
 {
-  Source source;
-  std::deque<uint8_t> data;
-  double timeStamp;
-  std::string lastComponent;
+  Source source;              ///< Where did this come from? (Above/Below)
+  std::deque<uint8_t> data;   ///< The actual data.
+  double timeStamp;           ///< Timestamp for this data.
+  std::string lastComponent;  ///< ??
   
-  //! Constructor initializes our variables
+  /// Constructor initializes our variables
   StackDataSet(double t=0)
-    :timeStamp(t){}
+    : timeStamp(t)
+  {}
 };
 
-/*!
-*   \brief The StackDataBuffer class implements a buffer which exists between two IRIS components in a StackEngine.
-*
-*  The buffer consists of a queue of pointers to StackDataSets.
-*  Components can push a StackDataSet to the buffer by calling pushDataSet().
-*  Components can get a DataSet from the buffer by calling popDataSet().
-*  The DataBuffer is thread-safe. In the event that the buffer is full, PushDataSet() will block.
-*  In the event that the buffer is empty, PopDataSet() will block.
-*/
+/** The StackDataBuffer class is used inside a StackComponent to hold a queue
+ * of StackDataSets that need to be processed.
+ *
+ * The buffer consists of a queue of pointers to StackDataSets. Components
+ * can push a StackDataSet to the buffer by calling pushDataSet(). Components
+ * can get a DataSet from the buffer by calling popDataSet(). The DataBuffer
+ * is thread-safe. In the event that the buffer is full, PushDataSet() will block.
+ * In the event that the buffer is empty, PopDataSet() will block.
+ */
 class StackDataBuffer
 {
-
-private:
-  //! The queue of StackDataSet pointers
-  std::queue< boost::shared_ptr<StackDataSet> > buffer_;
-
-  //! Max number of items in the queue
-  unsigned maxBufferSize_;
-
-  mutable boost::mutex mutex_;
-  boost::condition_variable notEmptyVariable_;
-  boost::condition_variable notFullVariable_;
-
 public:
 
-  /*!
-  *   \brief Constructor
+  /** Construct a StackDataBuffer
   *
-  *   \param maxSize    Max number of elements in queue
+  *  \param maxSize    Max number of elements in queue
   */
   explicit StackDataBuffer(unsigned maxSize = 10)
     :maxBufferSize_(maxSize)
@@ -103,22 +92,21 @@ public:
 
   virtual ~StackDataBuffer(){};
 
-  //! Is there any data in this buffer?
+  /// Is there any data in this buffer?
   bool hasData() const
   {
     boost::mutex::scoped_lock lock(mutex_);
     return buffer_.empty();
   }
 
-  //! Is the buffer full?
+  /// Is the buffer full?
   bool isFull() const
   {
   boost::mutex::scoped_lock(mutex_);
   return (buffer_.size() >= maxBufferSize_);
   }
   
-  /*!
-  *   \brief Get a StackDataSet from the queue
+  /** Get a StackDataSet from the queue
   *
   *  \return A boost::shared_ptr to a StackDataSet
   */
@@ -134,10 +122,9 @@ public:
     lock.unlock();
     notFullVariable_.notify_one();
     return p;
-  };
+  }
 
-  /*!
-  *   \brief Add a StackDataSet to a queue
+  /** Add a StackDataSet to a queue
   *
   *   \param set  A boost::shared_ptr to a StackDataSet
   */
@@ -151,7 +138,18 @@ public:
     buffer_.push(set);
     lock.unlock();
     notEmptyVariable_.notify_one();
-  };
+  }
+
+private:
+  /// The queue of StackDataSet pointers
+  std::queue< boost::shared_ptr<StackDataSet> > buffer_;
+
+
+  unsigned maxBufferSize_;        ///< Max number of items in the queue.
+  mutable boost::mutex mutex_;    ///< Provide thread safety.
+  boost::condition_variable notEmptyVariable_;  ///< Used to block if queue is empty.
+  boost::condition_variable notFullVariable_;   ///< Used to block if queue is full.
+
 };
 
 } /* namespace iris */

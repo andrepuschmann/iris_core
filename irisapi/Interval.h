@@ -43,34 +43,32 @@
 namespace iris
 {
 
-/** Represents an interval: [Interval<T>().min, Interval<T>().max]
- */
+/// Represents an interval: [Interval<T>().min, Interval<T>().max]
 template <typename T>
 struct Interval
 {
-  //! Make sure we use a numeric type here
-  BOOST_STATIC_ASSERT( TypeInfo<T>::isNumeric );
-  //! The lower bound of the interval
-  T minimum;
-  //! The upper bound of the interval
-  T maximum;
+  /// Make sure we use a numeric type here
+  BOOST_STATIC_ASSERT( TypeInfo<T>::isNumeric ); ///< Ensure we use a numeric type.
 
-  //! Default constructor, initialises the values with min and max from
-  //! std::numeric_limits.
-  //! In case of floats, the min is set to -max.
+  T minimum;    ///< The lower bound of the interval
+  T maximum;    ///< The upper bound of the interval
+
+  /** Default constructor, initialises the values with min and max from
+   * std::numeric_limits. In case of floats, the min is set to -max.
+   */
   Interval()
     : minimum(boost::numeric::bounds<T>::lowest()),
       maximum(boost::numeric::bounds<T>::highest())
   {
   };
 
-  //! Constructor giving the min and max explicitly
+  /// Constructor giving the min and max explicitly
   Interval(T min, T max) : minimum(min), maximum(max) {  }
 
-  //! Copy constructor
+  /// Copy constructor
   Interval(const Interval& other) : minimum(other.minimum), maximum(other.maximum) {}
 
-  //! Assignment
+  /// Assignment
   Interval operator=(const Interval& other)
   {
     minimum = other.minimum;
@@ -78,13 +76,13 @@ struct Interval
     return *this;
   }
 
-  //! compare to another Interval
+  /// compare to another Interval
   bool operator==(const Interval& other) const
   {
     return minimum==other.minimum && maximum == other.maximum;
   }
 
-  //! check if number is in interval
+  /// check if number is in interval
   bool isIn(const T& num) const
   {
     return (num >= minimum) && (num <= maximum);
@@ -92,11 +90,11 @@ struct Interval
 
 };
 
-//! specialisation for bool to get rid of warning
+/// specialisation for bool to get rid of warning
 template<>
 inline Interval<bool>::Interval() : minimum(false), maximum(true) {}
 
-//! output Interval on ostream
+/// output Interval on ostream
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const Interval<T> i)
 {
@@ -106,4 +104,4 @@ std::ostream& operator<<(std::ostream& os, const Interval<T> i)
 
 } // end of iris namespace
 
-#endif /* IRISAPI_INTERVAL_H_ */
+#endif // IRISAPI_INTERVAL_H_

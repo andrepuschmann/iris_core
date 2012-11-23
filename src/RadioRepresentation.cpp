@@ -46,7 +46,7 @@ namespace iris
 {
 
     RadioRepresentation::RadioRepresentation()
-        :isBuilt(false)
+        :isBuilt_(false)
     {}
 
     RadioRepresentation::RadioRepresentation(const RadioRepresentation& r)
@@ -62,29 +62,29 @@ namespace iris
 
     void RadioRepresentation::copy(const RadioRepresentation& r)
     {
-        isBuilt = r.isBuilt;
-        controllers = r.controllers;
-        links = r.links;
-        engines = r.engines;
-        externalLinks = r.externalLinks;
-        theRadioGraph = r.theRadioGraph;
-        theEngineGraph = r.theEngineGraph;
+        isBuilt_ = r.isBuilt_;
+        controllers_ = r.controllers_;
+        links_ = r.links_;
+        engines_ = r.engines_;
+        externalLinks_ = r.externalLinks_;
+        radioGraph_ = r.radioGraph_;
+        engineGraph_ = r.engineGraph_;
     }
 
     void RadioRepresentation::addControllerDescription(ControllerDescription con)
     {
-        controllers.push_back(con);
+        controllers_.push_back(con);
     }
 
     void RadioRepresentation::addEngineDescription(EngineDescription eng)
     {
-        engines.push_back(eng);
+        engines_.push_back(eng);
     }
 
 
     void RadioRepresentation::addLinkDescription(LinkDescription link)
     {
-        links.push_back(link);
+        links_.push_back(link);
     }
 
     //Use the link descriptions and engine descriptions to build the radio graph, the engine graph and the
@@ -95,70 +95,70 @@ namespace iris
 
         //Add component descriptions as vertices to radio graph
         vector<EngineDescription>::iterator engIt;
-        for(engIt = engines.begin(); engIt != engines.end(); engIt++)
+        for(engIt = engines_.begin(); engIt != engines_.end(); engIt++)
         {
             vector<ComponentDescription>::iterator compIt;
             for(compIt = engIt->components.begin(); compIt != engIt->components.end(); compIt++)
             {
                 //Add the component description to the component graph
-                Vertex v = add_vertex(theRadioGraph);
-                theRadioGraph[v] = *compIt;
+                Vertex v = add_vertex(radioGraph_);
+                radioGraph_[v] = *compIt;
             }
         }
 
         //Add all the links as edges of the radio graph
         vector<LinkDescription>::iterator linkIt;
-        for(linkIt = links.begin(); linkIt != links.end(); linkIt++)
+        for(linkIt = links_.begin(); linkIt != links_.end(); linkIt++)
         {
             Vertex src, snk;
-            if(!findComponent(linkIt->sourceComponent, theRadioGraph, src))
+            if(!findComponent(linkIt->sourceComponent, radioGraph_, src))
                 throw GraphStructureErrorException("Could not find component " + linkIt->sourceComponent + " referenced by link");
-            if(!findComponent(linkIt->sinkComponent, theRadioGraph, snk))
+            if(!findComponent(linkIt->sinkComponent, radioGraph_, snk))
                 throw GraphStructureErrorException("Could not find component " + linkIt->sinkComponent + " referenced by link");
             bool inserted;
             Edge e;
-            tie(e, inserted) = add_edge(src, snk, theRadioGraph);
-            theRadioGraph[e] = *linkIt;
+            tie(e, inserted) = add_edge(src, snk, radioGraph_);
+            radioGraph_[e] = *linkIt;
         }
 
         //Find all the internal and external (ones that cross engine boundaries) edges
         EdgeIterator ei, eiend;
-        for(tie(ei,eiend) = edges(theRadioGraph); ei != eiend; ++ei)
+        for(tie(ei,eiend) = edges(radioGraph_); ei != eiend; ++ei)
         {
             string srcEng, snkEng;
-            srcEng = theRadioGraph[source(*ei, theRadioGraph)].engineName;
-            snkEng = theRadioGraph[target(*ei, theRadioGraph)].engineName;
+            srcEng = radioGraph_[source(*ei, radioGraph_)].engineName;
+            snkEng = radioGraph_[target(*ei, radioGraph_)].engineName;
 
             //Set the source and sink engines
-            theRadioGraph[*ei].sourceEngine = srcEng;
-            theRadioGraph[*ei].sinkEngine = snkEng;
+            radioGraph_[*ei].sourceEngine = srcEng;
+            radioGraph_[*ei].sinkEngine = snkEng;
 
             if(srcEng != snkEng) //External link
             {
                 //Add to the vector of external links
-                externalLinks.push_back(theRadioGraph[*ei]);
+                externalLinks_.push_back(radioGraph_[*ei]);
             }
             else //Internal link
             {
                 //Find the engine which the link belongs to and add it
-                for(engIt = engines.begin(); engIt != engines.end(); engIt++)
+                for(engIt = engines_.begin(); engIt != engines_.end(); engIt++)
                 {
                     if(engIt->name == srcEng)
-                        engIt->links.push_back(theRadioGraph[*ei]);
+                        engIt->links.push_back(radioGraph_[*ei]);
                 }
             }
         }
 
         //Build all the individual engine graphs
-        for(engIt = engines.begin(); engIt != engines.end(); engIt++)
+        for(engIt = engines_.begin(); engIt != engines_.end(); engIt++)
         {
             buildEngineDescriptionGraph(*engIt);
         }
 
         //Add external links to the engine descriptions
-        for(linkIt = externalLinks.begin(); linkIt != externalLinks.end(); linkIt++)
+        for(linkIt = externalLinks_.begin(); linkIt != externalLinks_.end(); linkIt++)
         {
-            for(engIt = engines.begin(); engIt != engines.end(); engIt++)
+            for(engIt = engines_.begin(); engIt != engines_.end(); engIt++)
             {
                 if(engIt->name == linkIt->sourceEngine || engIt->name == linkIt->sinkEngine)
                 {
@@ -168,38 +168,38 @@ namespace iris
         }
 
         //Build the overall engine graph
-        for(engIt = engines.begin(); engIt != engines.end(); engIt++)
+        for(engIt = engines_.begin(); engIt != engines_.end(); engIt++)
         {
             //Add the engine description to the engine graph
-            EngVertex engV = add_vertex(theEngineGraph);
-            theEngineGraph[engV] = *engIt;
+            EngVertex engV = add_vertex(engineGraph_);
+            engineGraph_[engV] = *engIt;
         }
         vector<LinkDescription>::iterator exLinkIt;
-        for(exLinkIt = externalLinks.begin(); exLinkIt != externalLinks.end(); ++exLinkIt)
+        for(exLinkIt = externalLinks_.begin(); exLinkIt != externalLinks_.end(); ++exLinkIt)
         {
             LinkDescription el = *exLinkIt;
             //Add link to the engine graph
             EngVertex engSrc, engSnk;
-            if(!findEngine(el.sourceEngine, theEngineGraph, engSrc))
+            if(!findEngine(el.sourceEngine, engineGraph_, engSrc))
                 throw GraphStructureErrorException("Could not find engine " + el.sourceEngine);
-            if(!findEngine(el.sinkEngine, theEngineGraph, engSnk))
+            if(!findEngine(el.sinkEngine, engineGraph_, engSnk))
                 throw GraphStructureErrorException("Could not find engine " + el.sinkEngine);
 
             bool inserted;
             EngEdge engE;
-            tie(engE, inserted) = add_edge(engSrc, engSnk, theEngineGraph);
-            theEngineGraph[engE] = el;
+            tie(engE, inserted) = add_edge(engSrc, engSnk, engineGraph_);
+            engineGraph_[engE] = el;
         }
 
-        isBuilt = true;
+        isBuilt_ = true;
     }
 
     void RadioRepresentation::reconfigureRepresentation(ReconfigSet reconfigs)
     {
         //Find all the parametric reconfigurations and apply them
         vector< ParametricReconfig >::iterator paramIt;
-        for(paramIt = reconfigs.paramReconfigs_.begin();
-            paramIt != reconfigs.paramReconfigs_.end();
+        for(paramIt = reconfigs.paramReconfigs.begin();
+            paramIt != reconfigs.paramReconfigs.end();
             ++paramIt)
         {
             reconfigureParameter(*paramIt);
@@ -213,23 +213,23 @@ namespace iris
         //Apply change to the RadioGraph
         Vertex v;
         ComponentDescription newComp;
-        if(!findComponent(reconfig.componentName, theRadioGraph, v))
+        if(!findComponent(reconfig.componentName, radioGraph_, v))
         {
             throw ResourceNotFoundException("Could not find component " + reconfig.componentName + " when reconfiguring RadioRepresentation");
             return;
         }
         vector<ParameterDescription>::iterator paramIt;
-        for(paramIt = theRadioGraph[v].parameters.begin(); paramIt != theRadioGraph[v].parameters.end(); ++paramIt)
+        for(paramIt = radioGraph_[v].parameters.begin(); paramIt != radioGraph_[v].parameters.end(); ++paramIt)
         {
             if(paramIt->name == reconfig.parameterName)
                 paramIt->value = reconfig.parameterValue;
         }
-        newComp = theRadioGraph[v];
+        newComp = radioGraph_[v];
 
         //Apply change to the EngineDescription
         EngineDescription engD;
         vector<EngineDescription>::iterator engIt;
-        for(engIt = engines.begin(); engIt != engines.end(); ++engIt)
+        for(engIt = engines_.begin(); engIt != engines_.end(); ++engIt)
         {
             if(engIt->name == reconfig.engineName)
             {
@@ -248,12 +248,12 @@ namespace iris
 
         //Apply change to the EngineGraph
         EngVertex ver;
-        if(!findEngine(reconfig.engineName, theEngineGraph, ver))
+        if(!findEngine(reconfig.engineName, engineGraph_, ver))
         {
             throw ResourceNotFoundException("Could not find engine " + reconfig.engineName + " when reconfiguring RadioRepresentation");
             return;
         }
-        theEngineGraph[ver] = engD;
+        engineGraph_[ver] = engD;
     }
 
     std::string RadioRepresentation::getParameterValue(std::string paramName, std::string componentName)
@@ -261,12 +261,12 @@ namespace iris
         boost::mutex::scoped_lock lock(mutex_);
 
         Vertex v;
-        if(!findComponent(componentName, theRadioGraph, v))
+        if(!findComponent(componentName, radioGraph_, v))
         {
             return "";
         }
         vector<ParameterDescription>::iterator paramIt;
-        for(paramIt = theRadioGraph[v].parameters.begin(); paramIt != theRadioGraph[v].parameters.end(); ++paramIt)
+        for(paramIt = radioGraph_[v].parameters.begin(); paramIt != radioGraph_[v].parameters.end(); ++paramIt)
         {
             if(paramIt->name == paramName)
                 return paramIt->value;
@@ -339,13 +339,13 @@ namespace iris
         }
         VertexIterator i, iend;
         OutEdgeIterator ei, eiend;
-        for(tie(i, iend) = vertices(theRadioGraph); i != iend; ++i)
+        for(tie(i, iend) = vertices(radioGraph_); i != iend; ++i)
         {
-            result += theRadioGraph[*i].name + "\n";
-            for(tie(ei,eiend) = out_edges(*i,theRadioGraph); ei != eiend; ++ei)
+            result += radioGraph_[*i].name + "\n";
+            for(tie(ei,eiend) = out_edges(*i,radioGraph_); ei != eiend; ++ei)
             {
-                result += theRadioGraph[*i].name + "." + theRadioGraph[*ei].sourcePort + " --> " \
-                    + theRadioGraph[target(*ei, theRadioGraph)].name + "." + theRadioGraph[*ei].sinkPort + "\n";
+                result += radioGraph_[*i].name + "." + radioGraph_[*ei].sourcePort + " --> " \
+                    + radioGraph_[target(*ei, radioGraph_)].name + "." + radioGraph_[*ei].sinkPort + "\n";
             }
         }
         return result;
@@ -361,13 +361,13 @@ namespace iris
         }
         EngVertexIterator i, iend;
         EngOutEdgeIterator ei, eiend;
-        for(tie(i, iend) = vertices(theEngineGraph); i != iend; ++i)
+        for(tie(i, iend) = vertices(engineGraph_); i != iend; ++i)
         {
-            result += theEngineGraph[*i].name + "\n";
-            for(tie(ei,eiend) = out_edges(*i,theEngineGraph); ei != eiend; ++ei)
+            result += engineGraph_[*i].name + "\n";
+            for(tie(ei,eiend) = out_edges(*i,engineGraph_); ei != eiend; ++ei)
             {
-                result += theEngineGraph[*i].name + "." + theEngineGraph[*ei].sourcePort + " --> " \
-                    + theEngineGraph[target(*ei, theEngineGraph)].name + "." += theEngineGraph[*ei].sinkPort + "\n";
+                result += engineGraph_[*i].name + "." + engineGraph_[*ei].sourcePort + " --> " \
+                    + engineGraph_[target(*ei, engineGraph_)].name + "." += engineGraph_[*ei].sinkPort + "\n";
             }
         }
         return result;
@@ -375,37 +375,37 @@ namespace iris
 
     bool RadioRepresentation::isGraphBuilt() const
     {
-        return isBuilt;
+        return isBuilt_;
     }
 
     vector<ControllerDescription> RadioRepresentation::getControllers() const
     {
-        return controllers;
+        return controllers_;
     }
 
     vector<EngineDescription> RadioRepresentation::getEngines() const
     {
-        return engines;
+        return engines_;
     }
 
     vector<LinkDescription> RadioRepresentation::getLinks() const
     {
-        return links;
+        return links_;
     }
 
     vector<LinkDescription> RadioRepresentation::getExternalLinks() const
     {
-        return externalLinks;
+        return externalLinks_;
     }
 
     RadioGraph RadioRepresentation::getRadioGraph() const
     {
-        return theRadioGraph;
+        return radioGraph_;
     }
 
     EngineGraph RadioRepresentation::getEngineGraph() const
     {
-        return theEngineGraph;
+        return engineGraph_;
     }
 
 }

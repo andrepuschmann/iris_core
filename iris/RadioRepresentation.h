@@ -51,13 +51,13 @@ class DataBufferBase;
 struct ReconfigSet;
 struct ParametricReconfig;
 
-/// A controller
+/// Holds a controller type.
 struct ControllerDescription
 {
   std::string type;
 };
 
-/// A component input or output port
+/// Holds information about a port.
 struct PortDescription
 {
   std::string name;
@@ -69,7 +69,7 @@ struct PortDescription
   }
 };
 
-/// A component parameter
+/// Holds information about a parameter.
 struct ParameterDescription
 {
   std::string name;
@@ -81,7 +81,7 @@ struct ParameterDescription
   }
 };
 
-/// A component
+/// Holds information about a component.
 struct ComponentDescription
 {
   std::string name;
@@ -97,7 +97,7 @@ struct ComponentDescription
   }
 };
 
-/** The graph used to represent the radio structure of components and links
+/** The graph used to represent the radio structure of components and links.
  *
  *  We use a directed graph which allows us to access both the
  *  in-edges and out-edges of each vertex (boost::bidirectionalS).
@@ -117,7 +117,7 @@ typedef boost::graph_traits < RadioGraph >::edge_iterator      EdgeIterator;
 typedef boost::graph_traits < RadioGraph >::out_edge_iterator  OutEdgeIterator;
 typedef boost::graph_traits < RadioGraph >::in_edge_iterator   InEdgeIterator;
 
- /// An Iris v2.0 engine
+ /// Holds information about an engine.
 struct EngineDescription
 {
   std::string name;
@@ -133,7 +133,7 @@ struct EngineDescription
   }
 };
 
-/** The graph used to represent the radio structure of engines and links
+/** The graph used to represent the radio structure of engines and links.
  *
  *  We use a directed graph which allows us to access both the
  *  in-edges and out-edges of each vertex (boost::bidirectionalS).
@@ -158,6 +158,9 @@ typedef boost::graph_traits < EngineGraph >::in_edge_iterator   EngInEdgeIterato
 
 /** The RadioRepresentation contains all the information needed by the
  *  Iris system to build a radio.
+ *
+ *  A running radio will maintain a RadioRepresentation which describes
+ *  itself and will update it as reconfigurations occur.
  */
 class RadioRepresentation
 {
@@ -223,15 +226,15 @@ private:
   /// Build an engine graph
   void buildEngineDescriptionGraph(EngineDescription& eng) const throw (GraphStructureErrorException);
 
-  RadioGraph theRadioGraph;     ///< Graph of all components and links
-  EngineGraph theEngineGraph;   ///< Graph of all engines and links
+  RadioGraph radioGraph_;     ///< Graph of all components and links
+  EngineGraph engineGraph_;   ///< Graph of all engines and links
 
-  std::vector<ControllerDescription> controllers;
-  std::vector<LinkDescription> links;
-  std::vector<EngineDescription> engines;
-  std::vector<LinkDescription> externalLinks;   ///< All links between engines
+  std::vector<ControllerDescription> controllers_;
+  std::vector<LinkDescription> links_;
+  std::vector<EngineDescription> engines_;
+  std::vector<LinkDescription> externalLinks_;   ///< All links between engines
 
-  bool isBuilt; ///< Have the graphs been built?
+  bool isBuilt_; ///< Have the graphs been built?
   mutable boost::mutex mutex_;
 };
 

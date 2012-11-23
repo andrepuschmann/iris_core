@@ -76,13 +76,11 @@
 namespace iris
 {
 
-/*!
- * \brief The base class for all components
+/** The base class for all components
  *
- * The ComponentBase class provides functionality for component parameters, information and ports via
- * its parent classes.
+ * The ComponentBase class provides functionality for component parameters, events,
+ * information and ports via its parent classes.
  */
-
 class ComponentBase
   : public ComponentParameters,
     public ComponentEvents,
@@ -93,8 +91,7 @@ public:
 
   virtual ~ComponentBase() {};
 
-  /*!
-   * \brief Construct this component
+  /** Construct this component
    *
    * \param name      component name
    * \param type      component type
@@ -102,7 +99,6 @@ public:
    * \param author    component author
    * \param version     component version
    */
-
   ComponentBase(std::string name, std::string type, std::string description, std::string author, std::string version ):
     ComponentInformation(name, type, description, author, version)
   {};
@@ -130,12 +126,20 @@ public:
     return *this;
   }
 
-  //! Activate an event
+  /** Activate an event with a single data element.
+   *
+   * @param name  The name of the event to activate.
+   * @param data  The data being passed with the event.
+   */
   template<typename T>
   inline void activateEvent(std::string name, T &data) 
     throw (EventNotFoundException, InvalidDataTypeException);
 
-  //! Activate an event
+  /** Activate an event with multiple data elements.
+   *
+   * @param name  The name of the event to activate.
+   * @param data  The vector of data being passed with the event.
+   */
   template<typename T>
   inline void activateEvent(std::string name, std::vector<T> &data) 
     throw (EventNotFoundException, InvalidDataTypeException);

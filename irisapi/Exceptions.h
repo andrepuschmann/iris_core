@@ -41,14 +41,13 @@
 namespace iris
 {
 
-/** The base exception class for IRIS 2.0
+/** The base exception class for Iris
 *
-*   All other exceptions within IRIS 2.0 inherit from this base class
+*   All other exceptions within Iris inherit from this base class
 */
-class IrisException : public std::exception
+class IrisException
+  : public std::exception
 {
-private:
-  std::string message_;
 public:
   IrisException(const std::string &message) throw()
     :exception(), message_(message)
@@ -59,9 +58,12 @@ public:
   };
   virtual ~IrisException() throw()
   {};
+
+private:
+  std::string message_;   ///< Message describing the cause of the exception.
 };
 
-//! Exception thrown when some value is out of range
+/// Exception thrown when some value is out of range
 class ParameterOutOfRangeException : public IrisException
 {
 public:
@@ -70,7 +72,7 @@ public:
   {};
 };
 
-//! Exception thrown when a parameter is not found in the registered parameters
+/// Exception thrown when a parameter is not found in the registered parameters
 class ParameterNotFoundException : public IrisException
 {
 public:
@@ -79,7 +81,7 @@ public:
   {};
 };
 
-//! Exception thrown when an event is not found in the registered events
+/// Exception thrown when an event is not found in the registered events
 class EventNotFoundException : public IrisException
 {
 public:
@@ -88,7 +90,7 @@ public:
   {};
 };
 
-//! Exception thrown when the requested type is not the right one, or not allowed
+/// Exception thrown when the requested type is not the right one, or not allowed
 class InvalidDataTypeException : public IrisException
 {
 public:
@@ -97,7 +99,7 @@ public:
   {};
 };
 
-//! Exception thrown when memory allocation fails.
+/// Exception thrown when memory allocation fails.
 class OutOfMemoryException : public IrisException
 {
 public:
@@ -106,7 +108,7 @@ public:
   {};
 };
 
-//! Exception thrown by DataBuffer when a DataSet isn't released
+/// Exception thrown by DataBuffer when a DataSet isn't released
 class DataBufferReleaseException : public IrisException
 {
 public:
@@ -115,7 +117,7 @@ public:
   {};
 };
 
-//! Exception thrown by XmlParser when an xml error is detected
+/// Exception thrown by XmlParser when an xml error is detected
 class XmlParsingException : public IrisException
 {
 public:
@@ -124,7 +126,7 @@ public:
   {};
 };
 
-//! Exception thrown at the top level
+/// Exception thrown at the top level
 class SystemException : public IrisException
 {
 public:
@@ -133,7 +135,7 @@ public:
   {};
 };
 
-//! API mismatch between core and module 
+/// API mismatch between core and module
 class ApiVersionException : public IrisException
 {
 public:
@@ -142,7 +144,7 @@ public:
   {};
 };
 
-//! General exception for when a resource can't be found
+/// General exception for when a resource can't be found
 class ResourceNotFoundException : public IrisException
 {
 public:
@@ -151,7 +153,7 @@ public:
   {};
 };
 
-//! If a file could not be found
+/// If a file could not be found
 class FileNotFoundException : public ResourceNotFoundException
 {
 public:
@@ -160,7 +162,7 @@ public:
   {}
 };
 
-//! If a library load has failed
+/// If a library load has failed
 class LibraryLoadException : public IrisException
 {
 public:
@@ -169,7 +171,7 @@ public:
   {}
 };
 
-//! Thrown if a symbol could not be found in a shared library
+/// Thrown if a symbol could not be found in a shared library
 class LibrarySymbolException : public ResourceNotFoundException
 {
 public:
@@ -178,7 +180,7 @@ public:
   {}
 };
 
-//! Error with the given graph structure
+/// Error with the given graph structure
 class GraphStructureErrorException : public IrisException
 {
 public:

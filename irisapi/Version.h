@@ -38,17 +38,23 @@
 namespace iris
 {
 
+/** Used to get the version number of this Iris API.
+ *
+ * Whenever an Iris module is loaded by the core, the version number
+ * of the API it was built against is compared with this version number
+ * to ensure compatibility. The version number is updated whenever the
+ * API changes.
+ */
 class Version
 {
 public:
   static const char* getApiVersion()
   {
-    return "0.0.16";
+    return "0.0.17";
   };
-
 };
 
-} /* namespace iris */
+} // namespace iris
 
-#endif /* IRISAPI_VERSION_H_ */
+#endif // IRISAPI_VERSION_H_
 

@@ -50,7 +50,7 @@
 #include <irisapi/MessageQueue.h>
 #include <irisapi/ControllerCallbackInterface.h>
 
-/** Macro for IRIS boilerplate code in each controller.
+/** Macro for Iris boilerplate code in each controller.
  *  \param ControllerClass Class of the controller class to be exported by the library
  *
  *  This macro defines the GetApiVersion(), CreateController(), and ReleaseController()
@@ -81,48 +81,19 @@
 namespace iris
 {
 
-/*!
- * \brief The base class for all controllers
+/** The base class for all Controllers.
  *
+ * Controllers in Iris have a global view of the running radio. They
+ * can subscribe to events on any component and carry out reconfigurations
+ * of the running radio.
  */
 class Controller
 {
-private:
-  std::string name_;
-  std::string description_;
-  std::string author_;
-  std::string version_;
-
-  //! MessageQueue of Event objects
-  MessageQueue< Event > eventQueue_;
-
-  //! Interface to the owner of this controller
-  ControllerCallbackInterface* controllerManager_;
-
-  //! Handle for this controller's thread of execution
-  boost::scoped_ptr< boost::thread > thread_;
-
-  bool started_;
-  bool loaded_;
-  mutable boost::mutex mutex_;
-  boost::condition_variable conditionVar_;
-
-protected:
-  //! Called when this controller is created to allow it to subscribe to events - called by controller thread
-  virtual void subscribeToEvents() = 0;
-
-  //! Initialize this controller - called by controller thread
-  virtual void initialize() = 0;
-
-  //! Destroy this controller - called by controller thread
-  virtual void destroy() = 0;
-
 public:
 
   virtual ~Controller() {};
 
-  /*!
-   * \brief Construct this controller
+  /** Construct this controller
    *
    * \param name      controller name
    * \param description   brief description of this component
@@ -138,12 +109,13 @@ public:
   {
   }
 
-  //! Process an event - should be overwritten in the controller subclass
+  /// Process an event - should be overwritten in the controller subclass
   virtual void processEvent(Event &e)
   {
     LOG(LERROR) << "Function processEvent has not been implemented in controller " << name_;
   }
 
+  /// Called by derived controller to reconfigure the radio.
   void reconfigureRadio(ReconfigSet reconfigs)
   {
     if(controllerManager_ == NULL)
@@ -152,6 +124,7 @@ public:
     controllerManager_->reconfigureRadio(reconfigs);
   }
 
+  /// Called by derived controller to issue a command.
   void postCommand(Command command)
   {
     if(controllerManager_ == NULL)
@@ -160,6 +133,7 @@ public:
     controllerManager_->postCommand(command);
   }
 
+  /// Called by a derived controller to get the current value of a parameter.
   std::string getParameterValue(std::string paramName, std::string componentName)
   {
     if(controllerManager_ == NULL)
@@ -170,6 +144,7 @@ public:
     return controllerManager_->getParameterValue(paramName, componentName);
   }
 
+  /// Called by a derived controller to subscribe to an event on a component.
   void subscribeToEvent(std::string eventName, std::string componentName)
   {
     if(controllerManager_ == NULL)
@@ -180,19 +155,20 @@ public:
     controllerManager_->subscribeToEvent(eventName, componentName, this);
   }
 
-  //! Set an interface to the ControllerManager
+
+  /// Called by ControllerManager to set the callback interface.
   void setCallbackInterface(ControllerCallbackInterface* c)
   {
     controllerManager_ = c;
   }
 
-  //! Pass an event to this Controller
+  /// Called by ControllerManager to pass an event to this Controller
   void postEvent(Event &e)
   {
     eventQueue_.push(e);
   }
 
-  //! Load the controller thread
+  /// Called by ControllerManager to load the controller thread.
   void load()
   {
     //Load the controller thread (if it hasn't already been loaded)
@@ -203,7 +179,7 @@ public:
     }
   }
 
-  //! Start this controller
+  /// Called by ControllerManager to start this controller
   void start()
   {
     boost::mutex::scoped_lock lock(mutex_);
@@ -212,7 +188,7 @@ public:
     conditionVar_.notify_one();
   }
 
-  //! Stop this controller
+  /// Called by ControllerManager to stop this controller
   void stop()
   {
     boost::mutex::scoped_lock lock(mutex_);
@@ -223,7 +199,7 @@ public:
     thread_->interrupt();
   }
 
-  //! Unload the controller thread
+  /// Called by ControllerManager to unload the controller thread
   void unload()
   {
     //unload the controller thread
@@ -232,7 +208,7 @@ public:
     thread_->join();
   }
 
-  //! The main loop for the Controller thread
+  /// The main loop for the Controller thread
   void eventLoop()
   {
     //Initialize the controller and subscribe to events
@@ -294,14 +270,36 @@ public:
     return version_;
   }
 
-  /** Set the logging policy for this controller
-  *
-  *   \param policy   The logging policy to set
-  */
+  /// Called by the ControllerManager to set the logging policy.
   virtual void setLoggingPolicy(LoggingPolicy* policy) const
   {
     Logger::getPolicy() = policy;
   };
+
+protected:
+  /// Subscribe to events on Iris components - called by controller thread.
+  virtual void subscribeToEvents() = 0;
+
+  /// Initialize this controller - called by controller thread.
+  virtual void initialize() = 0;
+
+  /// Destroy this controller - called by controller thread.
+  virtual void destroy() = 0;
+
+private:
+  std::string name_;
+  std::string description_;
+  std::string author_;
+  std::string version_;
+
+  MessageQueue< Event > eventQueue_;                ///< Queue of incoming Event objects.
+  ControllerCallbackInterface* controllerManager_;  ///< Interface to the ControllerManager.
+  boost::scoped_ptr< boost::thread > thread_;       ///< This controller's thread.
+
+  bool started_;
+  bool loaded_;
+  mutable boost::mutex mutex_;
+  boost::condition_variable conditionVar_;
 
 };
 

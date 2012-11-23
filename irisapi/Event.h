@@ -40,21 +40,19 @@
 namespace iris
 {
 
+/** Event objects which can be activated by Components.
+ *
+ * Events can be registered and activated by Components to notify
+ * Controllers that something has happened. This permits a Controller
+ * to take action such as reconfiguring the radio.
+ */
 struct Event
 {
-  //! the data passed with the event
-  std::vector<boost::any> data;
-
-  //! type of data passed with event
-  int typeId;
-
-  //! name of the event
-  std::string eventName;
-
-  //! name of the component which triggered the event
-  std::string componentName;
+  std::vector<boost::any> data;   ///< The data passed with the event.
+  int typeId;                     ///< The type of data being passed.
+  std::string eventName;          ///< The name of this event.
+  std::string componentName;      ///< The name of the component which created it.
 };
-
 
 } /* namespace iris */
 

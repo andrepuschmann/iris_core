@@ -39,28 +39,29 @@
 
 namespace iris{
 
-  //Forward declaration 
-  class DataBufferBase;
+// Forward declaration
+class DataBufferBase;
 
-  //! A link between two components
-  struct LinkDescription
+/// A link between two components
+struct LinkDescription
+{
+  boost::shared_ptr< DataBufferBase > theBuffer;  ///< Pointer to the link buffer.
+  std::string sourceEngine;     ///< Name of the engine containing the source component.
+  std::string sinkEngine;       ///< Name of the engine containing the sink component.
+  std::string sourceComponent;  ///< Name of the source component.
+  std::string sinkComponent;    ///< Name of the sink component.
+  std::string sourcePort;       ///< Name of the source port.
+  std::string sinkPort;         ///< Name of the sink port.
+
+  /// Check if two LinkDescriptions are identical.
+  bool operator==(const LinkDescription& link) const
   {
-    boost::shared_ptr< DataBufferBase > theBuffer;
-    std::string sourceEngine;
-    std::string sinkEngine;
-    std::string sourceComponent;
-    std::string sinkComponent;
-    std::string sourcePort;
-    std::string sinkPort;
+    return (sourceEngine == link.sourceEngine && sinkEngine == link.sinkEngine &&
+      sourceComponent == link.sourceComponent && sinkComponent == link.sinkComponent &&
+      sourcePort == link.sourcePort && sinkPort == link.sinkPort);
+  }
+};
 
-    bool operator==(const LinkDescription& link) const
-    {
-      return (sourceEngine == link.sourceEngine && sinkEngine == link.sinkEngine &&
-        sourceComponent == link.sourceComponent && sinkComponent == link.sinkComponent &&
-        sourcePort == link.sourcePort && sinkPort == link.sinkPort);   
-    }
-  };
+} // namespace iris
 
-} /* namespace iris */
-
-#endif /* IRISAPI_LINKDESCRIPTION_H_ */
+#endif // IRISAPI_LINKDESCRIPTION_H_

@@ -46,8 +46,9 @@ namespace iris
  */
 struct Port
 {
-  std::string portName;
-  std::vector<int> supportedTypes;
+  std::string portName;             ///< The name of this port.
+  std::vector<int> supportedTypes;  ///< The data types supported by this port.
+
   Port()
     : portName("")
   {}
@@ -65,17 +66,20 @@ struct Port
 
 /** The ports interface for all components
  *
- * The ComponentPorts class allows components to register their input and output ports along with supported
- * data types.
+ * The ComponentPorts class allows components to register their input and output
+ * ports along with supported data types.
  */
 class ComponentPorts
 {
-private:
-  //! The input ports registered for this component
-  std::vector<Port> inputPorts;
+public:
+  ComponentPorts()
+  {};
 
-  //! The output ports registered for this component
-  std::vector<Port> outputPorts;
+  std::vector<Port> getInputPorts() const
+  {return inputPorts;};
+
+  std::vector<Port> getOutputPorts() const
+  {return outputPorts;};
 
 protected:
   /** Registers an input port of a child class.
@@ -98,16 +102,9 @@ protected:
     outputPorts.push_back(Port(name, types));
   };
 
-
-public:
-  ComponentPorts()
-  {};
-
-  std::vector<Port> getInputPorts() const
-  {return inputPorts;};
-
-  std::vector<Port> getOutputPorts() const
-  {return outputPorts;};
+private:
+  std::vector<Port> inputPorts;   ///< Input ports registered for this component.
+  std::vector<Port> outputPorts;  ///< Output ports registered for this component.
 
 };
 

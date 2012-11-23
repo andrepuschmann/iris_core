@@ -51,14 +51,13 @@
 namespace iris
 {
 
-//! Get the current time
+/// Get the current time
 inline std::string NowTime();
 
-//! The log levels available for logging
+/// The log levels available for logging
 enum LogLevel {LDEBUG, LINFO, LWARNING, LERROR, LFATAL};
 
-/*!
-*   \brief  The logging policy. This class determines the output streams of the logging element.
+/** The logging policy. This class determines the output streams of the logging element.
 *
 *   Logger objects use a policy to determine the output streams.
 *   The default output stream is stderr. A log file can be created by setting the file stream.
@@ -110,7 +109,7 @@ public:
     fileStream = pFile;
   }
 
-  //! Get and/or set the reporting level - anything below this level is ignored
+  /// Get and/or set the reporting level - anything below this level is ignored
   LogLevel& ReportingLevel()
   {
     return reportingLevel;
@@ -118,8 +117,7 @@ public:
 
 };
 
-/*!
-*   \brief  The logging element.
+/** The logging element.
 *
 *  In your code, use the LOG macro as follows:
 *  \code LOG(LDEBUG) << "This is an example log message with variable: " << someVariable; \endcode
@@ -136,21 +134,21 @@ public:
   Logger();
   ~Logger();
   std::ostringstream& Get(LogLevel level = LINFO);
-public:
+
   static std::string ToString(LogLevel level);
   static LogLevel FromString(const std::string& level);
   static LoggingPolicy*& getPolicy();
+
 protected:
   std::ostringstream os;
 };
 
-//! Constructor sets LoggingPolicy if required
+/// Constructor sets LoggingPolicy if required
 inline Logger::Logger()
 {
 }
 
-/*!
-*   \brief  Get the output log stream
+/** Get the output log stream
 *
 *   \param level The log level for the message.
 */
@@ -167,27 +165,28 @@ inline std::ostringstream& Logger::Get(LogLevel level)
   return os;
 }
 
-//! Destructor flushes the log stream
+/// Destructor flushes the log stream
 inline Logger::~Logger()
 {
   os << std::endl;
   getPolicy()->output(os.str());
 }
 
+/// Get ref to pointer to the current LoggingPolicy
 inline LoggingPolicy*& Logger::getPolicy()
 {
   static LoggingPolicy* thePolicyPtr = LoggingPolicy::getPolicyInstance();
   return thePolicyPtr;
 }
 
-//! Get the string for a given level
+/// Get the string for a given level
 inline std::string Logger::ToString(LogLevel level)
 {
   static const char* const buffer[] = {"DEBUG", "INFO", "WARNING", "ERROR", "FATAL"};
   return buffer[level];
 }
 
-//! Find the level associated with a given string
+/// Find the level associated with a given string
 inline LogLevel Logger::FromString(const std::string& level)
 {
   if (level == "DEBUG")
@@ -204,15 +203,15 @@ inline LogLevel Logger::FromString(const std::string& level)
   return LINFO;
 }
 
-//! The lowest log level to be reported
+/// The lowest log level to be reported
 #ifndef LOG_MIN_LEVEL
 #define LOG_MIN_LEVEL ::iris::LDEBUG
 #endif
 
-/*  Macro which checks the loglevel and outputs to streams
+/**  Macro which checks the loglevel and outputs to streams
  *
  *  This is the main interface for performing logging.
-
+ *
  *   Usage:
  *   \code LOG(LDEBUG) << "this is a log message"; \endcode
  */
@@ -221,15 +220,13 @@ inline LogLevel Logger::FromString(const std::string& level)
   else if (::iris::level < ::iris::Logger::getPolicy()->ReportingLevel()) ; \
   else ::iris::Logger().Get(::iris::level) << getName() << ": "
 
-/*  Cross-platform time access using boost::date_time
- *
- */
+///  Cross-platform time access using boost::date_time
 inline std::string NowTime()
 {
   using namespace boost::posix_time;
   return to_simple_string(microsec_clock::local_time());
 }
 
-} /* namespace iris */
+} // namespace iris
 
-#endif /* IRISAPI_LOGGING_H_ */
+#endif // IRISAPI_LOGGING_H_

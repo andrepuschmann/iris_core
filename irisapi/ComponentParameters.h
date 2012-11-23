@@ -103,38 +103,136 @@ struct Parameter
  * The ComponentParameters class permits components to register parameters of different types along with
  * permitted values. These parameters may be accessed through setValue and getValue functions.
  */
-class ComponentParameters : boost::noncopyable
+class ComponentParameters
+  : boost::noncopyable
 {
-private:
-  /// Map holding all registered parameters. The key is the parameter name.
-  std::map<std::string, Parameter> parameterMap_;
+public:
 
-  /// Helper method called by the registerParameter methods
+  /// Constructs an instance of ComponentParameters
+  ComponentParameters()
+    : parameterMap_()
+  {}
+
+  virtual ~ComponentParameters() {}
+
+  /** Copies the parameters by value from other into this.
+   *
+   * \param other The ComponentParameters object to copy from.
+   */
+  virtual ComponentParameters& assignParameters(const ComponentParameters& other)
+      throw (ParameterNotFoundException, InvalidDataTypeException);
+
+
+  /** Returns the default XML for all parameters.
+   *
+   * \return A std::string (with newlines) with all parameters, e.g.
+   *  \code
+   *   <parameter name="example" value="1.234" />
+   *   <parameter name="debug" value="false" />
+   *  \endcode
+   */
+  std::string getDefaultXML() const
+  {
+    using namespace std;
+
+    map<string,Parameter>::const_iterator it;
+    stringstream ret;
+
+    for (it = parameterMap_.begin(); it != parameterMap_.end(); ++it)
+    {
+      ret << "\t<parameter name=\"" << it->first << "\" " <<
+          "value=\"" << it->second.defaultValue << "\" />" << endl;
+    }
+
+    return ret.str();
+  }
+
+  /// returns the number of registered parameters
+  size_t getNumParameters() const
+  { return parameterMap_.size(); }
+
+  /** Get the value of parameter 'name' in a std::string.
+   *
+   * \return The current value as a string.
+   */
+  std::string getValue(std::string name) const
+    throw (ParameterNotFoundException, InvalidDataTypeException);
+
+  /** Get the value of a registered parameter
+   *
+   * \param name    Parameter name
+   * \param value   Pointer to a variable where the result should be stored.
+   */
   template<typename T>
-  void registerParameterHelper(std::string name, std::string description,
-      std::string defaultValue, bool isDynamic, T& parameter);
+  inline void getValue(std::string name, T* value) const
+    throw (ParameterNotFoundException, InvalidDataTypeException);
 
-  /// Returns a const reference to a Parameter object given by name.
-  /// \throw ParameterNotFoundException if the parameter does not exist
-  const Parameter& getParameterReference(std::string name) const
+  /** Changes the value of parameter "name" to value "val".
+   *
+   * \param name    Name of parameter to change.
+   * \param value   New value for the parameter.
+   */
+  template <typename T>
+  inline void setValue(std::string name, T value)
+    throw (ParameterNotFoundException, InvalidDataTypeException,ParameterOutOfRangeException);
+
+  /** Get the description of the parameter.
+   *
+   * \param name Name of the parameter
+   * \return Description of the parameter
+   */
+  std::string getParameterDescription(std::string name) const
     throw (ParameterNotFoundException)
   {
-    std::map<std::string, Parameter>::const_iterator it = parameterMap_.find(name);
-    if (it == parameterMap_.end())
-      throw ParameterNotFoundException(std::string("Parameter ") + name + " does not exist.");
-    return it->second;
+    //Convert parameter name to lower case
+    boost::to_lower(name);
+    return getParameterReference(name).description;
   }
 
-  /// Return a reference to a Parameter object given by name.
-  /// \throw ParameterNotFoundException if the parameter does not exist
-  Parameter& getParameterReference(std::string name)
+  /** Returns the default value of a parameter as a string.
+   *
+   * \return Default value as string.
+   * \throw ParameterNotFoundException if parameter with name name does not exist.
+   */
+  std::string getParameterDefaultValue(std::string name) const
     throw (ParameterNotFoundException)
   {
-    std::map<std::string, Parameter>::iterator it = parameterMap_.find(name);
-    if (it == parameterMap_.end())
-      throw ParameterNotFoundException(std::string("Parameter ") + name + " does not exist.");
-    return it->second;
+    //Convert parameter name to lower case
+    boost::to_lower(name);
+    return getParameterReference(name).defaultValue;
   }
+
+  /** Returns the data type of a registered parameter.
+   *
+   * \param name  The parameter name.
+   */
+  std::string getParameterDataType(std::string name) const
+    throw(ParameterNotFoundException)
+  {
+    //Convert parameter name to lower case
+    boost::to_lower(name);
+    return getParameterReference(name).typeName;
+  }
+
+  /** Returns true if the parameter with the given name is dynamically
+   * reconfigurable.
+   *
+   * @param name    The parameter name.
+   * @return  True if parameter is dynamically reconfigurable.
+   */
+  bool isParameterDynamic(std::string name) const
+    throw (ParameterNotFoundException)
+  {
+    //Convert parameter name to lower case
+    boost::to_lower(name);
+    return getParameterReference(name).isDynamic;
+  }
+
+  /** Called to tell a component that one of its parameters has been reconfigured.
+   *
+   * \param name Name of the parameter
+   */
+  virtual void parameterHasChanged(std::string name){}
 
 protected:
   /** Registers a parameter of a child class. All parameters registered
@@ -184,128 +282,51 @@ protected:
       bool isDynamic, T& parameter, std::list<T> allowedValues)
       throw (InvalidDataTypeException);
 
-public:
 
-  /// Constructs an instance of ComponentParameters
-  ComponentParameters() : parameterMap_() {}
+private:
 
-  virtual ~ComponentParameters() {}
-
-  /** Copies the parameter values stored in other into this instance by value.
-   *
-   * \param other The ComponentParameters object to copy from
-   */
-  virtual ComponentParameters& assignParameters(const ComponentParameters& other)
-      throw (ParameterNotFoundException, InvalidDataTypeException);
-
-
-  /** Returns the default XML for all parameters.
-   *
-   * \return A std::string (with newlines) with all parameters, e.g.
-   *  \code
-   *   <parameter name="example" value="1.234" />
-   *   <parameter name="debug" value="false" />
-   *  \endcode
-   */
-  std::string getDefaultXML() const
-  {
-    using namespace std;
-
-    map<string,Parameter>::const_iterator it;
-    stringstream ret;
-
-    for (it = parameterMap_.begin(); it != parameterMap_.end(); ++it)
-    {
-      ret << "\t<parameter name=\"" << it->first << "\" " <<
-          "value=\"" << it->second.defaultValue << "\" />" << endl;
-    }
-
-    return ret.str();
-  }
-
-  /// returns the number of registered parameters
-  size_t getNumParameters() const { return parameterMap_.size(); }
-
-  /** Get the value of parameter 'name' in a std::string.
-   * \throw ParameterNotFoundException if no such parameter exists
-   * \throw InvalidDataTypeException if the type of the parameter could not
-   * be identified (should never happen).
-   */
-  std::string getValue(std::string name) const
-    throw (ParameterNotFoundException, InvalidDataTypeException);
-
-  /** Get the value of a registered parameter
-   *
-   * \param name Parameter name
-   * \param value  Pointer to a variable where the result should be stored.
-   * \throw ParameterNotFoundException If there is no parameter with the given name.
-   * \throw InvalidDataTypeException If the parameter is of a different type.
-   */
+  /// Helper method called by the registerParameter methods
   template<typename T>
-  inline void getValue(std::string name, T* value) const
-    throw (ParameterNotFoundException, InvalidDataTypeException);
+  void registerParameterHelper(std::string name, std::string description,
+      std::string defaultValue, bool isDynamic, T& parameter);
 
-  /** Changes the value of parameter "name" to value "val".
-   * \throw ParameterNotFoundException if no such parameter exists
-   * \throw InvalidDataTypeException if the parameter is not of type T.
-   */
-  template <typename T>
-  inline void setValue(std::string name, T value)
-    throw (ParameterNotFoundException, InvalidDataTypeException,ParameterOutOfRangeException);
-
-  /** Get the description of the parameter.
+  /** Return a const reference to a Parameter object.
    *
-   * \param name Name of the parameter
-   * \return Description of the parameter
+   * @param name    The parameter name.
+   * @return  Const reference to the Parameter object.
    */
-  std::string getParameterDescription(std::string name) const
+  const Parameter& getParameterReference(std::string name) const
     throw (ParameterNotFoundException)
   {
-    //Convert parameter name to lower case
-    boost::to_lower(name);
-    return getParameterReference(name).description;
+    std::map<std::string, Parameter>::const_iterator it = parameterMap_.find(name);
+    if (it == parameterMap_.end())
+      throw ParameterNotFoundException(std::string("Parameter ") + name + " does not exist.");
+    return it->second;
   }
 
-  /** Returns the default value of a parameter.
-   * \throw ParameterNotFoundException if parameter with name name does not exist.
-   */
-  std::string getParameterDefaultValue(std::string name) const
-    throw (ParameterNotFoundException)
-  {
-    //Convert parameter name to lower case
-    boost::to_lower(name);
-    return getParameterReference(name).defaultValue;
-  }
-
-  /// Returns the data type of a registered parameter.
-  /// \throw ParameterNotFoundException if no parameter with the given name exists.
-  std::string getParameterDataType(std::string name) const
-    throw(ParameterNotFoundException)
-  {
-    //Convert parameter name to lower case
-    boost::to_lower(name);
-    return getParameterReference(name).typeName;
-  }
-
-  /// Returns true if the parameter with the given name is dynamically
-  /// reconfigurable.
-  /// \throw ParameterNotFoundException if the parameter could not be found.
-  bool isParameterDynamic(std::string name) const
-    throw (ParameterNotFoundException)
-  {
-    //Convert parameter name to lower case
-    boost::to_lower(name);
-    return getParameterReference(name).isDynamic;
-  }
-
-  /** Called to tell a component that one of its parameters has been reconfigured
+  /** Return a reference to a Parameter object.
    *
-   * \param name Name of the parameter
+   * @param name    The parameter name.
+   * @return  Reference to the parameter object.
    */
-  virtual void parameterHasChanged(std::string name){}
-};
+  Parameter& getParameterReference(std::string name)
+    throw (ParameterNotFoundException)
+  {
+    std::map<std::string, Parameter>::iterator it = parameterMap_.find(name);
+    if (it == parameterMap_.end())
+      throw ParameterNotFoundException(std::string("Parameter ") + name + " does not exist.");
+    return it->second;
+  }
 
-// have to implement the template methods here
+  /// Map holding all registered parameters. The key is the parameter name.
+  std::map<std::string, Parameter> parameterMap_;
+
+}; // class ComponentParameter
+
+
+/*************************************************
+* Template method Implementations
+*************************************************/
 
 template <typename T>
 inline void ComponentParameters::getValue(std::string name, T* value) const

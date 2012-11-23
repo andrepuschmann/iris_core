@@ -143,8 +143,8 @@ namespace iris
                 while(reconfigQueue_.tryPop(currentReconfigSet))
                 {
                     vector< ParametricReconfig >::iterator paramIt;
-                    for(paramIt = currentReconfigSet.paramReconfigs_.begin();
-                        paramIt != currentReconfigSet.paramReconfigs_.end();
+                    for(paramIt = currentReconfigSet.paramReconfigs.begin();
+                        paramIt != currentReconfigSet.paramReconfigs.end();
                         ++paramIt)
                     {
                         reconfigureParameter(*paramIt);

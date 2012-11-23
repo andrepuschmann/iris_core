@@ -63,7 +63,8 @@ struct DataSet{
 *  The DataBuffer class inherits from this base class. The typeIdentifier specifies
 *   the type of the derived class.
 */
-class DataBufferBase : boost::noncopyable
+class DataBufferBase
+  : boost::noncopyable
 {
 public:
   virtual ~DataBufferBase(){};
@@ -78,7 +79,8 @@ public:
 *  The ReadBuffer and DataBuffer inherit from this base class. The typeIdentifier specifies
 *   the type of the derived classes.
 */
-class ReadBufferBase:public virtual DataBufferBase
+class ReadBufferBase
+  : public virtual DataBufferBase
 {};
 
 /** The WriteBufferBase class allows us to store vectors of WriteBuffers of different types
@@ -86,12 +88,14 @@ class ReadBufferBase:public virtual DataBufferBase
 *  The WriteBuffer and DataBuffer inherit from this base class. The typeIdentifier specifies
 *   the type of the derived classes.
 */
-class WriteBufferBase:public virtual DataBufferBase
+class WriteBufferBase
+  : public virtual DataBufferBase
 {};
 
-//! The ReadBuffer interface limits the use of a DataBuffer for a writing client.
+/// The ReadBuffer interface limits the use of a DataBuffer for a writing client.
 template <typename T>
-class ReadBuffer:public virtual ReadBufferBase
+class ReadBuffer
+  : public virtual ReadBufferBase
 {
 public:
   virtual ~ReadBuffer(){};
@@ -99,9 +103,10 @@ public:
   virtual void releaseReadData(DataSet<T>*& setPtr) = 0;
 };
 
-//! The WriteBuffer interface limits the use of a DataBuffer for a writing client.
+/// The WriteBuffer interface limits the use of a DataBuffer for a writing client.
 template <typename T>
-class WriteBuffer:public virtual WriteBufferBase
+class WriteBuffer
+  : public virtual WriteBufferBase
 {
 public:
   virtual ~WriteBuffer(){};
