@@ -1,5 +1,5 @@
 /**
- * \file PNEngine_test.cpp
+ * \file PhyEngine_test.cpp
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -28,10 +28,10 @@
  *
  * \section DESCRIPTION
  *
- * Main test file for PNEngine class.
+ * Main test file for PhyEngine class.
  */
 
-#define BOOST_TEST_MODULE PNEngineTest
+#define BOOST_TEST_MODULE PhyEngineTest
 
 #include <boost/test/unit_test.hpp>
 #include <boost/function.hpp>
@@ -43,17 +43,17 @@
 #include <algorithm>
 #include <string>
 
-#include "iris/PNEngine.h"
+#include "iris/PhyEngine.h"
 
 using namespace std;
 using namespace iris;
 
-BOOST_AUTO_TEST_SUITE (PNEngineTest)
+BOOST_AUTO_TEST_SUITE (PhyEngineTest)
 
 
-BOOST_AUTO_TEST_CASE(PNEngineBasic)
+BOOST_AUTO_TEST_CASE(PhyEngineBasic)
 {
-    PNEngine thePNEngine("MyEngine", ".");
+    PhyEngine thePhyEngine("MyEngine", ".");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -1,5 +1,5 @@
 /**
- * \file TemplatePNComponent.h
+ * \file TemplatePhyComponent.h
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -28,11 +28,11 @@
  *
  * \section DESCRIPTION
  *
- * Base class for templated PN Components + template helper functions.
+ * Base class for templated Phy Components + template helper functions.
  */
 
-#ifndef IRISAPI_TEMPLATEPNCOMPONENT_H_
-#define IRISAPI_TEMPLATEPNCOMPONENT_H_
+#ifndef IRISAPI_TEMPLATEPHYCOMPONENT_H_
+#define IRISAPI_TEMPLATEPHYCOMPONENT_H_
 
 #include <boost/mpl/vector.hpp>
 #include <boost/mpl/push_back.hpp>
@@ -45,23 +45,23 @@
 #include <boost/mpl/pop_front.hpp>
 #include <boost/utility.hpp>
 
-#include <irisapi/PNComponent.h>
+#include <irisapi/PhyComponent.h>
 
 namespace iris
 {
 
-/** Base class for template PNComponents.
+/** Base class for template PhyComponents.
  *
- * Template PNComponents can operate on multiple input and/or output data types.
+ * Template PhyComponents can operate on multiple input and/or output data types.
  */
 template <class Comp>
-class TemplatePNComponent : public PNComponent
+class TemplatePhyComponent : public PhyComponent
 {
 public:
-  TemplatePNComponent(std::string name, std::string type, std::string description, std::string author, std::string version)
-    : PNComponent(name, type, description, author, version) {}
+  TemplatePhyComponent(std::string name, std::string type, std::string description, std::string author, std::string version)
+    : PhyComponent(name, type, description, author, version) {}
 
-  virtual ~TemplatePNComponent() {}
+  virtual ~TemplatePhyComponent() {}
 
   virtual void initialize()
   {
@@ -80,10 +80,10 @@ public:
    *
    * \param inputTypes Vector of input type identifiers, each element represents a port
    * \param outputTypes Vector of output type identifiers, each element represents a port
-   * \return A PNComponent* with the input and output correctly setup, i.e., an instance of
+   * \return A PhyComponent* with the input and output correctly setup, i.e., an instance of
    * CompImp with the correct template parameters according to inputTypes & outputTypes.
    */
-  virtual PNComponent* setupIO(const std::vector<int>& inputTypes, const std::vector<int>& outputTypes)
+  virtual PhyComponent* setupIO(const std::vector<int>& inputTypes, const std::vector<int>& outputTypes)
   {
     return registerTemplateComponent(inputTypes, outputTypes);
   }
@@ -97,7 +97,7 @@ protected:
    * \return A newly instantiated object of a templated component with the appropriate type
    * parameters.
    */
-  PNComponent* registerTemplateComponent(const std::vector<int>& inputTypes, const std::vector<int>& outputTypes);
+  PhyComponent* registerTemplateComponent(const std::vector<int>& inputTypes, const std::vector<int>& outputTypes);
 
 };
 
@@ -129,7 +129,7 @@ namespace detail
    *
    * Here is how the algorithm works in pseudo-code:
    * \code
-   * // Derived : A component derived from this TemplatePNComponent, with fields supportedInputTypes,
+   * // Derived : A component derived from this TemplatePhyComponent, with fields supportedInputTypes,
    * //       supportedOutputTypes, and static method createInstance<Tin,Tout>(comp)
    * iIn = empty_type_vector;
    * iOut = empty_type_vector;
@@ -192,7 +192,7 @@ namespace detail
         class Enabled = void>
   struct TemplateHelper
   {
-    static PNComponent* EXEC(std::vector<int>& inTypes, std::vector<int>& outTypes, const PNComponent* comp)
+    static PhyComponent* EXEC(std::vector<int>& inTypes, std::vector<int>& outTypes, const PhyComponent* comp)
     {
       // we should never get here
       assert(false);
@@ -212,7 +212,7 @@ namespace detail
   struct TemplateHelper<Derived, In, Out, iIn, iOut, inAcc, outAcc,
               typename boost::enable_if< mpl::and_< mpl::empty<iIn>, mpl::not_< mpl::empty<In> > > >::type >
   {
-    static PNComponent* EXEC(std::vector<int>& inTypes, std::vector<int>& outTypes, const PNComponent* comp)
+    static PhyComponent* EXEC(std::vector<int>& inTypes, std::vector<int>& outTypes, const PhyComponent* comp)
     {
       typedef typename mpl::front<In>::type newiIn;
       typedef typename mpl::pop_front<In>::type newIn;
@@ -231,7 +231,7 @@ namespace detail
   struct TemplateHelper<Derived, In, Out, iIn, iOut, inAcc, outAcc,
               typename boost::enable_if< mpl::not_< mpl::empty<iIn> > >::type >
   {
-    static PNComponent* EXEC(std::vector<int>& inTypes, std::vector<int>& outTypes, const PNComponent* comp)
+    static PhyComponent* EXEC(std::vector<int>& inTypes, std::vector<int>& outTypes, const PhyComponent* comp)
     {
       typedef typename mpl::front<iIn>::type curType;
       typedef typename mpl::pop_front<iIn>::type newiIn;
@@ -272,7 +272,7 @@ namespace detail
                     mpl::empty<iOut>,
                     mpl::not_<mpl::empty<Out> > > >::type >
   {
-    static PNComponent* EXEC(std::vector<int>& inTypes, std::vector<int>& outTypes, const PNComponent* comp)
+    static PhyComponent* EXEC(std::vector<int>& inTypes, std::vector<int>& outTypes, const PhyComponent* comp)
     {
       typedef typename mpl::front<Out>::type newiOut;
       typedef typename mpl::pop_front<Out>::type newOut;
@@ -294,7 +294,7 @@ namespace detail
                     mpl::empty<In>,
                     mpl::not_<mpl::empty<iOut> >  > >::type >
   {
-    static PNComponent* EXEC(std::vector<int>& inTypes, std::vector<int>& outTypes, const PNComponent* comp)
+    static PhyComponent* EXEC(std::vector<int>& inTypes, std::vector<int>& outTypes, const PhyComponent* comp)
     {
       typedef typename mpl::front<iOut>::type curType;
       typedef typename mpl::pop_front<iOut>::type newiOut;
@@ -335,7 +335,7 @@ namespace detail
                     mpl::empty<iOut>,
                     mpl::empty<Out> > >::type >
   {
-    static PNComponent* EXEC(std::vector<int>& inTypes, std::vector<int>& outTypes, const PNComponent* comp)
+    static PhyComponent* EXEC(std::vector<int>& inTypes, std::vector<int>& outTypes, const PhyComponent* comp)
     {
       return Derived::template createInstance<inAcc, outAcc>(comp);
     }
@@ -355,7 +355,7 @@ namespace detail
   template <class DerivedComponent, class Enabled = void>
   struct TemplateHelperCaller
   {
-    static PNComponent* EXEC(std::vector<int>& inTypes, std::vector<int>& outTypes, PNComponent* comp)
+    static PhyComponent* EXEC(std::vector<int>& inTypes, std::vector<int>& outTypes, PhyComponent* comp)
     {
       // defaulting to both multisequence
       return TemplateHelper<DerivedComponent,
@@ -376,7 +376,7 @@ namespace detail
                         detail::isMultiSequence< typename DerivedComponent::supportedOutputTypes >
                      > >::type >
     {
-      static PNComponent* EXEC(std::vector<int>& inTypes, std::vector<int>& outTypes, PNComponent* comp)
+      static PhyComponent* EXEC(std::vector<int>& inTypes, std::vector<int>& outTypes, PhyComponent* comp)
       {
         // defaulting to both multisequence
         return TemplateHelper<DerivedComponent,
@@ -399,7 +399,7 @@ namespace detail
                         mpl::not_<detail::isMultiSequence< typename DerivedComponent::supportedOutputTypes > >
                      > >::type >
     {
-      static PNComponent* EXEC(std::vector<int>& inTypes, std::vector<int>& outTypes, PNComponent* comp)
+      static PhyComponent* EXEC(std::vector<int>& inTypes, std::vector<int>& outTypes, PhyComponent* comp)
       {
         // defaulting to both multisequence
         return TemplateHelper<DerivedComponent,
@@ -420,7 +420,7 @@ namespace detail
                         mpl::not_<detail::isMultiSequence< typename DerivedComponent::supportedOutputTypes > >
                      > >::type >
     {
-      static PNComponent* EXEC(std::vector<int>& inTypes, std::vector<int>& outTypes, PNComponent* comp)
+      static PhyComponent* EXEC(std::vector<int>& inTypes, std::vector<int>& outTypes, PhyComponent* comp)
       {
         // defaulting to both multisequence
         return TemplateHelper<DerivedComponent,
@@ -436,8 +436,8 @@ namespace detail
 }
 
 template <class Comp>
-inline PNComponent*
-TemplatePNComponent<Comp>::registerTemplateComponent(const std::vector<int>& inputTypes, const std::vector<int>& outputTypes)
+inline PhyComponent*
+TemplatePhyComponent<Comp>::registerTemplateComponent(const std::vector<int>& inputTypes, const std::vector<int>& outputTypes)
 {
    using namespace detail;
 
@@ -449,4 +449,4 @@ TemplatePNComponent<Comp>::registerTemplateComponent(const std::vector<int>& inp
 }
 
 } // namespace iris
-#endif // IRISAPI_TEMPLATEPNCOMPONENT_H_
+#endif // IRISAPI_TEMPLATEPHYCOMPONENT_H_

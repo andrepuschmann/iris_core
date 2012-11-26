@@ -1,5 +1,5 @@
 /**
- * \file PNEngine.h
+ * \file PhyEngine.h
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -28,11 +28,11 @@
  *
  * \section DESCRIPTION
  *
- * The PNEngine implements a process network engine for the Iris framework.
+ * The PhyEngine implements a process network engine for the Iris framework.
  */
 
-#ifndef IRIS_PNENGINE_H_
-#define IRIS_PNENGINE_H_
+#ifndef IRIS_PHYENGINE_H_
+#define IRIS_PHYENGINE_H_
 
 #include <deque>
 
@@ -51,19 +51,19 @@
 namespace iris
 {
 //Forward declarations to avoid inter-element dependencies
-class PNComponent;
-class PNComponentManager;
+class PhyComponent;
+class PhyComponentManager;
 
-/** The PNEngine class implements a process network engine for the IRIS framework.
+/** The PhyEngine class implements a process network engine for the IRIS framework.
 *
-*  Each PNEngine runs its own thread of execution and serves one or more PNComponents.
+*  Each PhyEngine runs its own thread of execution and serves one or more PhyComponents.
 */
-class PNEngine:public EngineInterface, public ComponentCallbackInterface
+class PhyEngine:public EngineInterface, public ComponentCallbackInterface
 {
 public:
-  PNEngine(std::string name, std::string repository)
+  PhyEngine(std::string name, std::string repository)
     throw (IrisException);
-  ~PNEngine();
+  ~PhyEngine();
 
   void setEngineManager(EngineCallbackInterface *e);
 
@@ -85,7 +85,7 @@ public:
 
 private:
   /// The component manager for this engine
-  boost::scoped_ptr< PNComponentManager > compManager_;
+  boost::scoped_ptr< PhyComponentManager > compManager_;
 
   /// Handle for this engine's thread of execution
   boost::scoped_ptr< boost::thread > thread_;
@@ -93,8 +93,8 @@ private:
   /// The graph representing the components within the engine and the links between them
   RadioGraph engineGraph_;
 
-  /// The PNComponents running within this engine
-  std::vector< boost::shared_ptr<PNComponent> > components_;
+  /// The PhyComponents running within this engine
+  std::vector< boost::shared_ptr<PhyComponent> > components_;
 
   /// The DataBuffers for the internal links between components of this engine
   std::vector< boost::shared_ptr< DataBufferBase > > internalBuffers_;
@@ -115,7 +115,7 @@ private:
 
   /// Helper functions
    boost::shared_ptr< DataBufferBase >  createDataBuffer(int type) const;
-   boost::shared_ptr< DataBufferBase >  createPNDataBuffer(int type) const;
+   boost::shared_ptr< DataBufferBase >  createPhyDataBuffer(int type) const;
   bool sameLink(LinkDescription first, LinkDescription second) const;
 
   /// The internal loop which this engine's thread executes
@@ -136,4 +136,4 @@ private:
 
 } // namespace iris
 
-#endif // IRIS_PNENGINE_H_
+#endif // IRIS_PHYENGINE_H_

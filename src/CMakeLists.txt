@@ -51,7 +51,7 @@ SET(iris_core_sources
 
 # Static library (test code can link against this)
 ADD_LIBRARY(iris_lib ${iris_core_sources})
-TARGET_LINK_LIBRARIES(iris_lib ticpp pnengine stackengine ${Boost_LIBRARIES})
+TARGET_LINK_LIBRARIES(iris_lib ticpp phyengine stackengine ${Boost_LIBRARIES})
 IF( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
   SET_TARGET_PROPERTIES(iris_lib PROPERTIES COMPILE_FLAGS -fPIC)
 ENDIF( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )

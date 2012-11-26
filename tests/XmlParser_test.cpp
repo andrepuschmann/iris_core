@@ -71,24 +71,24 @@ BOOST_AUTO_TEST_CASE(XmlParserCleanParse)
 <?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\" ?>\
 <softwareradio>\
 <controller class=\"testcontroller\" />\
-<engine name=\"pnengine1\" class=\"pnengine\">\
-<component name=\"src1\" class=\"sourcepncomponent\">\
+<engine name=\"phyengine1\" class=\"phyengine\">\
+<component name=\"src1\" class=\"sourcephycomponent\">\
 <port name=\"output1\" class=\"output\" />\
 </component>\
-<component name=\"splitter1\" class=\"splitterpncomponent\">\
+<component name=\"splitter1\" class=\"splitterphycomponent\">\
 <parameter name=\"x_numoutputs\" value=\"2\" />\
 <port name=\"input1\" class=\"input\" />\
 <port name=\"output1\" class=\"output\" />\
 <port name=\"output2\" class=\"output\" />\
 </component>\
 </engine>\
-<engine name=\"pnengine2\" class=\"pnengine\">\
-<component name=\"snk1\" class=\"sinkpncomponent\">\
+<engine name=\"phyengine2\" class=\"phyengine\">\
+<component name=\"snk1\" class=\"sinkphycomponent\">\
 <port name=\"input1\" class=\"input\" />\
 </component>\
 </engine>\
-<engine name=\"pnengine3\" class=\"pnengine\">\
-<component name=\"snk2\" class=\"sinkpncomponent\">\
+<engine name=\"phyengine3\" class=\"phyengine\">\
+<component name=\"snk2\" class=\"sinkphycomponent\">\
 <port name=\"input1\" class=\"input\" />\
 </component>\
 </engine>\
@@ -118,24 +118,24 @@ BOOST_AUTO_TEST_CASE(XmlParserDirtyParse1)
     string xmlConfig("\
 <?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\" ?>\
 <softwareradio>\
-<engine name=\"pnengine1\" class=\"pnengine\">\
-<component name=\"src1\" class=\"sourcepncomponent\">\
+<engine name=\"phyengine1\" class=\"phyengine\">\
+<component name=\"src1\" class=\"sourcephycomponent\">\
 <port name=\"output1\" class=\"output\" />\
 </component>\
-<component name=\"splitter1\" class=\"splitterpncomponent\">\
+<component name=\"splitter1\" class=\"splitterphycomponent\">\
 <parameter name=\"x_numoutputs\" value=\"2\" />\
 <port name=\"input1\" class=\"input\" />\
 <port name=\"output1\" class=\"output\" />\
 <port name=\"output2\" class=\"output\" />\
 </component>\
 </engine>\
-<engine name=\"pnengine2\" class=\"pnengine\">\
-<component name=\"snk1\" class=\"sinkpncomponent\">\
+<engine name=\"phyengine2\" class=\"phyengine\">\
+<component name=\"snk1\" class=\"sinkphycomponent\">\
 <port name=\"input1\" class=\"input\" />\
 </component>\
 </engine>\
-<engine name=\"pnengine3\" class=\"pnengine\">\
-<component name=\"snk2\" class=\"sinkpncomponent\">\
+<engine name=\"phyengine3\" class=\"phyengine\">\
+<component name=\"snk2\" class=\"sinkphycomponent\">\
 <port name=\"input1\" class=\"input\" />\
 </component>\
 </engine>\
@@ -156,24 +156,24 @@ BOOST_AUTO_TEST_CASE(XmlParserDirtyParse2)
     string xmlConfig("\
 <?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\" ?>\
 <softwareradio>\
-<engine name=\"pnengine1\" class=\"pnengine\">\
-<component name=\"src1\" class=\"sourcepncomponent\">\
+<engine name=\"phyengine1\" class=\"phyengine\">\
+<component name=\"src1\" class=\"sourcephycomponent\">\
 <port name=\"output1\" class=\"output\" />\
 </component>\
-<component name=\"splitter1\" class=\"splitterpncomponent\">\
+<component name=\"splitter1\" class=\"splitterphycomponent\">\
 <parameter name=\"x_numoutputs\" value=\"2\" />\
 <port name=\"input1\" class=\"input\" />\
 <port name=\"output1\" class=\"output\" />\
 <port name=\"output2\" class=\"output\" />\
 </component>\
 </engine>\
-<engine name=\"pnengine2\" class=\"pnengine\">\
-<component name=\"snk1\" class=\"sinkpncomponent\">\
+<engine name=\"phyengine2\" class=\"phyengine\">\
+<component name=\"snk1\" class=\"sinkphycomponent\">\
 <port name=\"input1\" class=\"input\" />\
 </component>\
 </engine>\
-<engine name=\"pnengine3\" class=\"pnengine\">\
-<component name=\"snk2\" class=\"sinkpncomponent\">\
+<engine name=\"phyengine3\" class=\"phyengine\">\
+<component name=\"snk2\" class=\"sinkphycomponent\">\
 <port name=\"input1\" class=\"input\" />\
 </component>\
 </engine>\

@@ -40,7 +40,7 @@
 #include "boost/filesystem.hpp"
 
 #include "iris/RadioRepresentation.h"
-#include "iris/PNEngine.h"
+#include "iris/PhyEngine.h"
 #include "iris/ControllerManager.h"
 #include "irisapi/Exceptions.h"
 #include "irisapi/Logging.h"
@@ -52,7 +52,7 @@ namespace iris
 struct Repositories
 {
   std::string stackRepository;
-  std::string pnRepository;
+  std::string phyRepository;
   std::string sdfRepository;
   std::string contRepository;
 };

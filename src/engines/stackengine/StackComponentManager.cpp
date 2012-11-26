@@ -153,7 +153,7 @@ namespace iris
             loadedLibraries_.push_back(temp);
         }
 
-        //Pull a PNComponent class out of the library
+        //Pull a StackComponent class out of the library
         CREATEFUNCTION createFunction = (CREATEFUNCTION)temp.libPtr->getSymbol("CreateComponent");
         DESTROYFUNCTION destroyFunction = (DESTROYFUNCTION)temp.libPtr->getSymbol("ReleaseComponent");
         GETAPIVERSIONFUNCTION getApiFunction = (GETAPIVERSIONFUNCTION)temp.libPtr->getSymbol("GetApiVersion"); 

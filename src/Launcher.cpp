@@ -77,8 +77,8 @@ private:
     string radioConfig_;
     //! path to the Stack component repository
     string stackRepoPath_;
-    //! path to the PN component repository
-    string pnRepoPath_;
+    //! path to the Phy component repository
+    string phyRepoPath_;
     //! path to the SDF component repository
     string sdfRepoPath_;
     //! path to the controller repository
@@ -131,7 +131,7 @@ int main(int argc, char* argv[])
 
 
 Launcher::Launcher()
-    :radioConfig_(""), pnRepoPath_(""), sdfRepoPath_(""), contRepoPath_(""), 
+    :radioConfig_(""), phyRepoPath_(""), sdfRepoPath_(""), contRepoPath_(""),
     logLevel_("debug"), autoLoad_(true), autoStart_(true), stateMachine_(),
     isRunning_(true)
 {
@@ -162,10 +162,10 @@ void Launcher::parseOptions(int argc, char* argv[]) throw (po::error, LauncherEx
 
     po::options_description desc("Configuration options");
     desc.add_options()
-        ("stackrepository,t", po::value<string>(&stackRepoPath_), "Repository of IRISv2 Stack components")
-        ("pnrepository,p", po::value<string>(&pnRepoPath_), "Repository of IRISv2 PN components")
-        ("sdfrepository,s", po::value<string>(&sdfRepoPath_), "Repository of IRISv2 SDF components")
-        ("controllerrepository,c", po::value<string>(&contRepoPath_), "Repository of IRISv2 controllers")
+        ("stackrepository,t", po::value<string>(&stackRepoPath_), "Repository of Iris Stack components")
+        ("phyrepository,p", po::value<string>(&phyRepoPath_), "Repository of Iris Phy components")
+        ("sdfrepository,s", po::value<string>(&sdfRepoPath_), "Repository of Iris SDF components")
+        ("controllerrepository,c", po::value<string>(&contRepoPath_), "Repository of Iris controllers")
         ("loglevel,l", po::value<string>(&logLevel_), "Log level (options are debug, info, warning, error & fatal)")
         ("no-load",  "Do not automatically load radio (implies --no-start)")
         ("no-start", "Do not automatically start radio")
@@ -223,7 +223,7 @@ void Launcher::parseOptions(int argc, char* argv[]) throw (po::error, LauncherEx
     }
 
     // if a repository was not given, exit with error
-    if (!vm.count("pnrepository") && !vm.count("sdfrepository") && !vm.count("stackrepository")) {
+    if (!vm.count("phyrepository") && !vm.count("sdfrepository") && !vm.count("stackrepository")) {
         throw LauncherException("No component repositories were set.");
     }
 
@@ -244,7 +244,7 @@ void Launcher::menuLoop() throw (LauncherException)
 
     stateMachine_.setRadioConfig(radioConfig_);
     stateMachine_.setStackRadioRepository(stackRepoPath_);
-    stateMachine_.setPnRadioRepository(pnRepoPath_);
+    stateMachine_.setPhyRadioRepository(phyRepoPath_);
     stateMachine_.setSdfRadioRepository(sdfRepoPath_);
     stateMachine_.setContRadioRepository(contRepoPath_);
     stateMachine_.setLogLevel(logLevel_);
@@ -294,7 +294,7 @@ void Launcher::printStatus()
 {
     cout << endl;
     cout << "Stack Repository  :  " << stackRepoPath_ << endl;
-    cout << "PN Repository  :  " << pnRepoPath_ << endl;
+    cout << "Phy Repository  :  " << phyRepoPath_ << endl;
     cout << "SDF Repository  : " << sdfRepoPath_ << endl;
     cout << "Controller Repository  : " << contRepoPath_ << endl;
     cout << "Log level : " << logLevel_ << endl;

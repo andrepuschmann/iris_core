@@ -1,5 +1,5 @@
 /**
- * \file PNDataBuffer.h
+ * \file PhyDataBuffer.h
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -28,11 +28,11 @@
  *
  * \section DESCRIPTION
  *
- * The PNDataBuffer which exists on links internal to a PNEngine.
+ * The PhyDataBuffer which exists on links internal to a PhyEngine.
  */
 
-#ifndef PNDATABUFFER_H_
-#define PNDATABUFFER_H_
+#ifndef PHYDATABUFFER_H_
+#define PHYDATABUFFER_H_
 
 #include "irisapi/DataBufferInterfaces.h"
 #include "irisapi/Exceptions.h"
@@ -42,19 +42,19 @@ namespace iris
 {
 
 /*!
-*   \brief The PNDataBuffer class implements a buffer which exists between two IRIS components within a single 
-*  PNEngine.
+*   \brief The PhyDataBuffer class implements a buffer which exists between two IRIS components within a single
+*  PhyEngine.
 *
 *  The buffer consists of a number of DataSet objects which can be written and read by the components.
 *  Components can get a DataSet to write to by calling GetWriteSet(). When finished writing, the component
 *  releases the DataSet by calling ReleaseWriteSet().
 *  Components can get a DataSet to read from by calling GetReadSet(). When finished reading, the component
 *  releases the DataSet by calling ReleaseReadSet().
-*  The PNDataBuffer is NOT thread-safe. It should only be used within a single PNEngine. It is non-blocking.
-*  If a component wishes to write more data sets than are available, the PNDataBuffer will grow.
+*  The PhyDataBuffer is NOT thread-safe. It should only be used within a single PhyEngine. It is non-blocking.
+*  If a component wishes to write more data sets than are available, the PhyDataBuffer will grow.
 */
 template <typename T>
-class PNDataBuffer : public ReadBuffer<T>, public WriteBuffer<T>
+class PhyDataBuffer : public ReadBuffer<T>, public WriteBuffer<T>
 {
 public:
 
@@ -63,7 +63,7 @@ public:
   *
   *   \param dataBufferLength   number of DataSets in the buffer
   */
-  explicit PNDataBuffer(int dataBufferLength = 2) throw (InvalidDataTypeException)
+  explicit PhyDataBuffer(int dataBufferLength = 2) throw (InvalidDataTypeException)
     :buffer_(dataBufferLength, DataSet<T>()),
     isReadLocked_(false),
     isWriteLocked_(false),
@@ -78,7 +78,7 @@ public:
       throw InvalidDataTypeException("Data type not supported");
   };
 
-  virtual ~PNDataBuffer(){};
+  virtual ~PhyDataBuffer(){};
 
 
   //! Set the link description (with info on source and sink components) for this buffer
@@ -201,4 +201,4 @@ private:
 } /* namespace iris */
 
 
-#endif /* DATABUFFER_H_ */
+#endif /* PHYDATABUFFER_H_ */

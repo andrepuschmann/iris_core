@@ -28,17 +28,17 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR})
 ########################################################################
 # Build the library from source files
 ########################################################################
-SET(pnengine_sources
-    PNComponentManager.cpp
-    PNDataBuffer.h
-    PNComponentManager.h
-    PNEngine.cpp
+SET(phyengine_sources
+    PhyComponentManager.cpp
+    PhyDataBuffer.h
+    PhyComponentManager.h
+    PhyEngine.cpp
 
 )
-ADD_LIBRARY(pnengine STATIC ${pnengine_sources})
+ADD_LIBRARY(phyengine STATIC ${phyengine_sources})
 IF( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
-  SET_TARGET_PROPERTIES(pnengine PROPERTIES COMPILE_FLAGS -fPIC)
+  SET_TARGET_PROPERTIES(phyengine PROPERTIES COMPILE_FLAGS -fPIC)
 ENDIF( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
-TARGET_LINK_LIBRARIES(pnengine sharedlibrary)
+TARGET_LINK_LIBRARIES(phyengine sharedlibrary)
 
 

@@ -1,5 +1,5 @@
 /**
- * \file PNEngine.cpp
+ * \file PhyEngine.cpp
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -28,7 +28,7 @@
  *
  * \section DESCRIPTION
  *
- * Implementation of PNEngine class - the Iris process network engine.
+ * Implementation of PhyEngine class - the Iris process network engine.
  */
 
 #include <boost/graph/topological_sort.hpp>
@@ -38,11 +38,11 @@
 #include <boost/progress.hpp>
 #include <boost/bind.hpp>
 
-#include "iris/PNEngine.h"
+#include "iris/PhyEngine.h"
 
-#include "irisapi/PNComponent.h"
-#include "PNComponentManager.h"
-#include "PNDataBuffer.h"
+#include "irisapi/PhyComponent.h"
+#include "PhyComponentManager.h"
+#include "PhyDataBuffer.h"
 
 using namespace std;
 using namespace boost;
@@ -50,29 +50,29 @@ using namespace boost;
 namespace iris
 {
 
-    PNEngine::PNEngine(std::string name, std::string repository) throw (IrisException)
+    PhyEngine::PhyEngine(std::string name, std::string repository) throw (IrisException)
         :engineName_(name)
         ,engineManager_(NULL)
     {
-        compManager_.reset(new PNComponentManager());
+        compManager_.reset(new PhyComponentManager());
         compManager_->addRepository(repository);
     }
 
-    PNEngine::~PNEngine()
+    PhyEngine::~PhyEngine()
     {
     }
 
-    string PNEngine::getName() const
+    string PhyEngine::getName() const
     {
         return engineName_;
     }
 
-    void PNEngine::setEngineManager(EngineCallbackInterface *e)
+    void PhyEngine::setEngineManager(EngineCallbackInterface *e)
     {
         engineManager_ = e;
     }
 
-    std::vector< boost::shared_ptr< DataBufferBase > > PNEngine::loadEngine(EngineDescription eng, std::vector< boost::shared_ptr< DataBufferBase > > inputLinks)
+    std::vector< boost::shared_ptr< DataBufferBase > > PhyEngine::loadEngine(EngineDescription eng, std::vector< boost::shared_ptr< DataBufferBase > > inputLinks)
         throw (IrisException)
     {
         //Set the external input buffer
@@ -90,7 +90,7 @@ namespace iris
         return engOutputBuffers_;
     }
 
-    void PNEngine::unloadEngine()
+    void PhyEngine::unloadEngine()
     {
         //Destroy all components and clear the vector
         components_.clear();   //Components are deleted here using a custom deallocator due to use of boost::shared_ptr
@@ -99,21 +99,21 @@ namespace iris
         internalBuffers_.clear();
     }
 
-    void PNEngine::startEngine()
+    void PhyEngine::startEngine()
     {
         //Start any components that require it
-        for( vector< shared_ptr<PNComponent> >::iterator i = components_.begin(); i != components_.end(); ++i)
+        for( vector< shared_ptr<PhyComponent> >::iterator i = components_.begin(); i != components_.end(); ++i)
         {
             (*i)->start();
         }
         //Start the main engine thread
-        thread_.reset( new thread( boost::bind( &PNEngine::threadLoop, this ) ) );
+        thread_.reset( new thread( boost::bind( &PhyEngine::threadLoop, this ) ) );
     }
 
-    void PNEngine::stopEngine()
+    void PhyEngine::stopEngine()
     {
         //Stop any components that require it
-        for( vector< shared_ptr<PNComponent> >::iterator i = components_.begin(); i != components_.end(); ++i)
+        for( vector< shared_ptr<PhyComponent> >::iterator i = components_.begin(); i != components_.end(); ++i)
         {
             (*i)->stop();
         }
@@ -121,12 +121,12 @@ namespace iris
         thread_->join();
     }
 
-    void PNEngine::addReconfiguration(ReconfigSet reconfigs)
+    void PhyEngine::addReconfiguration(ReconfigSet reconfigs)
     {
         reconfigQueue_.push(reconfigs);
     }
 
-    void PNEngine::threadLoop()
+    void PhyEngine::threadLoop()
     {
         //Do a topological sort of the graph (sorts in reverse topological order)
         vector<unsigned> revTopoOrder;
@@ -183,14 +183,14 @@ namespace iris
         }
     }
 
-    void PNEngine::checkGraph(RadioGraph& graph)
+    void PhyEngine::checkGraph(RadioGraph& graph)
     {
-        //Check graph obeys PNEngine rules:
+        //Check graph obeys PhyEngine rules:
         //  * Only one source component - can have multiple inputs
         //  * All other components have only one input
     }
 
-    void PNEngine::buildEngineGraph(RadioGraph& graph)
+    void PhyEngine::buildEngineGraph(RadioGraph& graph)
         throw (IrisException)
     {
         //Create the components
@@ -199,7 +199,7 @@ namespace iris
         {
             //Load the component and add to vector
             ComponentDescription current = graph[*i];
-            shared_ptr<PNComponent> comp = compManager_->loadComponent(current);
+            shared_ptr<PhyComponent> comp = compManager_->loadComponent(current);
             comp->setEngine(this);    //Provide an interface to the component
             components_.push_back(comp);
         }
@@ -250,7 +250,7 @@ namespace iris
                 outTypes.push_back(j->second);
             }
 
-            PNComponent* x = components_[*i]->setupIO(inTypes, outTypes);
+            PhyComponent* x = components_[*i]->setupIO(inTypes, outTypes);
             if (x != components_[*i].get())
             {
                 components_[*i].reset(x);
@@ -265,12 +265,12 @@ namespace iris
                 if(outputTypes.find(srcPort) == outputTypes.end())
                 {
                     throw ResourceNotFoundException("Output port " + srcPort + \
-                        " could not be found on PNComponent " + components_[*i]->getName()); 
+                        " could not be found on PhyComponent " + components_[*i]->getName());
                 }
 
-                //Create a PNDataBuffer of the correct type
+                //Create a PhyDataBuffer of the correct type
                 int currentType = outputTypes[srcPort];
-                shared_ptr< DataBufferBase > buf = createPNDataBuffer(currentType);
+                shared_ptr< DataBufferBase > buf = createPhyDataBuffer(currentType);
                 graph[*outEdgeIt].theBuffer = buf;
                 graph[*outEdgeIt].theBuffer->setLinkDescription(graph[*outEdgeIt]);
                 internalBuffers_.push_back( buf );
@@ -307,12 +307,12 @@ namespace iris
 
     }
 
-    void PNEngine::reconfigureParameter(ParametricReconfig reconfig)
+    void PhyEngine::reconfigureParameter(ParametricReconfig reconfig)
     {
         bool bFound = false;
 
         //Find component
-        vector< shared_ptr<PNComponent> >::iterator compIt;
+        vector< shared_ptr<PhyComponent> >::iterator compIt;
         for(compIt = components_.begin(); compIt != components_.end(); ++compIt)
         {
             if((*compIt)->getName() == reconfig.componentName)
@@ -330,13 +330,13 @@ namespace iris
         }
     }
 
-    void PNEngine::postCommand(Command command)
+    void PhyEngine::postCommand(Command command)
     {
-        LOG(LERROR) << "PNComponents do not support commands - failed to post command " <<
+        LOG(LERROR) << "PhyComponents do not support commands - failed to post command " <<
                 command.commandName << " to " << command.componentName;
     }
 
-    void PNEngine::activateEvent(Event &e)
+    void PhyEngine::activateEvent(Event &e)
     {
         if(engineManager_ == NULL)
         {
@@ -348,7 +348,7 @@ namespace iris
         engineManager_->activateEvent(e);
     }
 
-    bool PNEngine::sameLink(LinkDescription first, LinkDescription second) const
+    bool PhyEngine::sameLink(LinkDescription first, LinkDescription second) const
     {
         return (first.sourceComponent == second.sourceComponent &&
             first.sinkComponent == second.sinkComponent &&
@@ -387,9 +387,9 @@ namespace iris
         }
     };
 
-    //! Struct for metaprogramming loop to go through all iris types and create a PNDataBuffer of the correct type
+    //! Struct for metaprogramming loop to go through all iris types and create a PhyDataBuffer of the correct type
     template <int N = boost::mpl::size<IrisDataTypes>::value>
-    struct getPNBufferOfType
+    struct getPhyBufferOfType
     {
         static bool EXEC(int type, shared_ptr<DataBufferBase> &ptr)
         {
@@ -397,18 +397,18 @@ namespace iris
 
             if(N-1 == type)
             {
-                ptr.reset(new PNDataBuffer<T>);
+                ptr.reset(new PhyDataBuffer<T>);
                 return true;
             }
             else
             {
-                return getPNBufferOfType<N-1>::EXEC(type, ptr);
+                return getPhyBufferOfType<N-1>::EXEC(type, ptr);
             }
         }
     };
     //! Template specialization to end the recursion
     template <>
-    struct getPNBufferOfType<0>
+    struct getPhyBufferOfType<0>
     {
         static bool EXEC(int type, shared_ptr<DataBufferBase> &ptr)
         {
@@ -418,7 +418,7 @@ namespace iris
     } /* namespace internal */
 
     //! Create a DataBuffer of a particular data type
-    shared_ptr< DataBufferBase > PNEngine::createDataBuffer(int type) const
+    shared_ptr< DataBufferBase > PhyEngine::createDataBuffer(int type) const
     {
         shared_ptr< DataBufferBase> ret;
         if(!internal::getBufferOfType<>::EXEC(type, ret))
@@ -428,11 +428,11 @@ namespace iris
         return ret;
     }
 
-    //! Create a PNDataBuffer of a particular data type
-    shared_ptr< DataBufferBase > PNEngine::createPNDataBuffer(int type) const
+    //! Create a PhyDataBuffer of a particular data type
+    shared_ptr< DataBufferBase > PhyEngine::createPhyDataBuffer(int type) const
     {
         shared_ptr< DataBufferBase> ret;
-        if(!internal::getPNBufferOfType<>::EXEC(type, ret))
+        if(!internal::getPhyBufferOfType<>::EXEC(type, ret))
         {
             throw InvalidDataTypeException("Attempted to create DataBuffer with invalid data type value: " + type);
         }

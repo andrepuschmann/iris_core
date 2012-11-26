@@ -57,14 +57,14 @@ BOOST_AUTO_TEST_CASE(ReconfigurationManagerParametersTest)
     string xmlConfig1("\
 <?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\" ?>\
 <softwareradio>\
-<engine name=\"pnengine1\" class=\"pnengine\">\
-<component name=\"src1\" class=\"sourcepncomponent\">\
+<engine name=\"phyengine1\" class=\"phyengine\">\
+<component name=\"src1\" class=\"sourcephycomponent\">\
 <parameter name=\"param1\" value=\"1\" />\
 <parameter name=\"param2\" value=\"1\" />\
 <parameter name=\"param3\" value=\"1\" />\
 <port name=\"output1\" class=\"output\" />\
 </component>\
-<component name=\"snk1\" class=\"sinkpncomponent\">\
+<component name=\"snk1\" class=\"sinkphycomponent\">\
 <port name=\"input1\" class=\"input\" />\
 </component>\
 </engine>\
@@ -75,11 +75,11 @@ BOOST_AUTO_TEST_CASE(ReconfigurationManagerParametersTest)
     string xmlConfig2("\
 <?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\" ?>\
 <softwareradio>\
-<engine name=\"pnengine1\" class=\"pnengine\">\
-<component name=\"snk1\" class=\"sinkpncomponent\">\
+<engine name=\"phyengine1\" class=\"phyengine\">\
+<component name=\"snk1\" class=\"sinkphycomponent\">\
 <port name=\"input1\" class=\"input\" />\
 </component>\
-<component name=\"src1\" class=\"sourcepncomponent\">\
+<component name=\"src1\" class=\"sourcephycomponent\">\
 <parameter name=\"param3\" value=\"2\" />\
 <parameter name=\"param1\" value=\"2\" />\
 <parameter name=\"param2\" value=\"2\" />\
@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE(ReconfigurationManagerParametersTest)
     vector<ParametricReconfig>::iterator it;
     for(it = reconfigs.paramReconfigs.begin(); it != reconfigs.paramReconfigs.end(); ++it)
     {
-        BOOST_REQUIRE(it->engineName == "pnengine1");
+        BOOST_REQUIRE(it->engineName == "phyengine1");
         BOOST_REQUIRE(it->componentName == "src1");
         BOOST_REQUIRE(it->parameterName == "param1" || it->parameterName == "param2" || it->parameterName == "param3");
         BOOST_REQUIRE(it->parameterValue == "2");

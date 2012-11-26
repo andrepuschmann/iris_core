@@ -1,5 +1,5 @@
 /**
- * \file PNComponentManager.h
+ * \file PhyComponentManager.h
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -28,12 +28,12 @@
  *
  * \section DESCRIPTION
  *
- * The Process Network Component Manager - loads/unloads PNComponents
- * for the PNEngine.
+ * The Process Network Component Manager - loads/unloads PhyComponents
+ * for the PhyEngine.
  */
 
-#ifndef PNCOMPONENTMANAGER_H_
-#define PNCOMPONENTMANAGER_H_
+#ifndef PHYCOMPONENTMANAGER_H_
+#define PHYCOMPONENTMANAGER_H_
 
 #include <string>
 #include <vector>
@@ -44,7 +44,7 @@
 #include "iris/SharedLibrary.h"
 #include "iris/RadioRepresentation.h"
 #include "irisapi/Logging.h"
-#include "irisapi/PNComponent.h"
+#include "irisapi/PhyComponent.h"
 #include "irisapi/Exceptions.h"
 
 namespace iris
@@ -53,9 +53,9 @@ namespace iris
 //! Function pointer for "GetApiVersion" in component library
 typedef const char* (*GETAPIVERSIONFUNCTION)();
 //! Function pointer for "CreateComponent" in component library
-typedef PNComponent* (*CREATEFUNCTION)(std::string);
+typedef PhyComponent* (*CREATEFUNCTION)(std::string);
 //! Function pointer for "ReleaseComponent" in component library
-typedef void (*DESTROYFUNCTION)(PNComponent*);
+typedef void (*DESTROYFUNCTION)(PhyComponent*);
 
 //! A component library
 struct ComponentLibrary
@@ -76,11 +76,11 @@ struct Repository
   std::vector< ComponentLibrary > componentLibs;
 };
 
-/** The PNComponentManager class implements a component manager for the PNEngine.
+/** The PhyComponentManager class implements a component manager for the PhyEngine.
 *
-*  The PNEngine uses the PNComponentManager to manage the lifecycle of its components
+*  The PhyEngine uses the PhyComponentManager to manage the lifecycle of its components
 */
-class PNComponentManager
+class PhyComponentManager
 {
 private:
   //! Repositories of components which can be loaded by this manager
@@ -91,7 +91,7 @@ private:
 
 public:
   //! ctor
-  PNComponentManager();
+  PhyComponentManager();
 
   /** Add a repository 
   *   Multiple repositories can be specified by separating paths with ";"
@@ -99,11 +99,11 @@ public:
   */
   void addRepository(std::string repoPath) throw (ResourceNotFoundException);
   
-  /** Load a PNComponent
-  *   \param desc   Description of PNComponent to be loaded
-  *   \returns A pointer to the loaded PNComponent
+  /** Load a PhyComponent
+  *   \param desc   Description of PhyComponent to be loaded
+  *   \returns A pointer to the loaded PhyComponent
   */
-  boost::shared_ptr<PNComponent> loadComponent(ComponentDescription desc) throw (IrisException);
+  boost::shared_ptr<PhyComponent> loadComponent(ComponentDescription desc) throw (IrisException);
 
   /** Check whether a component exists
   *   \param  name  The name of the component to look for
@@ -114,8 +114,8 @@ public:
   std::vector<boost::filesystem::path> getRepositories();
 
   //! Get the name of this element
-  std::string getName(){return "PNComponentManager";};
+  std::string getName(){return "PhyComponentManager";};
 };
 
-}
-#endif
+} // namespace iris
+#endif // PHYCOMPONENTMANAGER_H_

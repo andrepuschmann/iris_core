@@ -33,7 +33,7 @@
  */
 
 #include "iris/EngineManager.h"
-#include "iris/PNEngine.h"
+#include "iris/PhyEngine.h"
 #include "iris/StackEngine.h"
 
 using namespace std;
@@ -215,9 +215,9 @@ namespace iris
     {
         EngineInterface* current = NULL;
 
-        if(d.type == "pnengine")
+        if(d.type == "phyengine")
         {
-            current = new PNEngine(d.name, reps_.pnRepository); 
+            current = new PhyEngine(d.name, reps_.phyRepository);
         }
         else if(d.type == "stackengine")
         {

@@ -114,10 +114,10 @@ struct IrisStateMachine : boost::statechart::state_machine< IrisStateMachine, Ac
   void setStackRadioRepository(std::string radioRepository) { stackRadioRepository_ = radioRepository; }
   //! return radio Stack component repository
   std::string getStackRadioRepository() const { return stackRadioRepository_; }
-  //! set radio PN component repository
-  void setPnRadioRepository(std::string radioRepository) { pnRadioRepository_ = radioRepository; }
-  //! return radio PN component repository
-  std::string getPnRadioRepository() const { return pnRadioRepository_; }
+  //! set radio Phy component repository
+  void setPhyRadioRepository(std::string radioRepository) { phyRadioRepository_ = radioRepository; }
+  //! return radio Phy component repository
+  std::string getPhyRadioRepository() const { return phyRadioRepository_; }
   //! set radio SDF component repository
   void setSdfRadioRepository(std::string radioRepository) { sdfRadioRepository_ = radioRepository; }
   //! return radio SDF component repository
@@ -137,8 +137,8 @@ private:
   std::string radioConfig_;
   //! stores the radio Stack component repository
   std::string stackRadioRepository_;
-  //! stores the radio PN component repository
-  std::string pnRadioRepository_;
+  //! stores the radio Phy component repository
+  std::string phyRadioRepository_;
   //! stores the radio SDF component repository
   std::string sdfRadioRepository_;
   //! stores the radio Controller repository

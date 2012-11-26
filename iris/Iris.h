@@ -51,8 +51,8 @@ IRIS_DLL void IRISInitSystem();
 /// Set the Stack component repository
 IRIS_DLL bool IRISSetStackRepository(std::string rep);
 
-/// Set the PN component repository
-IRIS_DLL bool IRISSetPnRepository(std::string rep);
+/// Set the Phy component repository
+IRIS_DLL bool IRISSetPhyRepository(std::string rep);
 
 /// Set the SDF component repository
 IRIS_DLL bool IRISSetSdfRepository(std::string rep);

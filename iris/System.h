@@ -56,8 +56,8 @@ public:
   /// Set the Stack Component repository
   void setStackRepository(std::string rep);
 
-  /// Set the PN Component repository
-  void setPnRepository(std::string rep);
+  /// Set the Phy Component repository
+  void setPhyRepository(std::string rep);
 
   /// Set the SDF Component repository
   void setSdfRepository(std::string rep);

@@ -45,15 +45,15 @@
 #include <boost/algorithm/string.hpp>
 
 /** Macro for IRIS boilerplate code in each component.
- *  \param ComponentType Type of the component (PNComponent, SdfComponent, ...)
+ *  \param ComponentType Type of the component (PhyComponent, SdfComponent, ...)
  *  \param ComponentClass Class of the component class to be exported by the library
  *
  *  This macro defines the GetApiVersion(), CreateComponent(), and ReleaseComponent()
  *  functions with the correct C-style library export specifiers. It must be called
  *  in each component's source file.
- *  Example, for a pn component called ExampleComponent:
+ *  Example, for a Phy component called ExampleComponent:
  *  \code
- *  IRIS_COMPONENT_EXPORTS(PNComponent, ExampleComponent)
+ *  IRIS_COMPONENT_EXPORTS(PhyComponent, ExampleComponent)
  *
  *  ExampleComponent::~ExampleComponent(string name)
  *   ...

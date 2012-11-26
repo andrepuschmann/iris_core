@@ -52,7 +52,7 @@ SET(test_sources
     EngineManager_test.cpp
     Logging_test.cpp
     MemoryManager_test.cpp
-    PNEngine_test.cpp
+    PhyEngine_test.cpp
     RadioRepresentation_test.cpp
     ReconfigurationManager_test.cpp
     SharedLibrary_test.cpp

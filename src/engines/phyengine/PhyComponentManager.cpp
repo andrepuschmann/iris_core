@@ -1,5 +1,5 @@
 /**
- * \file PNComponentManager.cpp
+ * \file PhyComponentManager.cpp
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -28,15 +28,15 @@
  *
  * \section DESCRIPTION
  *
- * Implementation of PNComponentManager class - loads/unloads PNComponents
- * for the PNEngine.
+ * Implementation of PhyComponentManager class - loads/unloads PhyComponents
+ * for the PhyEngine.
  */
 
 #include <sstream>
 #include <boost/algorithm/string.hpp>
 
 #include "irisapi/Version.h"
-#include "PNComponentManager.h"
+#include "PhyComponentManager.h"
 
 using namespace std;
 namespace b=boost;
@@ -44,11 +44,11 @@ namespace bfs=boost::filesystem;
 
 namespace iris
 {
-    PNComponentManager::PNComponentManager()
+    PhyComponentManager::PhyComponentManager()
     {
     }
 
-    void PNComponentManager::addRepository(std::string repoPath) throw (ResourceNotFoundException)
+    void PhyComponentManager::addRepository(std::string repoPath) throw (ResourceNotFoundException)
     {
         while(!repoPath.empty())
         {
@@ -101,7 +101,7 @@ namespace iris
         }
     }
 
-    b::shared_ptr<PNComponent> PNComponentManager::loadComponent(ComponentDescription desc)
+    b::shared_ptr<PhyComponent> PhyComponentManager::loadComponent(ComponentDescription desc)
         throw (IrisException)
     {
         ComponentLibrary temp;
@@ -153,7 +153,7 @@ namespace iris
             loadedLibraries_.push_back(temp);
         }
 
-        //Pull a PNComponent class out of the library
+        //Pull a PhyComponent class out of the library
         CREATEFUNCTION createFunction = (CREATEFUNCTION)temp.libPtr->getSymbol("CreateComponent");
         DESTROYFUNCTION destroyFunction = (DESTROYFUNCTION)temp.libPtr->getSymbol("ReleaseComponent");
         GETAPIVERSIONFUNCTION getApiFunction = (GETAPIVERSIONFUNCTION)temp.libPtr->getSymbol("GetApiVersion"); 
@@ -172,7 +172,7 @@ namespace iris
         }
 
         //Create a shared_ptr and use a custom deallocator so the component is destroyed from the library
-        boost::shared_ptr<PNComponent> comp(createFunction(desc.name), destroyFunction);
+        boost::shared_ptr<PhyComponent> comp(createFunction(desc.name), destroyFunction);
 
         //Set the LoggingPolicy
         comp->setLoggingPolicy(Logger::getPolicy());
@@ -190,7 +190,7 @@ namespace iris
         return comp;
     }
 
-    bool PNComponentManager::componentExists(std::string name)
+    bool PhyComponentManager::componentExists(std::string name)
     {
         //Look for the component in our repositories
         vector< Repository >::iterator repIt;
@@ -208,7 +208,7 @@ namespace iris
         return false;
     }
 
-    vector<bfs::path> PNComponentManager::getRepositories()
+    vector<bfs::path> PhyComponentManager::getRepositories()
     {
         vector<bfs::path> paths;
         vector<Repository>::iterator it;

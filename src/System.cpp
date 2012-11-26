@@ -69,9 +69,9 @@ namespace iris
         reps_.stackRepository = rep;
     }
 
-    void System::setPnRepository(std::string rep)
+    void System::setPhyRepository(std::string rep)
     {
-        reps_.pnRepository = rep;
+        reps_.phyRepository = rep;
     }
 
     void System::setSdfRepository(std::string rep)

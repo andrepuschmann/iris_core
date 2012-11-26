@@ -114,8 +114,8 @@ public:
   std::vector<boost::filesystem::path> getRepositories();
 
   //! Get the name of this element
-  std::string getName(){return "PNComponentManager";};
+  std::string getName(){return "StackComponentManager";};
 };
 
-} /* namespace iris */
-#endif /* STACKCOMPONENTMANAGER_H_ */
+} // namespace iris
+#endif // STACKCOMPONENTMANAGER_H_

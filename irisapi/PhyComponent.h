@@ -1,5 +1,5 @@
 /**
- * \file PNComponent.h
+ * \file PhyComponent.h
  * \version 1.0
  *
  * \section COPYRIGHT
@@ -31,8 +31,8 @@
  * The Process Network Component base class.
  */
 
-#ifndef IRISAPI_PNCOMPONENT_H_
-#define IRISAPI_PNCOMPONENT_H_
+#ifndef IRISAPI_PHYCOMPONENT_H_
+#define IRISAPI_PHYCOMPONENT_H_
 
 #include <irisapi/ComponentBase.h>
 #include <irisapi/DataBufferInterfaces.h>
@@ -42,15 +42,15 @@
 namespace iris
 {
 
-/** The PNComponent class provides common functionality for all process
+/** The PhyComponent class provides common functionality for all process
  * network components.
  *
- * PNComponents run in a PNEngine. They typically read data from one or
+ * PhyComponents run in a PhyEngine. They typically read data from one or
  * more input ports, process it and write to one or more output ports.
- * PNComponents do not control the size of input data, but specify the
+ * PhyComponents do not control the size of input data, but specify the
  * size of their output data.
  */
-class PNComponent
+class PhyComponent
   : public ComponentBase
 {
 public:
@@ -62,7 +62,7 @@ public:
   *   \param author       Component author
   *   \param version      Component version
   */
-  PNComponent(std::string name,
+  PhyComponent(std::string name,
               std::string type,
               std::string description,
               std::string author,
@@ -71,7 +71,7 @@ public:
   {};
 
 
-  virtual ~PNComponent()
+  virtual ~PhyComponent()
   {
     if(numRuns > 0)
       LOG(LINFO) << "Average time taken per process() call = " << totalTime/(float)numRuns;
@@ -88,7 +88,7 @@ public:
     outputBuffers = out;
   };
 
-  /// Called by the PNEngine to process this component
+  /// Called by the PhyEngine to process this component
   virtual void doProcess()
   {
     boost::posix_time::ptime t1(boost::posix_time::microsec_clock::local_time());
@@ -116,13 +116,13 @@ public:
 public:
   /** Sets up input and output types.
    *
-   * This function is overridden by template components, which will return a new PNComponent
+   * This function is overridden by template components, which will return a new PhyComponent
    * instantiated with the right template parameters.
    * \param inputTypes Vector of input type identifiers, each element represents a port.
    * \param outputTypes Vector of output type identifiers, each element represents a port.
    * \return Pointer to this.
    */
-  virtual PNComponent* setupIO(const std::vector<int>& inputTypes, const std::vector<int>& outputTypes)
+  virtual PhyComponent* setupIO(const std::vector<int>& inputTypes, const std::vector<int>& outputTypes)
   {
     return this;
   }
@@ -158,5 +158,5 @@ private:
 };
 
 } // namespace iris
-#endif //IRISAPI_PNCOMPONENT_H_
+#endif //IRISAPI_PHYCOMPONENT_H_
 

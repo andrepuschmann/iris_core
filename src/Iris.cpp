@@ -71,14 +71,14 @@ bool IRISSetStackRepository(std::string rep)
     }
 }
 
-bool IRISSetPnRepository(std::string rep)
+bool IRISSetPhyRepository(std::string rep)
 {
     if(theSystem == NULL)
     {
         LOG(LERROR) << "System has not been initialized.";
         return false;
     }else{
-        theSystem->setPnRepository(rep);
+        theSystem->setPhyRepository(rep);
         return true;
     }
 }
