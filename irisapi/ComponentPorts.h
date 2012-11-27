@@ -82,20 +82,42 @@ public:
   {return outputPorts;};
 
 protected:
-  /** Registers an input port of a child class.
+  /** Register an input port of a child class with a single type.
    *
    * \param name Name of the port
-   * \param types Types supported by the port
+   * \param type Data type supported by the port
+   */
+  void registerInputPort(std::string name, int type)
+  {
+    std::vector<int> types(1,type);
+    registerInputPort(name, types);
+  };
+
+  /** Register an input port of a child class with multiple types.
+   *
+   * \param name  Name of the port
+   * \param types Data types supported by the port
    */
   void registerInputPort(std::string name, const std::vector<int>& types)
   {
     inputPorts.push_back(Port(name, types));
   };
 
-  /** Registers an output port of a child class.
+  /** Register an output port of a child class with a single type.
    *
    * \param name Name of the port
-   * \param types Types supported by the port
+   * \param type Data type supported by the port
+   */
+  void registerOutputPort(std::string name, int type)
+  {
+    std::vector<int> types(1,type);
+    registerOutputPort(name, types);
+  };
+
+  /** Register an output port of a child class with multiple types.
+   *
+   * \param name  Name of the port
+   * \param types Data types supported by the port
    */
   void registerOutputPort(std::string name, std::vector<int> types)
   {

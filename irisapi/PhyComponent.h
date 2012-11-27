@@ -73,8 +73,8 @@ public:
 
   virtual ~PhyComponent()
   {
-    if(numRuns > 0)
-      LOG(LINFO) << "Average time taken per process() call = " << totalTime/(float)numRuns;
+    if(numRuns_ > 0)
+      LOG(LINFO) << "Average time taken per process() call = " << totalTime_/(float)numRuns_;
   }
 
   /** Set the input and output buffers for this component
@@ -86,6 +86,18 @@ public:
   {
     inputBuffers = in;
     outputBuffers = out;
+
+    std::vector<Port> inPorts = getInputPorts();
+    std::vector<Port> outPorts = getOutputPorts();
+
+    for(int i=0; i<in.size(); ++i)
+    {
+      namedInputBuffers_[inPorts[i].portName] = in[i];
+    }
+    for(int i=0; i<out.size(); ++i)
+    {
+      namedOutputBuffers_[outPorts[i].portName] = out[i];
+    }
   };
 
   /// Called by the PhyEngine to process this component
@@ -94,8 +106,8 @@ public:
     boost::posix_time::ptime t1(boost::posix_time::microsec_clock::local_time());
     process();
     boost::posix_time::ptime t2(boost::posix_time::microsec_clock::local_time());
-    totalTime += (t2-t1);
-    numRuns++;
+    totalTime_ += (t2-t1);
+    numRuns_++;
   };
 
   /// \name To be implemented in derived classes.
@@ -128,6 +140,42 @@ public:
   }
 
 protected:
+  template <class T>
+  void getInputDataSet(std::string portName, DataSet<T>* data)
+  {
+    ReadBufferBase* b = namedInputBuffers_[portName];
+    if( TypeInfo< T >::identifier != b->getTypeIdentifier() )
+      throw InvalidDataTypeException("Data type mismatch in getInputDataSet.");
+    (dynamic_cast< ReadBuffer<T>* >(b))->getReadData(data);
+  }
+
+  template <class T>
+  void getOutputDataSet(std::string portName, DataSet<T>* data, std::size_t size)
+  {
+    WriteBufferBase* b = namedOutputBuffers_[portName];
+    if( TypeInfo< T >::identifier != b->getTypeIdentifier() )
+      throw InvalidDataTypeException("Data type mismatch in getOutputDataSet.");
+    (dynamic_cast< WriteBuffer<T>* >(b))->getWriteData(data, size);
+  }
+
+  template <class T>
+  void releaseInputDataSet(std::string portName, DataSet<T>* data)
+  {
+    ReadBufferBase* b = namedInputBuffers_[portName];
+    if( TypeInfo< T >::identifier != b->getTypeIdentifier() )
+      throw InvalidDataTypeException("Data type mismatch in releaseInputDataSet.");
+    (dynamic_cast< ReadBuffer<T>* >(b))->releaseReadData(data);
+  }
+
+  template <class T>
+  void releaseOutputDataSet(std::string portName, DataSet<T>* data)
+  {
+    WriteBufferBase* b = namedOutputBuffers_[portName];
+    if( TypeInfo< T >::identifier != b->getTypeIdentifier() )
+      throw InvalidDataTypeException("Data type mismatch in releaseOutputDataSet.");
+    (dynamic_cast< WriteBuffer<T>* >(b))->releaseWriteData(data);
+  }
+
   /// Helper fuction to cast a non-templated base buffer to a templated derived buffer
   template <class T>
   WriteBuffer< T >* castToType( WriteBufferBase* buf ) {
@@ -152,8 +200,11 @@ protected:
   std::vector<WriteBufferBase*> outputBuffers;  ///< Outputs from this component.
 
 private:
-  boost::posix_time::time_duration totalTime; ///< Time taken in process() so far.
-  int numRuns;                                ///< Number of process() calls so far.
+  boost::posix_time::time_duration totalTime_; ///< Time taken in process() so far.
+  int numRuns_;                                ///< Number of process() calls so far.
+
+  std::map<std::string, ReadBufferBase*> namedInputBuffers_;
+  std::map<std::string, WriteBufferBase*> namedOutputBuffers_;
 
 };
 
