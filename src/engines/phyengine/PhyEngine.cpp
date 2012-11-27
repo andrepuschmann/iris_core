@@ -237,7 +237,7 @@ namespace iris
             //TODO: Check that inputs exist for each of the registered input port names
 
             //Get output buffer types from component
-            outputTypes = components_[*i]->calculateOutputTypes(inputTypes);
+            components_[*i]->calculateOutputTypes(inputTypes, outputTypes);
 
             // temporary shell for testing template components
             std::vector<int> inTypes, outTypes;

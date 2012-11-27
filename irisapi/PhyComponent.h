@@ -112,7 +112,8 @@ public:
 
   /// \name To be implemented in derived classes.
   //@{
-  virtual std::map<std::string, int> calculateOutputTypes(std::map<std::string, int> inputTypes) = 0;
+  virtual void calculateOutputTypes(const std::map<std::string, int>& inputTypes,
+                                    std::map<std::string, int>& outputTypes) = 0;
   virtual void registerPorts() = 0;
   virtual void initialize() = 0;
   virtual void process() = 0;
