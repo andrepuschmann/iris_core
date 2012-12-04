@@ -68,6 +68,7 @@ public:
               std::string author,
               std::string version )
     : ComponentBase(name, type, description, author, version)
+      ,numRuns_(0)
   {};
 
 
