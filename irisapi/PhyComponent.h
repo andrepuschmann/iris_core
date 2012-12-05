@@ -55,13 +55,13 @@ class PhyComponent
 {
 public:
   /** Constructor
-  *
-  *   \param name         Name of the component
-  *   \param type         Type of the component
-  *   \param description  Brief description of what the component does
-  *   \param author       Component author
-  *   \param version      Component version
-  */
+   *
+   * \param name         Name of the component
+   * \param type         Type of the component
+   * \param description  Brief description of what the component does
+   * \param author       Component author
+   * \param version      Component version
+   */
   PhyComponent(std::string name,
               std::string type,
               std::string description,
@@ -78,11 +78,27 @@ public:
       LOG(LINFO) << "Average time taken per process() call = " << totalTime_/(float)numRuns_;
   }
 
-  /** Set the input and output buffers for this component
-  *
-  *   \param in   Vector of ReadBufferBase pointers
-  *   \param out  Vector of WriteBufferBase pointers
-  */
+  /** Set single input and output buffers for this component
+   *
+   * \param in   ReadBufferBase pointer
+   * \param out  WriteBufferBase pointer
+   */
+  virtual void setBuffers(ReadBufferBase* in, WriteBufferBase* out)
+  {
+    inputBuffers.push_back(in);
+    outputBuffers.push_back(out);
+
+    std::vector<Port> inPorts = getInputPorts();
+    std::vector<Port> outPorts = getOutputPorts();
+    namedInputBuffers_[inPorts.front().portName] = in;
+    namedOutputBuffers_[outPorts.front().portName] = out;
+  };
+
+  /** Set multiple input and output buffers for this component
+   *
+   * \param in   Vector of ReadBufferBase pointers
+   * \param out  Vector of WriteBufferBase pointers
+   */
   virtual void setBuffers(std::vector<ReadBufferBase*> in, std::vector<WriteBufferBase*> out)
   {
     inputBuffers = in;
@@ -92,13 +108,9 @@ public:
     std::vector<Port> outPorts = getOutputPorts();
 
     for(int i=0; i<in.size(); ++i)
-    {
       namedInputBuffers_[inPorts[i].portName] = in[i];
-    }
     for(int i=0; i<out.size(); ++i)
-    {
       namedOutputBuffers_[outPorts[i].portName] = out[i];
-    }
   };
 
   /// Called by the PhyEngine to process this component
@@ -132,9 +144,9 @@ public:
    *
    * This function is overridden by template components, which will return a new PhyComponent
    * instantiated with the right template parameters.
-   * \param inputTypes Vector of input type identifiers, each element represents a port.
-   * \param outputTypes Vector of output type identifiers, each element represents a port.
-   * \return Pointer to this.
+   * @param inputTypes Vector of input type identifiers, each element represents a port.
+   * @param outputTypes Vector of output type identifiers, each element represents a port.
+   * @return Pointer to this.
    */
   virtual PhyComponent* setupIO(const std::vector<int>& inputTypes, const std::vector<int>& outputTypes)
   {
@@ -143,7 +155,7 @@ public:
 
 protected:
   template <class T>
-  void getInputDataSet(std::string portName, DataSet<T>* data)
+  void getInputDataSet(std::string portName, DataSet<T>*& data)
   {
     ReadBufferBase* b = namedInputBuffers_[portName];
     if( TypeInfo< T >::identifier != b->getTypeIdentifier() )
@@ -152,7 +164,7 @@ protected:
   }
 
   template <class T>
-  void getOutputDataSet(std::string portName, DataSet<T>* data, std::size_t size)
+  void getOutputDataSet(std::string portName, DataSet<T>*& data, std::size_t size)
   {
     WriteBufferBase* b = namedOutputBuffers_[portName];
     if( TypeInfo< T >::identifier != b->getTypeIdentifier() )
@@ -161,7 +173,7 @@ protected:
   }
 
   template <class T>
-  void releaseInputDataSet(std::string portName, DataSet<T>* data)
+  void releaseInputDataSet(std::string portName, DataSet<T>*& data)
   {
     ReadBufferBase* b = namedInputBuffers_[portName];
     if( TypeInfo< T >::identifier != b->getTypeIdentifier() )
@@ -170,7 +182,7 @@ protected:
   }
 
   template <class T>
-  void releaseOutputDataSet(std::string portName, DataSet<T>* data)
+  void releaseOutputDataSet(std::string portName, DataSet<T>*& data)
   {
     WriteBufferBase* b = namedOutputBuffers_[portName];
     if( TypeInfo< T >::identifier != b->getTypeIdentifier() )
