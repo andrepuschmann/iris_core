@@ -36,9 +36,7 @@ SET(phyengine_sources
 
 )
 ADD_LIBRARY(phyengine STATIC ${phyengine_sources})
-IF( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
-  SET_TARGET_PROPERTIES(phyengine PROPERTIES COMPILE_FLAGS -fPIC)
-ENDIF( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
+IRIS_SET_PIC(phyengine)
 TARGET_LINK_LIBRARIES(phyengine sharedlibrary)
 
 

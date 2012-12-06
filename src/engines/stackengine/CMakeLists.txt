@@ -38,9 +38,7 @@ SET(stackengine_sources
     StackEngine.cpp
 )
 ADD_LIBRARY(stackengine STATIC ${stackengine_sources})
-IF( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
-  SET_TARGET_PROPERTIES(stackengine PROPERTIES COMPILE_FLAGS -fPIC)
-ENDIF( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
+IRIS_SET_PIC(stackengine)
 TARGET_LINK_LIBRARIES(stackengine sharedlibrary)
 
 

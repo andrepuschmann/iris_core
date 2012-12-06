@@ -128,6 +128,15 @@ ADD_CUSTOM_TARGET(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
 
 ########################################################################
+# Macro to add -fPIC property to static libs 
+########################################################################
+MACRO(IRIS_SET_PIC)
+	IF( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
+        SET_TARGET_PROPERTIES(${ARGV} PROPERTIES COMPILE_FLAGS -fPIC)
+    ENDIF( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
+ENDMACRO(IRIS_SET_PIC)
+
+########################################################################
 # Add the subdirectories
 ########################################################################
 # Recurse into the "src" and "lib" subdirectories. This does not actually
