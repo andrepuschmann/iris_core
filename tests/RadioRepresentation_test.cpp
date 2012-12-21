@@ -48,6 +48,7 @@
 
 using namespace std;
 using namespace iris;
+namespace b = boost;
 
 BOOST_AUTO_TEST_SUITE (RadioRepresentationTest)
 
@@ -112,9 +113,9 @@ BOOST_AUTO_TEST_CASE(RadioRepresentationCleanBuild)
 
     VertexIterator i, iend;
     OutEdgeIterator ei, eiend;
-    for(tie(i, iend) = vertices(theRGraph); i != iend; ++i)
+    for(b::tie(i, iend) = vertices(theRGraph); i != iend; ++i)
     {
-        for(tie(ei,eiend) = out_edges(*i,theRGraph); ei != eiend; ++ei)
+        for(b::tie(ei,eiend) = out_edges(*i,theRGraph); ei != eiend; ++ei)
         {
             BOOST_CHECK_EQUAL(theRGraph[*ei].sourcePort, "output1");
             BOOST_CHECK_EQUAL(theRGraph[*ei].sinkPort, "input1");
