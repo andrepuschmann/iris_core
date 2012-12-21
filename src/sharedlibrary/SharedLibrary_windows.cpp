@@ -81,7 +81,7 @@ SharedLibrary::open(boost::filesystem::path filename) throw (LibraryLoadExceptio
     }
 
     filename_ = filename;
-    std::string fString = filename_.file_string();
+    std::string fString = filename_.string();
     const char* system_filename = fString.c_str();
 
     //Need a wide character string for LoadLibrary when compiling with UNICODE

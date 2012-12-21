@@ -39,7 +39,7 @@
 #include "StackComponentManager.h"
 
 using namespace std;
-using namespace boost;
+namespace b = boost;
 
 namespace iris
 {
@@ -97,19 +97,19 @@ namespace iris
     void StackEngine::startEngine()
     {
         //Start all the InTranslators
-        for( vector< shared_ptr<StackInTranslator> >::iterator i = inTranslators_.begin(); i != inTranslators_.end(); ++i)
+        for( vector< b::shared_ptr<StackInTranslator> >::iterator i = inTranslators_.begin(); i != inTranslators_.end(); ++i)
         {
             (*i)->startTranslator();    //Start the translator thread
         }
 
         //Start all the OutTranslators
-        for( vector< shared_ptr<StackOutTranslator> >::iterator i = outTranslators_.begin(); i != outTranslators_.end(); ++i)
+        for( vector< b::shared_ptr<StackOutTranslator> >::iterator i = outTranslators_.begin(); i != outTranslators_.end(); ++i)
         {
             (*i)->startTranslator();    //Start the translator thread
         }
 
         //Start all the StackComponents
-        for( vector< shared_ptr<StackComponent> >::iterator i = components_.begin(); i != components_.end(); ++i)
+        for( vector< b::shared_ptr<StackComponent> >::iterator i = components_.begin(); i != components_.end(); ++i)
         {
             (*i)->initialize(); //Initialize the component
             (*i)->start();    //Call start() on the component implementation
@@ -120,19 +120,19 @@ namespace iris
     void StackEngine::stopEngine()
     {
         //Stop all the InTranslators
-        for( vector< shared_ptr<StackInTranslator> >::iterator i = inTranslators_.begin(); i != inTranslators_.end(); ++i)
+        for( vector< b::shared_ptr<StackInTranslator> >::iterator i = inTranslators_.begin(); i != inTranslators_.end(); ++i)
         {
             (*i)->stopTranslator();    //Stop the translator thread
         }
 
         //Stop all the OutTranslators
-        for( vector< shared_ptr<StackOutTranslator> >::iterator i = outTranslators_.begin(); i != outTranslators_.end(); ++i)
+        for( vector< b::shared_ptr<StackOutTranslator> >::iterator i = outTranslators_.begin(); i != outTranslators_.end(); ++i)
         {
             (*i)->stopTranslator();    //Start the translator thread
         }
 
         //Stop all the StackComponents
-        for( vector< shared_ptr<StackComponent> >::iterator i = components_.begin(); i != components_.end(); ++i)
+        for( vector< b::shared_ptr<StackComponent> >::iterator i = components_.begin(); i != components_.end(); ++i)
         {
             (*i)->stop();    //Call stop() on the component implementation
             (*i)->stopComponent();    //Stop the component thread
@@ -156,7 +156,7 @@ namespace iris
         bool bFound = false;
 
         //Find component and post command
-        vector< shared_ptr<StackComponent> >::iterator compIt;
+        vector< b::shared_ptr<StackComponent> >::iterator compIt;
         for(compIt = components_.begin(); compIt != components_.end(); ++compIt)
         {
             if((*compIt)->getName() == command.componentName)
@@ -184,7 +184,7 @@ namespace iris
         for(vector<ComponentDescription>::iterator i = eng.components.begin(); 
             i != eng.components.end(); i++)
         {
-            shared_ptr<StackComponent> comp = compManager_->loadComponent(*i);
+            b::shared_ptr<StackComponent> comp = compManager_->loadComponent(*i);
             comp->setEngine(this);    //Provide an interface to the component
             components_.push_back(comp);
         }
@@ -201,8 +201,8 @@ namespace iris
             else
             {
                 //Internal link
-                shared_ptr<StackComponent> above = findComponent(i->sourceComponent);
-                shared_ptr<StackComponent> below = findComponent(i->sinkComponent);
+                b::shared_ptr<StackComponent> above = findComponent(i->sourceComponent);
+                b::shared_ptr<StackComponent> below = findComponent(i->sinkComponent);
                 if(above == NULL)
                 {
                     throw ResourceNotFoundException("Could not find StackComponent " + i->sourceComponent +
@@ -225,7 +225,7 @@ namespace iris
         bool bFound = false;
 
         //Find component
-        vector< shared_ptr<StackComponent> >::iterator compIt;
+        vector< b::shared_ptr<StackComponent> >::iterator compIt;
         for(compIt = components_.begin(); compIt != components_.end(); ++compIt)
         {
             if((*compIt)->getName() == reconfig.componentName)
@@ -260,15 +260,15 @@ namespace iris
             //Incoming link
 
             //Find the StackComponent that receives the link
-            shared_ptr<StackComponent> comp = findComponent(l.sinkComponent);
+            b::shared_ptr<StackComponent> comp = findComponent(l.sinkComponent);
             if(comp == NULL)
             {
                 throw ResourceNotFoundException("Could not find StackComponent " + l.sinkComponent +
                         " specified in link."); 
             }
             //Find the DataBuffer for the link
-            shared_ptr< DataBufferBase > buf;
-            for( vector< shared_ptr< DataBufferBase > >::iterator i = engInputBuffers_.begin(); i != engInputBuffers_.end(); ++i)
+            b::shared_ptr< DataBufferBase > buf;
+            for( vector< b::shared_ptr< DataBufferBase > >::iterator i = engInputBuffers_.begin(); i != engInputBuffers_.end(); ++i)
             {
                 if(sameLink(l, (*i)->getLinkDescription()))
                 {
@@ -277,7 +277,7 @@ namespace iris
             }
 
             //Create a translator and link up
-            shared_ptr< StackInTranslator > t(new StackInTranslator());
+            b::shared_ptr< StackInTranslator > t(new StackInTranslator());
             t->setInputBuffer(dynamic_cast<ReadBufferBase*>(buf.get()));
             t->setBufferAbove(comp->getBuffer());
             inTranslators_.push_back(t);
@@ -287,7 +287,7 @@ namespace iris
             //Outgoing link
 
             //Find the StackComponent that provides the link
-            shared_ptr<StackComponent> comp = findComponent(l.sourceComponent);
+            b::shared_ptr<StackComponent> comp = findComponent(l.sourceComponent);
             if(comp == NULL)
             {
                 throw ResourceNotFoundException("Could not find StackComponent " + l.sourceComponent +
@@ -295,12 +295,12 @@ namespace iris
             }
 
             //Create a DataBuffer for the link
-            shared_ptr< DataBufferBase > buf(new DataBuffer<uint8_t>);
+            b::shared_ptr< DataBufferBase > buf(new DataBuffer<uint8_t>);
             buf->setLinkDescription(l);
             engOutputBuffers_.push_back(buf);
 
             //Create a translator and link up
-            shared_ptr< StackOutTranslator > t(new StackOutTranslator());
+            b::shared_ptr< StackOutTranslator > t(new StackOutTranslator());
             t->setOutputBuffer(dynamic_cast<WriteBufferBase*>(buf.get()));
             comp->addBufferBelow(l.sourcePort,t->getBuffer());
             outTranslators_.push_back(t);
@@ -317,8 +317,8 @@ namespace iris
 
     boost::shared_ptr< StackComponent > StackEngine::findComponent(std::string name)
     {
-        boost::shared_ptr<StackComponent> comp;
-        for(vector< shared_ptr<StackComponent> >::iterator i = components_.begin();
+        b::shared_ptr<StackComponent> comp;
+        for(vector< b::shared_ptr<StackComponent> >::iterator i = components_.begin();
             i != components_.end(); i++)
         {
             if((*i)->getName() == name)

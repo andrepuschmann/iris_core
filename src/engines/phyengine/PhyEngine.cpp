@@ -45,7 +45,7 @@
 #include "PhyDataBuffer.h"
 
 using namespace std;
-using namespace boost;
+namespace b = boost;
 
 namespace iris
 {
@@ -102,18 +102,18 @@ namespace iris
     void PhyEngine::startEngine()
     {
         //Start any components that require it
-        for( vector< shared_ptr<PhyComponent> >::iterator i = components_.begin(); i != components_.end(); ++i)
+        for( vector< b::shared_ptr<PhyComponent> >::iterator i = components_.begin(); i != components_.end(); ++i)
         {
             (*i)->start();
         }
         //Start the main engine thread
-        thread_.reset( new thread( boost::bind( &PhyEngine::threadLoop, this ) ) );
+        thread_.reset( new b::thread( b::bind( &PhyEngine::threadLoop, this ) ) );
     }
 
     void PhyEngine::stopEngine()
     {
         //Stop any components that require it
-        for( vector< shared_ptr<PhyComponent> >::iterator i = components_.begin(); i != components_.end(); ++i)
+        for( vector< b::shared_ptr<PhyComponent> >::iterator i = components_.begin(); i != components_.end(); ++i)
         {
             (*i)->stop();
         }
@@ -130,13 +130,13 @@ namespace iris
     {
         //Do a topological sort of the graph (sorts in reverse topological order)
         vector<unsigned> revTopoOrder;
-        topological_sort(engineGraph_, back_inserter(revTopoOrder), vertex_index_map(identity_property_map()));
+        topological_sort(engineGraph_, back_inserter(revTopoOrder), b::vertex_index_map(b::identity_property_map()));
 
         //The main loop of this engine thread
         try{
             while(true)
             {
-                this_thread::interruption_point();
+                b::this_thread::interruption_point();
 
                 //Check message queue for ReconfigSets
                 ReconfigSet currentReconfigSet;
@@ -161,7 +161,7 @@ namespace iris
                     else
                     {
                         InEdgeIterator edgeIt, edgeItEnd;
-                        for(tie(edgeIt, edgeItEnd) = in_edges(*i, engineGraph_); edgeIt != edgeItEnd; ++edgeIt)
+                        for(b::tie(edgeIt, edgeItEnd) = in_edges(*i, engineGraph_); edgeIt != edgeItEnd; ++edgeIt)
                         {
                             //If there's data available in an input buffer, process it
                             while( engineGraph_[*edgeIt].theBuffer->hasData() )
@@ -177,7 +177,7 @@ namespace iris
         {
             LOG(LFATAL) << "Error in engine " << engineName_ << ": " << ex.what() << " - Engine thread exiting.";
         }
-        catch(thread_interrupted&)
+        catch(b::thread_interrupted&)
         {
             LOG(LINFO) << "Thread in Engine " << engineName_ << " interrupted";
         }
@@ -195,18 +195,18 @@ namespace iris
     {
         //Create the components
         VertexIterator i, iend;
-        for(tie(i,iend) = vertices(graph); i != iend; ++i)
+        for(b::tie(i,iend) = vertices(graph); i != iend; ++i)
         {
             //Load the component and add to vector
             ComponentDescription current = graph[*i];
-            shared_ptr<PhyComponent> comp = compManager_->loadComponent(current);
+            b::shared_ptr<PhyComponent> comp = compManager_->loadComponent(current);
             comp->setEngine(this);    //Provide an interface to the component
             components_.push_back(comp);
         }
 
         //Do a topological sort of the graph
         deque<unsigned> topoOrder;
-        topological_sort(graph, front_inserter(topoOrder), vertex_index_map(identity_property_map()));
+        topological_sort(graph, front_inserter(topoOrder), b::vertex_index_map(b::identity_property_map()));
 
         //Set up some containers
         vector< ReadBufferBase* > currentInBufs;
@@ -214,7 +214,7 @@ namespace iris
         map<string, int> inputTypes, outputTypes;
 
         //The external input buffers feed the source component of the graph
-        for( vector< boost::shared_ptr< DataBufferBase > >::iterator i = engInputBuffers_.begin(); i != engInputBuffers_.end(); ++i)
+        for( vector< b::shared_ptr< DataBufferBase > >::iterator i = engInputBuffers_.begin(); i != engInputBuffers_.end(); ++i)
         {
             DataBufferBase* buf = (*i).get();
             LinkDescription desc = buf->getLinkDescription();
@@ -227,7 +227,7 @@ namespace iris
         {
             //Get the internal input buffer details
             InEdgeIterator edgeIt, edgeItEnd;
-            for(tie(edgeIt, edgeItEnd) = in_edges(*i, graph); edgeIt != edgeItEnd; ++edgeIt)
+            for(b::tie(edgeIt, edgeItEnd) = in_edges(*i, graph); edgeIt != edgeItEnd; ++edgeIt)
             {
                 inputTypes[graph[*edgeIt].sinkPort] =  graph[*edgeIt].theBuffer->getTypeIdentifier();
                 currentInBufs.push_back(dynamic_cast<ReadBufferBase*>(graph[*edgeIt].theBuffer.get()));
@@ -258,7 +258,7 @@ namespace iris
 
             //Create internal output buffers and add to graph edges
             OutEdgeIterator outEdgeIt, outEdgeItEnd;
-            for(tie(outEdgeIt, outEdgeItEnd) = out_edges(*i, graph); outEdgeIt != outEdgeItEnd; ++outEdgeIt)
+            for(b::tie(outEdgeIt, outEdgeItEnd) = out_edges(*i, graph); outEdgeIt != outEdgeItEnd; ++outEdgeIt)
             {
                 //Check that the port name exists
                 string srcPort = graph[*outEdgeIt].sourcePort;
@@ -270,7 +270,7 @@ namespace iris
 
                 //Create a PhyDataBuffer of the correct type
                 int currentType = outputTypes[srcPort];
-                shared_ptr< DataBufferBase > buf = createPhyDataBuffer(currentType);
+                b::shared_ptr< DataBufferBase > buf = createPhyDataBuffer(currentType);
                 graph[*outEdgeIt].theBuffer = buf;
                 graph[*outEdgeIt].theBuffer->setLinkDescription(graph[*outEdgeIt]);
                 internalBuffers_.push_back( buf );
@@ -285,7 +285,7 @@ namespace iris
             for( map<string, int>::iterator j = outputTypes.begin(); j != outputTypes.end(); ++j)
             {
                 //Create a DataBuffer and add to exOutputBuffers
-                shared_ptr< DataBufferBase > buf = createDataBuffer( j->second );
+                b::shared_ptr< DataBufferBase > buf = createDataBuffer( j->second );
                 LinkDescription l;
                 l.sourceEngine = engineName_;
                 l.sourceComponent = components_[*i]->getName();
@@ -312,7 +312,7 @@ namespace iris
         bool bFound = false;
 
         //Find component
-        vector< shared_ptr<PhyComponent> >::iterator compIt;
+        vector< b::shared_ptr<PhyComponent> >::iterator compIt;
         for(compIt = components_.begin(); compIt != components_.end(); ++compIt)
         {
             if((*compIt)->getName() == reconfig.componentName)
@@ -359,12 +359,12 @@ namespace iris
     // Internal namespace for metaprogramming loop 
     namespace internal{
     //! Struct for metaprogramming loop to go through all iris types and create a DataBuffer of the correct type
-    template <int N = boost::mpl::size<IrisDataTypes>::value>
+    template <int N = b::mpl::size<IrisDataTypes>::value>
     struct getBufferOfType
     {
-        static bool EXEC(int type, shared_ptr<DataBufferBase> &ptr)
+        static bool EXEC(int type, b::shared_ptr<DataBufferBase> &ptr)
         {
-            typedef typename boost::mpl::at_c<IrisDataTypes,N-1>::type T;
+            typedef typename b::mpl::at_c<IrisDataTypes,N-1>::type T;
 
             if(N-1 == type)
             {
@@ -381,19 +381,19 @@ namespace iris
     template <>
     struct getBufferOfType<0>
     {
-        static bool EXEC(int type, shared_ptr<DataBufferBase> &ptr)
+        static bool EXEC(int type, b::shared_ptr<DataBufferBase> &ptr)
         {
             return false;
         }
     };
 
     //! Struct for metaprogramming loop to go through all iris types and create a PhyDataBuffer of the correct type
-    template <int N = boost::mpl::size<IrisDataTypes>::value>
+    template <int N = b::mpl::size<IrisDataTypes>::value>
     struct getPhyBufferOfType
     {
-        static bool EXEC(int type, shared_ptr<DataBufferBase> &ptr)
+        static bool EXEC(int type, b::shared_ptr<DataBufferBase> &ptr)
         {
-            typedef typename boost::mpl::at_c<IrisDataTypes,N-1>::type T;
+            typedef typename b::mpl::at_c<IrisDataTypes,N-1>::type T;
 
             if(N-1 == type)
             {
@@ -410,7 +410,7 @@ namespace iris
     template <>
     struct getPhyBufferOfType<0>
     {
-        static bool EXEC(int type, shared_ptr<DataBufferBase> &ptr)
+        static bool EXEC(int type, b::shared_ptr<DataBufferBase> &ptr)
         {
             return false;
         }
@@ -418,9 +418,9 @@ namespace iris
     } /* namespace internal */
 
     //! Create a DataBuffer of a particular data type
-    shared_ptr< DataBufferBase > PhyEngine::createDataBuffer(int type) const
+    b::shared_ptr< DataBufferBase > PhyEngine::createDataBuffer(int type) const
     {
-        shared_ptr< DataBufferBase> ret;
+        b::shared_ptr< DataBufferBase> ret;
         if(!internal::getBufferOfType<>::EXEC(type, ret))
         {
             throw InvalidDataTypeException("Attempted to create DataBuffer with invalid data type value: " + type);
@@ -429,9 +429,9 @@ namespace iris
     }
 
     //! Create a PhyDataBuffer of a particular data type
-    shared_ptr< DataBufferBase > PhyEngine::createPhyDataBuffer(int type) const
+    b::shared_ptr< DataBufferBase > PhyEngine::createPhyDataBuffer(int type) const
     {
-        shared_ptr< DataBufferBase> ret;
+        b::shared_ptr< DataBufferBase> ret;
         if(!internal::getPhyBufferOfType<>::EXEC(type, ret))
         {
             throw InvalidDataTypeException("Attempted to create DataBuffer with invalid data type value: " + type);

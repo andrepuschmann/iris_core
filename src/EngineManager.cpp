@@ -37,7 +37,7 @@
 #include "iris/StackEngine.h"
 
 using namespace std;
-using namespace boost;
+namespace b = boost;
 
 namespace iris
 {
@@ -67,7 +67,7 @@ namespace iris
 
         //Create the engines
         EngVertexIterator i, iend;
-        for(tie(i,iend) = vertices(engineGraph_); i != iend; ++i)
+        for(b::tie(i,iend) = vertices(engineGraph_); i != iend; ++i)
         {
             //Get the engine description
             EngineDescription current = engineGraph_[*i];
@@ -78,15 +78,15 @@ namespace iris
 
         //Do a topological sort of the graph
         deque<unsigned> topoOrder;
-        topological_sort(engineGraph_, front_inserter(topoOrder), vertex_index_map(identity_property_map()));
+        topological_sort(engineGraph_, front_inserter(topoOrder), b::vertex_index_map(b::identity_property_map()));
 
         //Go through graph in topological order and set buffers
         for(deque<unsigned>::iterator i = topoOrder.begin(); i != topoOrder.end(); ++i)
         {
             //Get input buffers
-            vector< shared_ptr< DataBufferBase > > inputBuffers, outputBuffers;
+            vector< b::shared_ptr< DataBufferBase > > inputBuffers, outputBuffers;
             EngInEdgeIterator edgeIt, edgeItEnd;
-            for(tie(edgeIt, edgeItEnd) = in_edges(*i, engineGraph_); edgeIt != edgeItEnd; ++edgeIt)
+            for(b::tie(edgeIt, edgeItEnd) = in_edges(*i, engineGraph_); edgeIt != edgeItEnd; ++edgeIt)
             {
                 inputBuffers.push_back(engineGraph_[*edgeIt].theBuffer);
             }
@@ -96,9 +96,9 @@ namespace iris
 
             //Set the ouput buffers in the graph edges
             EngOutEdgeIterator outEdgeIt, outEdgeItEnd;
-            for(tie(outEdgeIt, outEdgeItEnd) = out_edges(*i, engineGraph_); outEdgeIt != outEdgeItEnd; ++outEdgeIt)
+            for(b::tie(outEdgeIt, outEdgeItEnd) = out_edges(*i, engineGraph_); outEdgeIt != outEdgeItEnd; ++outEdgeIt)
             {
-                for(vector< shared_ptr< DataBufferBase > >::iterator it = outputBuffers.begin(); it != outputBuffers.end(); ++it)
+                for(vector< b::shared_ptr< DataBufferBase > >::iterator it = outputBuffers.begin(); it != outputBuffers.end(); ++it)
                 {
                     LinkDescription first = (*it)->getLinkDescription();
                     LinkDescription second = engineGraph_[*outEdgeIt];
@@ -118,7 +118,7 @@ namespace iris
         controllerManager_.startControllers();
 
         //Start all the engines, one by one
-        for( ptr_vector<EngineInterface>::iterator i = engines_.begin(); i != engines_.end(); ++i)
+        for( b::ptr_vector<EngineInterface>::iterator i = engines_.begin(); i != engines_.end(); ++i)
         {
             i->startEngine();
         }
@@ -130,7 +130,7 @@ namespace iris
         controllerManager_.stopControllers();
 
         //Stop all the engines, one by one
-        for( ptr_vector<EngineInterface>::iterator i = engines_.begin(); i != engines_.end(); ++i)
+        for( b::ptr_vector<EngineInterface>::iterator i = engines_.begin(); i != engines_.end(); ++i)
         {
             i->stopEngine();
         }
@@ -142,7 +142,7 @@ namespace iris
         controllerManager_.unloadControllers();
 
         //Unload all the engines and remove them from the vector
-        for( ptr_vector<EngineInterface>::iterator i = engines_.begin(); i != engines_.end(); ++i)
+        for( b::ptr_vector<EngineInterface>::iterator i = engines_.begin(); i != engines_.end(); ++i)
         {
             i->unloadEngine();
         }
@@ -157,7 +157,7 @@ namespace iris
     void EngineManager::reconfigureRadio(ReconfigSet reconfigs)
     {
         //Separate out reconfigurations for each engine
-        boost::ptr_vector<EngineInterface>::iterator engIt;
+        b::ptr_vector<EngineInterface>::iterator engIt;
         for(engIt = engines_.begin(); engIt != engines_.end(); ++engIt)
         {
             string current = engIt->getName();
@@ -190,7 +190,7 @@ namespace iris
     void EngineManager::postCommand(Command command)
     {
         //Post the command to the relevant engine
-        boost::ptr_vector<EngineInterface>::iterator engIt;
+        b::ptr_vector<EngineInterface>::iterator engIt;
         for(engIt = engines_.begin(); engIt != engines_.end(); ++engIt)
         {
             if(command.engineName == engIt->getName())

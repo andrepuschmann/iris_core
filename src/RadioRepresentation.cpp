@@ -41,6 +41,7 @@ using std::vector;
 using std::string;
 using std::cout;
 using std::endl;
+namespace b = boost;
 
 namespace iris
 {
@@ -91,7 +92,7 @@ namespace iris
     //internal graphs for each engine.
     void RadioRepresentation::buildGraphs() throw (GraphStructureErrorException)
     {
-        boost::mutex::scoped_lock lock(mutex_);
+        b::mutex::scoped_lock lock(mutex_);
 
         //Add component descriptions as vertices to radio graph
         vector<EngineDescription>::iterator engIt;
@@ -117,13 +118,13 @@ namespace iris
                 throw GraphStructureErrorException("Could not find component " + linkIt->sinkComponent + " referenced by link");
             bool inserted;
             Edge e;
-            tie(e, inserted) = add_edge(src, snk, radioGraph_);
+            b::tie(e, inserted) = add_edge(src, snk, radioGraph_);
             radioGraph_[e] = *linkIt;
         }
 
         //Find all the internal and external (ones that cross engine boundaries) edges
         EdgeIterator ei, eiend;
-        for(tie(ei,eiend) = edges(radioGraph_); ei != eiend; ++ei)
+        for(b::tie(ei,eiend) = edges(radioGraph_); ei != eiend; ++ei)
         {
             string srcEng, snkEng;
             srcEng = radioGraph_[source(*ei, radioGraph_)].engineName;
@@ -187,7 +188,7 @@ namespace iris
 
             bool inserted;
             EngEdge engE;
-            tie(engE, inserted) = add_edge(engSrc, engSnk, engineGraph_);
+            b::tie(engE, inserted) = add_edge(engSrc, engSnk, engineGraph_);
             engineGraph_[engE] = el;
         }
 
@@ -208,7 +209,7 @@ namespace iris
 
     void RadioRepresentation::reconfigureParameter(ParametricReconfig reconfig)
     {
-        boost::mutex::scoped_lock lock(mutex_);
+        b::mutex::scoped_lock lock(mutex_);
 
         //Apply change to the RadioGraph
         Vertex v;
@@ -258,7 +259,7 @@ namespace iris
 
     std::string RadioRepresentation::getParameterValue(std::string paramName, std::string componentName)
     {
-        boost::mutex::scoped_lock lock(mutex_);
+        b::mutex::scoped_lock lock(mutex_);
 
         Vertex v;
         if(!findComponent(componentName, radioGraph_, v))
@@ -296,7 +297,7 @@ namespace iris
             
             bool inserted;
             Edge e;
-            tie(e, inserted) = add_edge(src, snk, eng.engineGraph);
+            b::tie(e, inserted) = add_edge(src, snk, eng.engineGraph);
             eng.engineGraph[e] = *linkIt;
         }
     }
@@ -304,7 +305,7 @@ namespace iris
     bool RadioRepresentation::findComponent(std::string name, const RadioGraph& graph, Vertex& ver)
     {
         VertexIterator i, iend;
-        for(tie(i, iend) = vertices(graph); i != iend; ++i)
+        for(b::tie(i, iend) = vertices(graph); i != iend; ++i)
         {
             if(graph[*i].name == name)
             {
@@ -318,7 +319,7 @@ namespace iris
     bool RadioRepresentation::findEngine(std::string name, const EngineGraph& graph, EngVertex& ver)  
     {
         EngVertexIterator i, iend;
-        for(tie(i, iend) = vertices(graph); i != iend; ++i)
+        for(b::tie(i, iend) = vertices(graph); i != iend; ++i)
         {
             if(graph[*i].name == name)
             {
@@ -339,10 +340,10 @@ namespace iris
         }
         VertexIterator i, iend;
         OutEdgeIterator ei, eiend;
-        for(tie(i, iend) = vertices(radioGraph_); i != iend; ++i)
+        for(b::tie(i, iend) = vertices(radioGraph_); i != iend; ++i)
         {
             result += radioGraph_[*i].name + "\n";
-            for(tie(ei,eiend) = out_edges(*i,radioGraph_); ei != eiend; ++ei)
+            for(b::tie(ei,eiend) = out_edges(*i,radioGraph_); ei != eiend; ++ei)
             {
                 result += radioGraph_[*i].name + "." + radioGraph_[*ei].sourcePort + " --> " \
                     + radioGraph_[target(*ei, radioGraph_)].name + "." + radioGraph_[*ei].sinkPort + "\n";
@@ -361,10 +362,10 @@ namespace iris
         }
         EngVertexIterator i, iend;
         EngOutEdgeIterator ei, eiend;
-        for(tie(i, iend) = vertices(engineGraph_); i != iend; ++i)
+        for(b::tie(i, iend) = vertices(engineGraph_); i != iend; ++i)
         {
             result += engineGraph_[*i].name + "\n";
-            for(tie(ei,eiend) = out_edges(*i,engineGraph_); ei != eiend; ++ei)
+            for(b::tie(ei,eiend) = out_edges(*i,engineGraph_); ei != eiend; ++ei)
             {
                 result += engineGraph_[*i].name + "." + engineGraph_[*ei].sourcePort + " --> " \
                     + engineGraph_[target(*ei, engineGraph_)].name + "." += engineGraph_[*ei].sinkPort + "\n";
