@@ -79,7 +79,7 @@ SharedLibrary::open(boost::filesystem::path filename) throw (LibraryLoadExceptio
     std::string fString = filename_.string();
     const char* system_filename = fString.c_str();
 
-    library_ = dlopen(system_filename, RTLD_NOW | RTLD_GLOBAL);
+    library_ = dlopen(system_filename, RTLD_NOW | RTLD_LOCAL);
 
     if (library_ == NULL)
     {
