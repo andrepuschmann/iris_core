@@ -43,6 +43,7 @@
 #include <boost/mpl/size.hpp>
 #include <boost/any.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/noncopyable.hpp>
 
 #include <irisapi/TypeInfo.h>
 #include <irisapi/ParameterTypeInfo.h>
