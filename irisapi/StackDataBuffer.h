@@ -110,7 +110,7 @@ public:
   *
   *  \return A boost::shared_ptr to a StackDataSet
   */
-  boost::shared_ptr<StackDataSet> popDataSet() throw(boost::thread_interrupted)
+  boost::shared_ptr<StackDataSet> popDataSet()
   {
     boost::mutex::scoped_lock lock(mutex_);
     while(buffer_.empty())
@@ -128,7 +128,7 @@ public:
   *
   *   \param set  A boost::shared_ptr to a StackDataSet
   */
-  void pushDataSet( boost::shared_ptr<StackDataSet> set) throw(boost::thread_interrupted)
+  void pushDataSet( boost::shared_ptr<StackDataSet> set)
   {
     boost::mutex::scoped_lock lock(mutex_);
     while(buffer_.size() >= maxBufferSize_)

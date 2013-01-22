@@ -120,8 +120,7 @@ public:
    *
    * \param other The ComponentParameters object to copy from.
    */
-  virtual ComponentParameters& assignParameters(const ComponentParameters& other)
-      throw (ParameterNotFoundException, InvalidDataTypeException);
+  virtual ComponentParameters& assignParameters(const ComponentParameters& other);
 
 
   /** Returns the default XML for all parameters.
@@ -156,8 +155,7 @@ public:
    *
    * \return The current value as a string.
    */
-  std::string getValue(std::string name) const
-    throw (ParameterNotFoundException, InvalidDataTypeException);
+  std::string getValue(std::string name) const;
 
   /** Get the value of a registered parameter
    *
@@ -165,8 +163,7 @@ public:
    * \param value   Pointer to a variable where the result should be stored.
    */
   template<typename T>
-  inline void getValue(std::string name, T* value) const
-    throw (ParameterNotFoundException, InvalidDataTypeException);
+  inline void getValue(std::string name, T* value) const;
 
   /** Changes the value of parameter "name" to value "val".
    *
@@ -174,8 +171,7 @@ public:
    * \param value   New value for the parameter.
    */
   template <typename T>
-  inline void setValue(std::string name, T value)
-    throw (ParameterNotFoundException, InvalidDataTypeException,ParameterOutOfRangeException);
+  inline void setValue(std::string name, T value);
 
   /** Get the description of the parameter.
    *
@@ -183,7 +179,6 @@ public:
    * \return Description of the parameter
    */
   std::string getParameterDescription(std::string name) const
-    throw (ParameterNotFoundException)
   {
     //Convert parameter name to lower case
     boost::to_lower(name);
@@ -196,7 +191,6 @@ public:
    * \throw ParameterNotFoundException if parameter with name name does not exist.
    */
   std::string getParameterDefaultValue(std::string name) const
-    throw (ParameterNotFoundException)
   {
     //Convert parameter name to lower case
     boost::to_lower(name);
@@ -208,7 +202,6 @@ public:
    * \param name  The parameter name.
    */
   std::string getParameterDataType(std::string name) const
-    throw(ParameterNotFoundException)
   {
     //Convert parameter name to lower case
     boost::to_lower(name);
@@ -222,7 +215,6 @@ public:
    * @return  True if parameter is dynamically reconfigurable.
    */
   bool isParameterDynamic(std::string name) const
-    throw (ParameterNotFoundException)
   {
     //Convert parameter name to lower case
     boost::to_lower(name);
@@ -248,8 +240,7 @@ protected:
    */
   template<typename T>
   inline void registerParameter(std::string name, std::string description, std::string defaultValue,
-      bool isDynamic, T& parameter)
-      throw (InvalidDataTypeException);
+      bool isDynamic, T& parameter);
 
   /** Registers a parameter of a child class. All parameters registered
    * with this function can be accessed from the XML description and from the Controller.
@@ -264,8 +255,7 @@ protected:
    */
   template<typename T>
   inline void registerParameter(std::string name, std::string description, std::string defaultValue,
-      bool isDynamic, T& parameter, Interval<T> allowedInterval)
-      throw (InvalidDataTypeException);
+      bool isDynamic, T& parameter, Interval<T> allowedInterval);
 
   /** Registers a parameter of a child class. All parameters registered
    * with this function can be accessed from the XML description and from the Controller.
@@ -280,8 +270,7 @@ protected:
    */
   template<typename T>
   inline void registerParameter(std::string name, std::string description, std::string defaultValue,
-      bool isDynamic, T& parameter, std::list<T> allowedValues)
-      throw (InvalidDataTypeException);
+      bool isDynamic, T& parameter, std::list<T> allowedValues);
 
 
 private:
@@ -297,7 +286,6 @@ private:
    * @return  Const reference to the Parameter object.
    */
   const Parameter& getParameterReference(std::string name) const
-    throw (ParameterNotFoundException)
   {
     std::map<std::string, Parameter>::const_iterator it = parameterMap_.find(name);
     if (it == parameterMap_.end())
@@ -311,7 +299,6 @@ private:
    * @return  Reference to the parameter object.
    */
   Parameter& getParameterReference(std::string name)
-    throw (ParameterNotFoundException)
   {
     std::map<std::string, Parameter>::iterator it = parameterMap_.find(name);
     if (it == parameterMap_.end())
@@ -331,7 +318,6 @@ private:
 
 template <typename T>
 inline void ComponentParameters::getValue(std::string name, T* value) const
-    throw(ParameterNotFoundException,InvalidDataTypeException)
 {
   //Convert parameter name to lower case
   boost::to_lower(name);
@@ -349,7 +335,6 @@ inline void ComponentParameters::getValue(std::string name, T* value) const
 
 template <typename T>
 inline void ComponentParameters::setValue(std::string name, T value)
-  throw(ParameterNotFoundException,ParameterOutOfRangeException,InvalidDataTypeException)
 {
   BOOST_STATIC_ASSERT( ParameterTypeInfo<T>::isAllowed );
 
@@ -400,7 +385,6 @@ template <int N = boost::mpl::size<IrisParameterTypes>::value>
 struct setParameterValue
 {
   static bool EXEC(ComponentParameters* compPar, std::string name, const Parameter& par, const std::string& newval)
-  throw (InvalidDataTypeException,ParameterOutOfRangeException)
   {
     using namespace std;
 
@@ -464,7 +448,7 @@ inline std::string TypeToString<std::string>(const std::string& val)
 template <int N>
 struct GetStringParTmp {
 
-  static std::string EXEC(const boost::any& val) throw (InvalidDataTypeException)
+  static std::string EXEC(const boost::any& val)
 {
   typedef typename boost::mpl::at_c<IrisParameterTypes,N-1>::type ParT;
   ParT** ret = boost::any_cast<ParT*>(const_cast<boost::any*>(&val));
@@ -484,7 +468,7 @@ struct GetStringParTmp {
 template<>
 struct GetStringParTmp<0>
 {
-static std::string EXEC(const boost::any& val) throw (InvalidDataTypeException)
+static std::string EXEC(const boost::any& val)
 {
   throw InvalidDataTypeException("could not resolve type of parameter");
   return "";
@@ -493,7 +477,7 @@ static std::string EXEC(const boost::any& val) throw (InvalidDataTypeException)
 
 /// Function to convert the value held by the given boost::any into a string.
 /// Checks all iris data types by using the GetStringParTmp template class.
-inline std::string getStringParameter(const boost::any& val) throw (InvalidDataTypeException)
+inline std::string getStringParameter(const boost::any& val)
 {
   return GetStringParTmp< boost::mpl::size<IrisParameterTypes>::value>::EXEC(val);
 }
@@ -501,7 +485,6 @@ inline std::string getStringParameter(const boost::any& val) throw (InvalidDataT
 } // end of internal namespace
 
 inline std::string ComponentParameters::getValue(std::string name) const
-    throw (ParameterNotFoundException, InvalidDataTypeException)
 {
   //Convert parameter name to lower case
   boost::to_lower(name);
@@ -515,7 +498,6 @@ inline std::string ComponentParameters::getValue(std::string name) const
 // the real parameter type, using the meta-programming loop above (in internal namespace)
 template <>
 inline void ComponentParameters::setValue< std::string >(std::string name, std::string value)
-    throw(ParameterNotFoundException, InvalidDataTypeException, ParameterOutOfRangeException)
 {
   //Convert parameter name to lower case
   boost::to_lower(name);
@@ -553,7 +535,6 @@ inline void ComponentParameters::setValue< std::string >(std::string name, std::
 // template specialisation for const char* -> call the string version
 template <>
 inline void ComponentParameters::setValue< const char* >(std::string name, const char* value)
-   throw (InvalidDataTypeException, ParameterNotFoundException, ParameterOutOfRangeException)
 {
   //Convert parameter name to lower case
   boost::to_lower(name);
@@ -581,7 +562,6 @@ inline void ComponentParameters::registerParameterHelper(std::string name, std::
 template<typename T>
 inline void ComponentParameters::registerParameter(std::string name, std::string description,
     std::string defaultValue, bool isDynamic, T& parameter)
-    throw (InvalidDataTypeException)
 {
   Interval<T> allowedInterval;
   if (allowedInterval.minimum > allowedInterval.maximum)
@@ -616,7 +596,6 @@ inline void ComponentParameters::registerParameter(std::string name, std::string
 template <>
 inline void ComponentParameters::registerParameter(std::string name, std::string description,
     std::string defaultValue, bool isDynamic, std::string& parameter)
-    throw (InvalidDataTypeException)
 {
   //Convert parameter name to lower case
   boost::to_lower(name);
@@ -630,7 +609,6 @@ inline void ComponentParameters::registerParameter(std::string name, std::string
 template<typename T>
 inline void ComponentParameters::registerParameter(std::string name, std::string description,
     std::string defaultValue, bool isDynamic, T& parameter, Interval<T> allowedInterval)
-    throw (InvalidDataTypeException)
 {
   if (allowedInterval.minimum > allowedInterval.maximum)
   {
@@ -652,7 +630,6 @@ inline void ComponentParameters::registerParameter(std::string name, std::string
 template<typename T>
 inline void ComponentParameters::registerParameter(std::string name, std::string description,
     std::string defaultValue, bool isDynamic, T& parameter, std::list<T> allowedValues)
-    throw (InvalidDataTypeException)
 {
   if (allowedValues.empty())
   {
@@ -673,7 +650,6 @@ inline void ComponentParameters::registerParameter(std::string name, std::string
 
 
 inline ComponentParameters& ComponentParameters::assignParameters(const ComponentParameters& other)
-  throw (ParameterNotFoundException, InvalidDataTypeException)
 {
   for (std::map<std::string, Parameter>::iterator i = parameterMap_.begin();
      i != parameterMap_.end();

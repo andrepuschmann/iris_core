@@ -76,8 +76,7 @@ private:
    *   \param  d    Description of the engine to be created.
    *   \returns     Pointer to the created engine.
    */
-  EngineInterface* createEngine(EngineDescription& d)
-    throw (ResourceNotFoundException);
+  EngineInterface* createEngine(EngineDescription& d);
 
   /** Check whether two links are equivalent
   *

@@ -90,7 +90,7 @@ namespace iris
 
     //Use the link descriptions and engine descriptions to build the radio graph, the engine graph and the
     //internal graphs for each engine.
-    void RadioRepresentation::buildGraphs() throw (GraphStructureErrorException)
+    void RadioRepresentation::buildGraphs()
     {
         b::mutex::scoped_lock lock(mutex_);
 
@@ -275,7 +275,7 @@ namespace iris
         return "";
     }
 
-    void RadioRepresentation::buildEngineDescriptionGraph(EngineDescription& eng) const throw (GraphStructureErrorException)
+    void RadioRepresentation::buildEngineDescriptionGraph(EngineDescription& eng) const
     {
         //Add all components as vertices of the graph
         vector<ComponentDescription>::iterator compIt;

@@ -67,7 +67,7 @@ public:
   *
   *   \param dataBufferLength   Number of DataSets in the buffer.
   */
-  explicit DataBuffer(int dataBufferLength = 2) throw (InvalidDataTypeException)
+  explicit DataBuffer(int dataBufferLength = 2)
     :buffer_(dataBufferLength, DataSet<T>()),
     isReadLocked_(false),
     isWriteLocked_(false),
@@ -119,7 +119,7 @@ public:
   *
   *   \param setPtr   A DataSet pointer which will be set by the buffer.
   */
-  void getReadData(DataSet<T>*& setPtr) throw(DataBufferReleaseException, boost::thread_interrupted)
+  void getReadData(DataSet<T>*& setPtr)
   {
     boost::mutex::scoped_lock lock(mutex_);
     if(isReadLocked_)
@@ -134,7 +134,7 @@ public:
   *   \param setPtr   A DataSet pointer which will be set by the buffer
   *   \param size     The number of elements required in the DataSet
   */
-  void getWriteData(DataSet<T>*& setPtr, std::size_t size) throw(DataBufferReleaseException, boost::thread_interrupted)
+  void getWriteData(DataSet<T>*& setPtr, std::size_t size)
   {
     boost::mutex::scoped_lock lock(mutex_);
     if(isWriteLocked_)

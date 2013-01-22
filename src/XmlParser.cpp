@@ -358,7 +358,7 @@ Element writeSoftwareRadio( RadioRepresentation &swrDesc)
 
 
 //Parses the specified Xml file into a radio description
-void XmlParser::parseXmlFile(std::string filename, RadioRepresentation &radio) throw (XmlParsingException, GraphStructureErrorException)
+void XmlParser::parseXmlFile(std::string filename, RadioRepresentation &radio)
 {
     try{
         Document doc(filename);
@@ -383,7 +383,7 @@ void XmlParser::parseXmlFile(std::string filename, RadioRepresentation &radio) t
     }
 }
 
-void XmlParser::parseXmlString( std::string &xml, RadioRepresentation &radio) throw (XmlParsingException, GraphStructureErrorException)
+void XmlParser::parseXmlString( std::string &xml, RadioRepresentation &radio)
 {
     try{
         Document doc;

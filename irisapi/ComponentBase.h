@@ -118,7 +118,6 @@ public:
    * \return A reference to *this.
    */
   ComponentBase& assign(const ComponentBase& other)
-    throw (ParameterNotFoundException, InvalidDataTypeException)
   {
     assignParameters(other);
     assignEvents(other);
@@ -132,8 +131,7 @@ public:
    * @param data  The data being passed with the event.
    */
   template<typename T>
-  inline void activateEvent(std::string name, T &data) 
-    throw (EventNotFoundException, InvalidDataTypeException);
+  inline void activateEvent(std::string name, T &data);
 
   /** Activate an event with multiple data elements.
    *
@@ -141,15 +139,13 @@ public:
    * @param data  The vector of data being passed with the event.
    */
   template<typename T>
-  inline void activateEvent(std::string name, std::vector<T> &data) 
-    throw (EventNotFoundException, InvalidDataTypeException);
+  inline void activateEvent(std::string name, std::vector<T> &data);
 
 };
 
 // Get the name of this component and pass everything on to ComponentEvents
 template<typename T>
 inline void ComponentBase::activateEvent(std::string name, T &data) 
-  throw (EventNotFoundException, InvalidDataTypeException)
 {
   boost::to_lower(name);
   activateEventInternal(getName(), name, data);
@@ -158,7 +154,6 @@ inline void ComponentBase::activateEvent(std::string name, T &data)
 // Get the name of this component and pass everything on to ComponentEvents
 template<typename T>
 inline void ComponentBase::activateEvent(std::string name, std::vector<T> &data)
-  throw (EventNotFoundException, InvalidDataTypeException)
 {
   boost::to_lower(name);
   activateEventInternal(getName(), name, data);

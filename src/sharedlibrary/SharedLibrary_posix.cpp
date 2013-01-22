@@ -41,16 +41,14 @@
 namespace iris
 {
 
-SharedLibrary::SharedLibrary(boost::filesystem::path filename) throw (LibraryLoadException,
-        FileNotFoundException) :
-    filename_(filename), library_(NULL)
+SharedLibrary::SharedLibrary(boost::filesystem::path filename)
+  : filename_(filename), library_(NULL)
 {
     this->open(filename);
 }
 
 void
-SharedLibrary::open(boost::filesystem::path filename) throw (LibraryLoadException,
-                FileNotFoundException)
+SharedLibrary::open(boost::filesystem::path filename)
 {
     if (library_ != NULL)
     {
@@ -92,7 +90,7 @@ SharedLibrary::open(boost::filesystem::path filename) throw (LibraryLoadExceptio
 }
 
 SharedLibrary::SymbolPointer
-SharedLibrary::getSymbol(std::string symbolName) throw (LibrarySymbolException)
+SharedLibrary::getSymbol(std::string symbolName)
 {
     void* tmp = dlsym(library_, symbolName.c_str());
 

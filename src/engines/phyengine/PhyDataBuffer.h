@@ -63,7 +63,7 @@ public:
   *
   *   \param dataBufferLength   number of DataSets in the buffer
   */
-  explicit PhyDataBuffer(int dataBufferLength = 2) throw (InvalidDataTypeException)
+  explicit PhyDataBuffer(int dataBufferLength = 2)
     :buffer_(dataBufferLength, DataSet<T>()),
     isReadLocked_(false),
     isWriteLocked_(false),
@@ -111,7 +111,7 @@ public:
   *
   *   \param setPtr   A DataSet pointer which will be set by the buffer
   */
-  void getReadData(DataSet<T>*& setPtr) throw(DataBufferReleaseException, boost::thread_interrupted)
+  void getReadData(DataSet<T>*& setPtr)
   {
     if(isReadLocked_)
       throw DataBufferReleaseException("getReadData() called before previous DataSet was released");
@@ -125,7 +125,7 @@ public:
   *   \param setPtr   A DataSet pointer which will be set by the buffer
   *   \param size   The number of elements required in the DataSet
   */
-  void getWriteData(DataSet<T>*& setPtr, std::size_t size) throw(DataBufferReleaseException, boost::thread_interrupted)
+  void getWriteData(DataSet<T>*& setPtr, std::size_t size)
   {
     if(isWriteLocked_)
       throw DataBufferReleaseException("getWriteData() called before previous DataSet was released");

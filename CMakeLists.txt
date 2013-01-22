@@ -77,6 +77,10 @@ IF(MSVC)
     ADD_DEFINITIONS(/MP) #build with multiple processors
 ENDIF(MSVC)
 
+IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    ADD_DEFINITIONS(-Wno-dangling-else)
+ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+
 ########################################################################
 # Setup Boost
 ########################################################################

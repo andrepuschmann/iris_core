@@ -191,7 +191,7 @@ public:
   *   theEngineGraph contains all engines and the links between them.
   *   This function uses the EngineDescriptions and LinkDescriptions to build these graphs
   */
-  void buildGraphs() throw (GraphStructureErrorException);
+  void buildGraphs();
   /// Have the graphs for this RadioRepresentation been built?
   bool isGraphBuilt() const;
 
@@ -224,7 +224,7 @@ private:
   void reconfigureParameter(ParametricReconfig reconfig);
 
   /// Build an engine graph
-  void buildEngineDescriptionGraph(EngineDescription& eng) const throw (GraphStructureErrorException);
+  void buildEngineDescriptionGraph(EngineDescription& eng) const;
 
   RadioGraph radioGraph_;     ///< Graph of all components and links
   EngineGraph engineGraph_;   ///< Graph of all engines and links

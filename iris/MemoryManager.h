@@ -137,7 +137,7 @@ public:
   ~MemoryManager();
 
   /// Locks size bytes of memory and returns a pointer to it
-  void* allocateBlock(std::size_t size) throw(OutOfMemoryException);
+  void* allocateBlock(std::size_t size);
 
   /// Releases the specified memory
   void releaseBlock(void* mem);

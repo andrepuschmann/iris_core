@@ -168,10 +168,10 @@ struct Loaded : boost::statechart::state< Loaded, Active, Stopped >
   //! On event EvLoadUnload, change to  Unloaded
   typedef boost::statechart::transition< EvLoadUnload, Unloaded > reactions;
 
-  Loaded(my_context ctx) throw (LauncherException);  //!< Constructor. Loads the radio.
+  Loaded(my_context ctx);  //!< Constructor. Loads the radio.
 
   //! unloads the radio
-  void exit() throw (LauncherException);
+  void exit();
 };
 
 //! In the Unloaded state, a transition is made to Loaded on EvLoadUnload
@@ -200,10 +200,10 @@ struct Running : boost::statechart::simple_state< Running, Loaded >
   typedef boost::statechart::transition< EvStartStop, Stopped > reactions;
 
   //! starts the radio
-  Running() throw (LauncherException);
+  Running();
 
   //! stops the radio
-  void exit() throw (LauncherException);
+  void exit();
 };
 
 #endif

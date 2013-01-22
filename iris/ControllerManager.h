@@ -106,22 +106,22 @@ public:
    *   Multiple repositories can be specified by separating paths with ";"
    *   \param repoPath   Path to the controller repository
    */
-  void addRepository(std::string repoPath) throw (ResourceNotFoundException);
+  void addRepository(std::string repoPath);
 
   /** Load a Controller
    *
    *   \param  name   Name of Controller to be loaded
    */
-  void loadController(std::string name) throw (IrisException);
+  void loadController(std::string name);
 
   /// Start all Controllers
-  void startControllers() throw (IrisException);
+  void startControllers();
 
   /// Stop all Controllers
-  void stopControllers() throw (IrisException);
+  void stopControllers();
 
   /// Unload all Controllers
-  void unloadControllers() throw (IrisException);
+  void unloadControllers();
 
   /** Check whether a controller exists
    *

@@ -73,19 +73,15 @@ public:
   /** Constructs a SharedLibrary instance and loads a shared library.
    *
    * \param filename Path to the library file.
-   * \throw LibraryLoadException If an error occurred during library loading.
-   * \throw FileNotFoundException If the given file could not be found.
    */
-  SharedLibrary(boost::filesystem::path filename) throw (LibraryLoadException,
-    FileNotFoundException);
+  SharedLibrary(boost::filesystem::path filename);
 
   /** Gets the address of a symbol from the dynamic library.
    *
    * \param symbolName Name of the symbol (function or variable) to search for
    * \return Return value should be cast to the function prototype pointer or variable pointer
-   * \throw LibrarySymbolException If an error occurred during resolution of the symbol name.
    */
-  SymbolPointer getSymbol(std::string symbolName) throw (LibrarySymbolException);
+  SymbolPointer getSymbol(std::string symbolName);
 
   /// Destructor. Closes the library.
   ~SharedLibrary();
@@ -107,8 +103,7 @@ public:
    *
    * \param filename    The path of the file to open.
    */
-  void open(boost::filesystem::path filename) throw (LibraryLoadException,
-      FileNotFoundException);
+  void open(boost::filesystem::path filename);
 
   /// Check whether the library has been loaded.
   bool isLoaded() {return library_ == NULL;};

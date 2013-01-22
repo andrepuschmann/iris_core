@@ -79,7 +79,7 @@ protected:
     return *this;
   }
 
-  void registerEvent(std::string name, std::string description, int typeId) throw (InvalidDataTypeException)
+  void registerEvent(std::string name, std::string description, int typeId)
   {
     if(typeId < 0)
       throw InvalidDataTypeException("Invalid data type specified when registering event " + name);
@@ -90,12 +90,10 @@ protected:
   }
 
   template<typename T>
-  inline void activateEventInternal(std::string compName, std::string name, T &data) 
-    throw (EventNotFoundException, InvalidDataTypeException);
+  inline void activateEventInternal(std::string compName, std::string name, T &data);
 
   template<typename T>
-  inline void activateEventInternal(std::string compName, std::string name, std::vector<T> &data) 
-    throw (EventNotFoundException, InvalidDataTypeException);
+  inline void activateEventInternal(std::string compName, std::string name, std::vector<T> &data);
 
 private:
   std::map<std::string, EventDescription> events_;
@@ -104,7 +102,6 @@ private:
 
 template<typename T>
 inline void ComponentEvents::activateEventInternal(std::string compName, std::string name, T &data)
-  throw (EventNotFoundException, InvalidDataTypeException)
 {
   //Check that we have an interface to the engine
   if(engine_ == NULL)
@@ -135,8 +132,7 @@ inline void ComponentEvents::activateEventInternal(std::string compName, std::st
 }
 
 template<typename T>
-inline void ComponentEvents::activateEventInternal(std::string compName, std::string name, std::vector<T> &data) 
-  throw (EventNotFoundException, InvalidDataTypeException)
+inline void ComponentEvents::activateEventInternal(std::string compName, std::string name, std::vector<T> &data)
 {
   //Check that we have an interface to the engine
   if(engine_ == NULL)

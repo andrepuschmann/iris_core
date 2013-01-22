@@ -62,7 +62,7 @@ public:
     //! pause the console
     static void pauseConsole();
     //! parses the command line options
-    void parseOptions(int argc, char* argv[]) throw (po::error, LauncherException);
+    void parseOptions(int argc, char* argv[]);
     //! prints status info (repository dir, radio config, etc.)
     void printStatus();
     //! prints menu for radio control
@@ -70,7 +70,7 @@ public:
     //! prints welcome banner for startup
     void printBanner();
     //! loop for controlling the radio
-    void menuLoop() throw (LauncherException);
+    void menuLoop();
 
 private:
     //! XML radio configuration
@@ -148,7 +148,7 @@ void Launcher::pauseConsole()
    cin.get();
 }
 
-void Launcher::parseOptions(int argc, char* argv[]) throw (po::error, LauncherException)
+void Launcher::parseOptions(int argc, char* argv[])
 {
     if (!isRunning_)
         return;
@@ -237,7 +237,7 @@ void Launcher::parseOptions(int argc, char* argv[]) throw (po::error, LauncherEx
         autoStart_ = false;
 }
 
-void Launcher::menuLoop() throw (LauncherException)
+void Launcher::menuLoop()
 {
     if (!isRunning_)
         return;

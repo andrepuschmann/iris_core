@@ -97,13 +97,13 @@ public:
   *   Multiple repositories can be specified by separating paths with ";"
   *   \param repoPath   Path to the component repository
   */
-  void addRepository(std::string repoPath) throw (ResourceNotFoundException);
+  void addRepository(std::string repoPath);
   
   /** Load a StackComponent
   *   \param desc   Description of StackComponent to be loaded
   *   \returns A pointer to the loaded StackComponent
   */
-  boost::shared_ptr<StackComponent> loadComponent(ComponentDescription desc) throw (IrisException);
+  boost::shared_ptr<StackComponent> loadComponent(ComponentDescription desc);
 
   /** Check whether a component exists
   *   \param  name  The name of the component to look for

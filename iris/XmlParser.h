@@ -55,11 +55,8 @@ public:
   *
   *   \param  filename  The configuration file to parse
   *   \param  radio     The RadioRepresentation object to be filled in
-  *
-  *   \throw  XMLParsingException       Thrown if an error exists in the xml configuration
-  *   \throw  GraphStructureErrorException  Thrown if the radio graphs cannot be built
   */
-  static void parseXmlFile( std::string filename, RadioRepresentation &radio) throw (XmlParsingException, GraphStructureErrorException);
+  static void parseXmlFile( std::string filename, RadioRepresentation &radio);
 
   /** Generate an xml file from a given RadioRepresentation
   *
@@ -72,11 +69,8 @@ public:
   *
   *   \param  xml     The string containing the xml to parse
   *   \param  radio     The RadioRepresentation object to be filled in
-  *
-  *   \throw  XMLParsingException       Thrown if an error exists in the xml configuration
-  *   \throw  GraphStructureErrorException  Thrown if the radio graphs cannot be built
   */
-  static void parseXmlString( std::string &xml, RadioRepresentation &radio) throw (XmlParsingException, GraphStructureErrorException);
+  static void parseXmlString( std::string &xml, RadioRepresentation &radio);
 
   /** Generate an xml string from a given RadioRepresentation
   *

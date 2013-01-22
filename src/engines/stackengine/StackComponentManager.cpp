@@ -48,7 +48,7 @@ namespace iris
     {
     }
 
-    void StackComponentManager::addRepository(std::string repoPath) throw (ResourceNotFoundException)
+    void StackComponentManager::addRepository(std::string repoPath)
     {
         while(!repoPath.empty())
         {
@@ -102,7 +102,6 @@ namespace iris
     }
 
     b::shared_ptr<StackComponent> StackComponentManager::loadComponent(ComponentDescription desc)
-        throw (IrisException)
     {
         ComponentLibrary temp;
 

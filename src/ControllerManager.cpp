@@ -53,7 +53,7 @@ namespace iris
         engineManager_ = e;
     }
 
-    void ControllerManager::addRepository(std::string repoPath) throw (ResourceNotFoundException)
+    void ControllerManager::addRepository(std::string repoPath)
     {
         while(!repoPath.empty())
         {
@@ -106,7 +106,6 @@ namespace iris
     }
 
     void ControllerManager::loadController(std::string name)
-        throw (IrisException)
     {
         //Check if the library has already been loaded
         vector< LoadedController >::iterator libIt;
@@ -191,7 +190,6 @@ namespace iris
     }
 
     void ControllerManager::startControllers()
-        throw (IrisException)
     {
         //Go through the loaded Controllers and start each one
         vector< LoadedController>::iterator it;
@@ -203,7 +201,6 @@ namespace iris
     }
 
     void ControllerManager::stopControllers()
-        throw (IrisException)
     {
         //Go through the loaded Controllers and stop each one
         vector< LoadedController>::iterator it;
@@ -215,7 +212,6 @@ namespace iris
     }
 
     void ControllerManager::unloadControllers()
-        throw (IrisException)
     {
         //Clear the event-controller map
         eventMap_.clear();

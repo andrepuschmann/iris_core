@@ -50,7 +50,7 @@ namespace iris
     };
 
     //! Locks size bytes of memory and returns a pointer to it
-    void* MemoryManager::allocateBlock(std::size_t size) throw(OutOfMemoryException)
+    void* MemoryManager::allocateBlock(std::size_t size)
     {
         avail_it lwr, last;
 

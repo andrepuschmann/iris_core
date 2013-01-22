@@ -211,7 +211,7 @@ namespace iris
         controllerManager_.activateEvent(e);
     }
 
-    EngineInterface* EngineManager::createEngine(EngineDescription& d) throw (ResourceNotFoundException)
+    EngineInterface* EngineManager::createEngine(EngineDescription& d)
     {
         EngineInterface* current = NULL;
 

@@ -52,7 +52,7 @@ Active::Active(my_context ctx) : my_base(ctx)
     IRISSetLogLevel(logLevel);
 }
 
-Loaded::Loaded(my_context ctx) throw (LauncherException)
+Loaded::Loaded(my_context ctx)
     : my_base(ctx) 
 {
     std::string radioConfig = context<IrisStateMachine>().getRadioConfig();
@@ -60,19 +60,19 @@ Loaded::Loaded(my_context ctx) throw (LauncherException)
         throw LauncherException("Failed to load radio - exiting");
 }
 
-void Loaded::exit() throw (LauncherException)
+void Loaded::exit()
 {
     if(!IRISUnloadRadio())
         throw LauncherException("Failed to unload radio - exiting");
 }
 
-Running::Running() throw (LauncherException)
+Running::Running()
 {
     if(!IRISStartRadio())
         throw LauncherException("Failed to start radio - exiting");
 }
 
-void Running::exit() throw (LauncherException)
+void Running::exit()
 {
     if(!IRISStopRadio())
         throw LauncherException("Failed to stop radio - exiting");

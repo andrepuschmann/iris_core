@@ -61,8 +61,7 @@ class PhyComponentManager;
 class PhyEngine:public EngineInterface, public ComponentCallbackInterface
 {
 public:
-  PhyEngine(std::string name, std::string repository)
-    throw (IrisException);
+  PhyEngine(std::string name, std::string repository);
   ~PhyEngine();
 
   void setEngineManager(EngineCallbackInterface *e);
@@ -73,8 +72,10 @@ public:
   *   \param inputLinks   The input DataBuffers for this engine
   *   \return             The output DataBuffers for this engine
   */
-  std::vector< boost::shared_ptr< DataBufferBase > > loadEngine(EngineDescription eng, std::vector< boost::shared_ptr< DataBufferBase > > inputLinks)
-    throw (IrisException);
+  std::vector< boost::shared_ptr< DataBufferBase > >
+  loadEngine(EngineDescription eng,
+             std::vector< boost::shared_ptr< DataBufferBase > > inputLinks);
+
   void unloadEngine();
   void startEngine();
   void stopEngine();
@@ -123,8 +124,7 @@ private:
   /// Check that a given graph complies with the policies of this engine
   void checkGraph(RadioGraph& graph);
   /// Build a given graph
-  void buildEngineGraph(RadioGraph& graph)
-    throw (IrisException);
+  void buildEngineGraph(RadioGraph& graph);
 
   /// Reconfigure a parameter within a component running in the engine
   void reconfigureParameter(ParametricReconfig reconfig);

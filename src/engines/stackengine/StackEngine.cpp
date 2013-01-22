@@ -44,7 +44,7 @@ namespace b = boost;
 namespace iris
 {
 
-    StackEngine::StackEngine(std::string name, std::string repository) throw (IrisException)
+    StackEngine::StackEngine(std::string name, std::string repository)
         :engineName_(name)
         ,engineManager_(NULL)
     {
@@ -66,8 +66,9 @@ namespace iris
         engineManager_ = e;
     }
 
-    std::vector< boost::shared_ptr< DataBufferBase > > StackEngine::loadEngine(EngineDescription eng, std::vector< boost::shared_ptr< DataBufferBase > > inputLinks)
-        throw (IrisException)
+    std::vector< boost::shared_ptr< DataBufferBase > >
+    StackEngine::loadEngine(EngineDescription eng,
+                            std::vector< boost::shared_ptr< DataBufferBase > > inputLinks)
     {
         //Set the external input buffer
         engInputBuffers_ = inputLinks;
@@ -178,7 +179,6 @@ namespace iris
     }
 
     void StackEngine::buildEngineGraph(EngineDescription& eng)
-        throw (IrisException)
     {
         //Create the components
         for(vector<ComponentDescription>::iterator i = eng.components.begin(); 

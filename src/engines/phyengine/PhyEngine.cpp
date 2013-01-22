@@ -50,7 +50,7 @@ namespace b = boost;
 namespace iris
 {
 
-    PhyEngine::PhyEngine(std::string name, std::string repository) throw (IrisException)
+    PhyEngine::PhyEngine(std::string name, std::string repository)
         :engineName_(name)
         ,engineManager_(NULL)
     {
@@ -72,8 +72,9 @@ namespace iris
         engineManager_ = e;
     }
 
-    std::vector< boost::shared_ptr< DataBufferBase > > PhyEngine::loadEngine(EngineDescription eng, std::vector< boost::shared_ptr< DataBufferBase > > inputLinks)
-        throw (IrisException)
+    std::vector< boost::shared_ptr< DataBufferBase > >
+    PhyEngine::loadEngine(EngineDescription eng,
+                          std::vector< boost::shared_ptr< DataBufferBase > > inputLinks)
     {
         //Set the external input buffer
         engInputBuffers_ = inputLinks;
@@ -191,7 +192,6 @@ namespace iris
     }
 
     void PhyEngine::buildEngineGraph(RadioGraph& graph)
-        throw (IrisException)
     {
         //Create the components
         VertexIterator i, iend;
