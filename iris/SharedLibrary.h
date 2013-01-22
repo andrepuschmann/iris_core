@@ -146,7 +146,7 @@ public:
     #elif defined(__unix__)
       return "lib";
     #elif defined(__APPLE__)
-      return "";
+      return "lib";
     #endif
   }
 

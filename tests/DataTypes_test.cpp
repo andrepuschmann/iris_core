@@ -100,8 +100,11 @@ BOOST_AUTO_TEST_CASE(parameter_type_info)
     BOOST_STATIC_ASSERT( ParameterTypeInfo<unsigned int>::isAllowed == true);
     BOOST_STATIC_ASSERT( ParameterTypeInfo<signed long>::isAllowed == true );
     BOOST_STATIC_ASSERT( ParameterTypeInfo<unsigned long>::isAllowed == true);
+
+# if ULONG_MAX != 18446744073709551615U // 2**64 - 1
     BOOST_STATIC_ASSERT( ParameterTypeInfo<int64_t>::isAllowed == true );
     BOOST_STATIC_ASSERT( ParameterTypeInfo<uint64_t>::isAllowed == true);
+# endif
 
 }
 
