@@ -37,7 +37,7 @@
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
   //boost::date_time uses windows.h - need to define the following to avoid socket and macro issues
   #define WIN32_LEAN_AND_MEAN
-  #define NOMINMAX
+  //#define NOMINMAX - already defined on command line (see top-level CMakeLists.txt)
 #endif
 
 #include <sstream>
