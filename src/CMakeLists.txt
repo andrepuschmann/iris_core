@@ -50,7 +50,7 @@ SET(iris_core_sources
 )
 
 # Static library (test code can link against this)
-ADD_LIBRARY(iris_lib ${iris_core_sources})
+ADD_LIBRARY(iris_lib STATIC ${iris_core_sources})
 TARGET_LINK_LIBRARIES(iris_lib ticpp phyengine stackengine ${Boost_LIBRARIES})
 IRIS_SET_PIC(iris_lib)
 
