@@ -49,12 +49,12 @@ SET(iris_core_sources
     System.cpp
 )
 
-# Static library (test code can link against this)
+# Static library (linked by tests and main iris exe)
 ADD_LIBRARY(iris_lib ${iris_core_sources})
 TARGET_LINK_LIBRARIES(iris_lib ticpp phyengine stackengine ${Boost_LIBRARIES})
 IRIS_SET_PIC(iris_lib)
 
-# Shared library (gets installed)
+# Shared library (can be used by alternative launchers)
 ADD_LIBRARY(iris_core SHARED Iris.cpp)
 TARGET_LINK_LIBRARIES(iris_core iris_lib)
 
@@ -67,7 +67,7 @@ INSTALL(TARGETS iris_core
 ########################################################################
 # Add executables and link to libraries
 ########################################################################
-ADD_EXECUTABLE (iris Launcher.cpp IrisStateMachine.cpp)
-TARGET_LINK_LIBRARIES (iris iris_core)
+ADD_EXECUTABLE (iris Launcher.cpp IrisStateMachine.cpp Iris.cpp)
+TARGET_LINK_LIBRARIES (iris iris_lib)
 
 INSTALL(TARGETS iris RUNTIME DESTINATION ${RUNTIME_DIR})
