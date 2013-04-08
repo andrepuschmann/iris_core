@@ -21,6 +21,7 @@ The installation guide can be found here: http://www.softwareradiosystems.com/re
 
 * Redmine: http://www.softwareradiosystems.com/redmine/projects/iris
 * Iris-discuss mailing list: http://www.softwareradiosystems.com/mailman/listinfo/iris-discuss
+* Iris blog: http://irissoftwareradio.wordpress.com
 
 ## License
 
