@@ -74,7 +74,12 @@ SharedLibrary::open(boost::filesystem::path filename)
     }
 
     filename_ = filename;
+#if BOOST_FILESYSTEM_VERSION == 2
+    std::string fString = filename_.file_string();
+#else
     std::string fString = filename_.string();
+#endif
+
     const char* system_filename = fString.c_str();
 
     library_ = dlopen(system_filename, RTLD_NOW | RTLD_LOCAL);
