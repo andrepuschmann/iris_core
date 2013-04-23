@@ -44,7 +44,7 @@ boost::scoped_ptr< System > theSystem;
 
 string getName()
 {   
-    return "IRISV2";
+    return "Iris";
 }
 
 void IRISInitSystem()

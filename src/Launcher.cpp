@@ -40,12 +40,7 @@
 #include <boost/program_options.hpp>
 #include <boost/program_options/parsers.hpp>
 
-//! \todo We need to write a basic config.h for Windows, with package information
-#ifdef HAVE_CONFIG_H
-#  include "config.h"
-#else
-#  define VERSION "0.1"
-#endif
+#define VERSION "1.0.1"
 
 using namespace std;
 namespace po = boost::program_options;
