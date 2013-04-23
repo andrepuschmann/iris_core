@@ -4,7 +4,7 @@
  *
  * \section COPYRIGHT
  *
- * Copyright 2012 The Iris Project Developers. See the
+ * Copyright 2012-2013 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
@@ -79,7 +79,11 @@ void PhyComponentManager::addRepository(std::string repoPath)
         for(;dir_iter != dir_end; ++dir_iter)
         {
             //Check that the file path contains the system library extension
+#if BOOST_FILESYSTEM_VERSION == 2
+            string filename = dir_iter->path().leaf();
+#else
             string filename = dir_iter->path().filename().string();
+#endif
             size_t pos = filename.find_last_of('.');
             if(pos != string::npos)
             {

@@ -1,5 +1,5 @@
 #
-# Copyright 2012 The Iris Project Developers. See the
+# Copyright 2012-2013 The Iris Project Developers. See the
 # COPYRIGHT file at the top-level directory of this distribution
 # and at http://www.softwareradiosystems.com/iris/copyright.html.
 #
@@ -37,7 +37,7 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR})
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/src/ticpp/include)
 
 ########################################################################
-# Build the library from source files
+# Build the libraries from source files
 ########################################################################
 SET(iris_core_sources
     XmlParser.cpp
@@ -49,25 +49,21 @@ SET(iris_core_sources
     System.cpp
 )
 
-# Static library (linked by tests and main iris exe)
-ADD_LIBRARY(iris_lib ${iris_core_sources})
+# Static library (linked by testcode, shared lib and iris executable)
+ADD_LIBRARY(iris_lib STATIC ${iris_core_sources})
 TARGET_LINK_LIBRARIES(iris_lib ticpp phyengine stackengine ${Boost_LIBRARIES})
 IRIS_SET_PIC(iris_lib)
 
 # Shared library (can be used by alternative launchers)
 ADD_LIBRARY(iris_core SHARED Iris.cpp)
 TARGET_LINK_LIBRARIES(iris_core iris_lib)
-
 INSTALL(TARGETS iris_core
     LIBRARY DESTINATION ${LIBRARY_DIR} # .so file
     ARCHIVE DESTINATION ${LIBRARY_DIR} # .lib file
     RUNTIME DESTINATION ${RUNTIME_DIR} # .dll file
 )
 
-########################################################################
-# Add executables and link to libraries
-########################################################################
+# Console executable 
 ADD_EXECUTABLE (iris Launcher.cpp IrisStateMachine.cpp Iris.cpp)
 TARGET_LINK_LIBRARIES (iris iris_lib)
-
 INSTALL(TARGETS iris RUNTIME DESTINATION ${RUNTIME_DIR})
