@@ -82,7 +82,7 @@ SharedLibrary::open(boost::filesystem::path filename)
 
     const char* system_filename = fString.c_str();
 
-    library_ = dlopen(system_filename, RTLD_NOW | RTLD_LOCAL);
+    library_ = dlopen(system_filename, RTLD_NOW | RTLD_GLOBAL);
 
     if (library_ == NULL)
     {
