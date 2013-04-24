@@ -4,7 +4,7 @@
  *
  * \section COPYRIGHT
  *
- * Copyright 2012 The Iris Project Developers. See the
+ * Copyright 2012-2013 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
@@ -40,12 +40,7 @@
 #include <boost/program_options.hpp>
 #include <boost/program_options/parsers.hpp>
 
-//! \todo We need to write a basic config.h for Windows, with package information
-#ifdef HAVE_CONFIG_H
-#  include "config.h"
-#else
-#  define VERSION "0.1"
-#endif
+#define VERSION "1.0.1"
 
 using namespace std;
 namespace po = boost::program_options;
