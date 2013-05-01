@@ -4,7 +4,7 @@
  *
  * \section COPYRIGHT
  *
- * Copyright 2012 The Iris Project Developers. See the
+ * Copyright 2012-2013 The Iris Project Developers. See the
  * COPYRIGHT file at the top-level directory of this distribution
  * and at http://www.softwareradiosystems.com/iris/copyright.html.
  *
@@ -82,7 +82,7 @@ SharedLibrary::open(boost::filesystem::path filename)
 
     const char* system_filename = fString.c_str();
 
-    library_ = dlopen(system_filename, RTLD_NOW | RTLD_LOCAL);
+    library_ = dlopen(system_filename, RTLD_NOW | RTLD_GLOBAL);
 
     if (library_ == NULL)
     {
