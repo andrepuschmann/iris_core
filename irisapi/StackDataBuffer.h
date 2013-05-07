@@ -59,6 +59,7 @@ enum Source { ABOVE, BELOW };
 struct StackDataSet
 {
   Source source;              ///< Where did this come from? (Above/Below)
+  std::string sourcePortName; ///< Name of the port this came from.
   std::deque<uint8_t> data;   ///< The actual data.
   double timeStamp;           ///< Timestamp for this data.
   std::string lastComponent;  ///< ??

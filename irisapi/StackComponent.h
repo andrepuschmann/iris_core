@@ -173,6 +173,7 @@ protected:
     if(!belowBuffers_.empty())
     {
       set->source = ABOVE;
+      set->sourcePortName = belowBuffers_.begin()->first;
       belowBuffers_.begin()->second->pushDataSet(set);
     }
     else
@@ -187,6 +188,7 @@ protected:
     if(!aboveBuffers_.empty())
     {
       set->source = BELOW;
+      set->sourcePortName = aboveBuffers_.begin()->first;
       aboveBuffers_.begin()->second->pushDataSet(set);
     }
     else
@@ -201,6 +203,7 @@ protected:
     if(belowBuffers_.find(portName) != belowBuffers_.end())
     {
       set->source = ABOVE;
+      set->sourcePortName = portName;
       belowBuffers_[portName]->pushDataSet(set);
     }
     else
@@ -215,6 +218,7 @@ protected:
     if(aboveBuffers_.find(portName) != aboveBuffers_.end())
     {
       set->source = BELOW;
+      set->sourcePortName = portName;
       aboveBuffers_[portName]->pushDataSet(set);
     }
     else
