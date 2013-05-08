@@ -51,7 +51,7 @@ SET(iris_core_sources
 
 # Static library (linked by testcode, shared lib and iris executable)
 ADD_LIBRARY(iris_lib STATIC ${iris_core_sources})
-TARGET_LINK_LIBRARIES(iris_lib ticpp phyengine stackengine ${Boost_LIBRARIES})
+TARGET_LINK_LIBRARIES(iris_lib ticpp phyengine stackengine ${Boost_LIBRARIES} ${QT_LIBRARIES} ${QWT_LIBRARIES})
 IRIS_SET_PIC(iris_lib)
 
 # Shared library (can be used by alternative launchers)

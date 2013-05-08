@@ -39,6 +39,14 @@
 #include <string>
 #include <boost/program_options.hpp>
 #include <boost/program_options/parsers.hpp>
+#include <boost/scoped_ptr.hpp>
+#include <boost/thread/thread.hpp>
+#include <boost/progress.hpp>
+#include <boost/bind.hpp>
+
+#ifdef HAVE_QT
+#include <qapplication.h>
+#endif
 
 #define VERSION "1.0.1"
 
@@ -92,9 +100,7 @@ private:
     bool isRunning_;
 };
 
-
-//! binary entry point
-int main(int argc, char* argv[])
+void threadMain(int argc, char* argv[], int& status)
 {
     try
     {
@@ -106,22 +112,42 @@ int main(int argc, char* argv[])
     {
         cerr << "Launcher: Program options error: " << err.what() << endl;
         Launcher::pauseConsole();
-        return EXIT_FAILURE;
+        status = EXIT_FAILURE;
     }
     catch (LauncherException& ex)
     {
         cerr << "Launcher: Error: " << ex.what() << endl;
         Launcher::pauseConsole();
-        return EXIT_FAILURE;
+        status = EXIT_FAILURE;
     }
     catch (...)
     {
         cerr << "Launcher: Unexpected error - exiting" << endl;
         Launcher::pauseConsole();
-        return EXIT_FAILURE;
+        status = EXIT_FAILURE;
     }
 
-    return EXIT_SUCCESS;
+    status = EXIT_SUCCESS;
+}
+
+
+//! binary entry point
+int main(int argc, char* argv[])
+{
+#ifdef HAVE_QT
+    QApplication a(argc, argv);
+#endif
+
+    int status;
+    boost::scoped_ptr< boost::thread > launchThread;
+    launchThread.reset( new boost::thread( &threadMain, argc, argv, status ) );
+
+#ifdef HAVE_QT
+    a.exec();
+#endif
+
+    launchThread->join();
+    return status;
 }
 
 
@@ -139,8 +165,8 @@ Launcher::~Launcher()
 
 void Launcher::pauseConsole()
 {
-   cout << "Press any key to continue..." << endl;
-   cin.get();
+    cout << "Press any key to continue..." << endl;
+    cin.get();
 }
 
 void Launcher::parseOptions(int argc, char* argv[])
