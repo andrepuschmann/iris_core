@@ -51,11 +51,7 @@ SET(iris_core_sources
 
 # Static library (linked by testcode, shared lib and iris executable)
 ADD_LIBRARY(iris_lib STATIC ${iris_core_sources})
-IF(QT4_FOUND AND QWT_FOUND)
-    TARGET_LINK_LIBRARIES(iris_lib ticpp phyengine stackengine ${Boost_LIBRARIES} ${QT_LIBRARIES} ${QWT_LIBRARIES})
-ELSEIF(QT4_FOUND AND QWT_FOUND)
-    TARGET_LINK_LIBRARIES(iris_lib ticpp phyengine stackengine ${Boost_LIBRARIES})
-ENDIF(QT4_FOUND AND QWT_FOUND)
+TARGET_LINK_LIBRARIES(iris_lib ticpp phyengine stackengine ${Boost_LIBRARIES})
 IRIS_SET_PIC(iris_lib)
 
 # Shared library (can be used by alternative launchers)
@@ -69,5 +65,10 @@ INSTALL(TARGETS iris_core
 
 # Console executable 
 ADD_EXECUTABLE (iris Launcher.cpp IrisStateMachine.cpp Iris.cpp)
-TARGET_LINK_LIBRARIES (iris iris_lib)
+IF(QT4_FOUND AND QWT_FOUND)
+    TARGET_LINK_LIBRARIES (iris iris_lib ${QT_LIBRARIES} ${QWT_LIBRARIES})
+ELSEIF(QT4_FOUND AND QWT_FOUND)
+    TARGET_LINK_LIBRARIES (iris iris_lib)
+ENDIF(QT4_FOUND AND QWT_FOUND)
+
 INSTALL(TARGETS iris RUNTIME DESTINATION ${RUNTIME_DIR})
