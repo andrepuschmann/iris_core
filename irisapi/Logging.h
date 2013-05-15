@@ -136,6 +136,7 @@ public:
   std::ostringstream& Get(LogLevel level = LINFO);
 
   static std::string ToString(LogLevel level);
+  static std::string ToColor(LogLevel level);
   static LogLevel FromString(const std::string& level);
   static LoggingPolicy*& getPolicy();
 
@@ -160,7 +161,7 @@ inline std::ostringstream& Logger::Get(LogLevel level)
   tmp += "]";
   tmp += std::string(sizeof("WARNING")+1 - tmp.size(), ' ');
 
-  os << tmp << " ";
+  os << ToColor(level) << tmp << " ";
 
   return os;
 }
@@ -168,7 +169,8 @@ inline std::ostringstream& Logger::Get(LogLevel level)
 /// Destructor flushes the log stream
 inline Logger::~Logger()
 {
-  os << std::endl;
+  std::string default_color = "\033[0m";
+  os << default_color << std::endl;
   getPolicy()->output(os.str());
 }
 
@@ -184,6 +186,16 @@ inline std::string Logger::ToString(LogLevel level)
 {
   static const char* const buffer[] = {"DEBUG", "INFO", "WARNING", "ERROR", "FATAL"};
   return buffer[level];
+}
+
+//! Get the escape sequence to set console color for a given level
+inline std::string Logger::ToColor(LogLevel level)
+{
+  static const char* const buffer[] = {"\033[36m" /* cyan */,
+                                         "\033[0m" /* default */,
+                                         "\033[33m" /* yellow */,
+                                         "\033[31m" /* red */,
+                                         "\033[31m\033[1m" /* red, bold */};
 }
 
 /// Find the level associated with a given string
