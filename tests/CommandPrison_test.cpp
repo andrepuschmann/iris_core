@@ -70,6 +70,7 @@ static void release(Command command, boost::shared_ptr<CommandPrison> prison)
 
 BOOST_AUTO_TEST_CASE(CommandPrison_Basic_Test)
 {
+    LOG(LDEBUG) << "CommandPrison_Basic_Test";
     boost::shared_ptr<CommandPrison> prison(new CommandPrison);
 
     BOOST_CHECK(prison->size() == 0);
@@ -119,6 +120,7 @@ BOOST_AUTO_TEST_CASE(CommandPrison_Basic_Test)
 
 BOOST_AUTO_TEST_CASE(CommandPrison_MultiRelease_Test)
 {
+    LOG(LDEBUG) << "CommandPrison_MultiRelease_Test";
     boost::shared_ptr<CommandPrison> prison(new CommandPrison);
 
     BOOST_CHECK(prison->size() == 0);
@@ -164,6 +166,45 @@ BOOST_AUTO_TEST_CASE(CommandPrison_MultiRelease_Test)
     t7.join();
     t8.join();
     t9.join();
+
+    BOOST_CHECK(prison->size() == 0);
+}
+
+BOOST_AUTO_TEST_CASE(CommandPrison_OutOfOrderRelease_Test)
+{
+    LOG(LDEBUG) << "CommandPrison_OutOfOrderRelease_Test";
+    boost::shared_ptr<CommandPrison> prison(new CommandPrison);
+
+    BOOST_CHECK(prison->size() == 0);
+
+    // Create a number of threads to wait in prison
+    boost::thread t0( boost::bind( &trap, "go1", prison ,0) );
+
+    //Wait for threads to start
+    boost::this_thread::sleep(boost::posix_time::seconds(1));
+
+    Command c;
+    //Release thread with trapWait set to false (default)
+    c.commandName = "go1";
+    boost::thread r0( boost::bind( &release, c, prison ) );
+
+    boost::this_thread::sleep(boost::posix_time::seconds(1));
+    // set go2: if trapWait is false, this boost test should fail
+    // because the release call is already gone, if t1 runs, if set to
+    // true, the test should run smoothly
+    c.commandName = "go2";
+    c.trapWait = true;
+    boost::thread r2( boost::bind( &release, c, prison ) );
+
+    // wait
+    boost::this_thread::sleep(boost::posix_time::seconds(1));
+
+    // now start thread for g2, which should still return
+    // if trapWait has been set to true in release call
+    boost::thread t1( boost::bind( &trap, "go2", prison ,1) );
+
+    t0.join();
+    t1.join();
 
     BOOST_CHECK(prison->size() == 0);
 }
