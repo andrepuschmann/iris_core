@@ -37,6 +37,7 @@
 #include <boost/utility.hpp>
 #include <vector>
 #include <irisapi/LinkDescription.h>
+#include <boost/any.hpp>
 
 namespace iris
 {
@@ -50,6 +51,8 @@ template <typename T>
 struct DataSet{
   std::vector< T, std::allocator<T> > data;  //We can change this to another container or
                         //use a custom allocator if we want
+  //! metadata
+  std::vector<boost::any> metadata;
   double sampleRate;
   double timeStamp;
 

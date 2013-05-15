@@ -40,6 +40,7 @@
 #include <boost/thread/condition_variable.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/bind.hpp>
+#include <boost/any.hpp>
 
 #include "irisapi/Exceptions.h"
 #include "irisapi/TypeInfo.h"
@@ -62,6 +63,7 @@ struct StackDataSet
   std::string sourcePortName; ///< Name of the port this was sent from.
   std::string destPortName;   ///< Name of the port this arrived on.
   std::deque<uint8_t> data;   ///< The actual data.
+  std::vector<boost::any> metadata; ///< Metadata associated with StackDataset
   double timeStamp;           ///< Timestamp for this data.
   std::string lastComponent;  ///< ??
   
