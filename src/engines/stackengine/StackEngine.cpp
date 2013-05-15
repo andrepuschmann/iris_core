@@ -169,7 +169,7 @@ namespace iris
 
         if(!bFound)
         {
-            LOG(LERROR) << "Parametric reconfiguration failed: could not find component: " << command.componentName;
+            LOG(LERROR) << "Posting command " << command.commandName << " failed: could not find component: " << command.componentName;
         }
     }
 
