@@ -44,6 +44,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include <irisapi/ModuleParameters.h>
+#include <irisapi/ComponentEvents.h>
 #include <irisapi/TypeInfo.h>
 #include <irisapi/Event.h>
 #include <irisapi/Exceptions.h>
@@ -89,7 +90,8 @@ namespace iris
  * of the running radio.
  */
 class Controller
-  : public ModuleParameters
+  : public ModuleParameters,
+    public ComponentEvents
 {
 public:
 
@@ -290,6 +292,16 @@ public:
       }
   }
 
+  //! Activate an event
+  template<typename T>
+  inline void activateEvent(std::string name, T &data)
+    throw (EventNotFoundException, InvalidDataTypeException);
+
+  //! Activate an event
+  template<typename T>
+  inline void activateEvent(std::string name, std::vector<T> &data)
+    throw (EventNotFoundException, InvalidDataTypeException);
+
   std::string getName() const
   {
     return name_;
@@ -343,6 +355,45 @@ private:
   boost::condition_variable conditionVar_;
 
 };
+
+// Get the name of this component and pass everything on to ComponentEvents
+template<typename T>
+inline void Controller::activateEvent(std::string name, T &data)
+    throw (EventNotFoundException, InvalidDataTypeException)
+{
+    if(controllerManager_ == NULL)
+        return;
+
+    boost::to_lower(name);
+
+    Event e;
+    e.data.push_back(boost::any(data));
+    e.eventName = name;
+    e.componentName = this->getName();
+    e.typeId = TypeInfo<T>::identifier;
+    controllerManager_->activateEvent(e);
+    return;
+}
+
+// Get the name of this component and pass everything on to ComponentEvents
+template<typename T>
+inline void Controller::activateEvent(std::string name, std::vector<T> &data)
+    throw (EventNotFoundException, InvalidDataTypeException)
+{
+    if(controllerManager_ == NULL)
+        return;
+
+    boost::to_lower(name);
+
+    Event e;
+    e.data.resize(data.size());
+    std::copy(data.begin(), data.end(), e.data.begin());
+    e.eventName = name;
+    e.componentName = this->getName();
+    e.typeId = TypeInfo<T>::identifier;
+    controllerManager_->activateEvent(e);
+    return;
+}
 
 } /* namespace iris */
 
