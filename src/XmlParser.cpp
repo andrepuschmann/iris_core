@@ -16,12 +16,12 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Iris is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * A copy of the GNU Lesser General Public License can be found in
  * the LICENSE file in the top-level directory of this distribution
  * and at http://www.gnu.org/licenses/.
@@ -60,8 +60,11 @@ LinkDescription readLink(Element &linkElem)
         if(c->Type() == TiXmlNode::ELEMENT)
         {
             string s = c->Value();
-            LOG(LFATAL) << "Illegal element in xml file: " << s;
-            throw XmlParsingException("Illegal element in xml file: " + s);
+            if(s != "parameter")
+            {
+                LOG(LFATAL) << "Illegal element in xml file: " << s;
+                throw XmlParsingException("Illegal element in xml file: " + s);
+            }
         }
     }
 
@@ -123,6 +126,18 @@ ControllerDescription readController(Element &controllerElem)
     theController.type = controllerElem.GetAttribute("class");
     boost::to_lower(theController.type);
     LOG(LINFO) << "Parsed controller: " << theController.type;
+
+    //Parse all the parameters and add to the component description
+    Iterator< Element > child("parameter");
+    for ( child = child.begin(&controllerElem); child != child.end(); child++ )
+    {
+        ParameterDescription param;
+        param.name = child->GetAttribute("name");
+        param.value = child->GetAttribute("value");
+        boost::to_lower(param.name);
+        boost::to_lower(param.value);
+        theController.parameters.push_back(param);
+    }
 
     return theController;
 }

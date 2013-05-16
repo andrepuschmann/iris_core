@@ -34,7 +34,7 @@
 #ifndef IRISAPI_COMPONENTBASE_H_
 #define IRISAPI_COMPONENTBASE_H_
 
-#include <irisapi/ComponentParameters.h>
+#include <irisapi/ModuleParameters.h>
 #include <irisapi/ComponentEvents.h>
 #include <irisapi/ComponentInformation.h>
 #include <irisapi/ComponentPorts.h>
@@ -82,7 +82,7 @@ namespace iris
  * information and ports via its parent classes.
  */
 class ComponentBase
-  : public ComponentParameters,
+  : public ModuleParameters,
     public ComponentEvents,
     public ComponentInformation,
     public ComponentPorts
@@ -145,7 +145,7 @@ public:
 
 // Get the name of this component and pass everything on to ComponentEvents
 template<typename T>
-inline void ComponentBase::activateEvent(std::string name, T &data) 
+inline void ComponentBase::activateEvent(std::string name, T &data)
 {
   boost::to_lower(name);
   activateEventInternal(getName(), name, data);

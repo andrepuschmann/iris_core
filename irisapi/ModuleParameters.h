@@ -32,8 +32,8 @@
  * adjustable from XML or controller).
  */
 
-#ifndef IRISAPI_COMPONENTPARAMETERS_H_
-#define IRISAPI_COMPONENTPARAMETERS_H_
+#ifndef IRISAPI_MODULEPARAMETERS_H_
+#define IRISAPI_MODULEPARAMETERS_H_
 
 #include <string>
 #include <map>
@@ -54,8 +54,8 @@
 namespace iris
 {
 
-/** Represents a parameter of a component child class. Will be created by
- *  the registerParameter function in the ComponentParameters class.
+/** Represents a parameter of a component/controller child class. Will be created by
+ *  the registerParameter function in the ModuleParameters class.
  */
 struct Parameter
 {
@@ -99,28 +99,28 @@ struct Parameter
 };
 
 
-/** An interface to the parameters of a component
+/** An interface to the parameters of a component/controller
  *
- * The ComponentParameters class permits components to register parameters of different types along with
+ * The ModuleParameters class permits components/controllers to register parameters of different types along with
  * permitted values. These parameters may be accessed through setValue and getValue functions.
  */
-class ComponentParameters
+class ModuleParameters
   : boost::noncopyable
 {
 public:
 
-  /// Constructs an instance of ComponentParameters
-  ComponentParameters()
+  /// Constructs an instance of ModuleParameters
+  ModuleParameters()
     : parameterMap_()
   {}
 
-  virtual ~ComponentParameters() {}
+  virtual ~ModuleParameters() {}
 
   /** Copies the parameters by value from other into this.
    *
-   * \param other The ComponentParameters object to copy from.
+   * \param other The ModuleParameters object to copy from.
    */
-  virtual ComponentParameters& assignParameters(const ComponentParameters& other);
+  virtual ModuleParameters& assignParameters(const ModuleParameters& other);
 
 
   /** Returns the default XML for all parameters.
@@ -221,7 +221,7 @@ public:
     return getParameterReference(name).isDynamic;
   }
 
-  /** Called to tell a component that one of its parameters has been reconfigured.
+  /** Called to tell a component/controller that one of its parameters has been reconfigured.
    *
    * \param name Name of the parameter
    */
@@ -309,7 +309,7 @@ private:
   /// Map holding all registered parameters. The key is the parameter name.
   std::map<std::string, Parameter> parameterMap_;
 
-}; // class ComponentParameter
+}; // class ModuleParameters
 
 
 /*************************************************
@@ -317,7 +317,7 @@ private:
 *************************************************/
 
 template <typename T>
-inline void ComponentParameters::getValue(std::string name, T* value) const
+inline void ModuleParameters::getValue(std::string name, T* value) const
 {
   //Convert parameter name to lower case
   boost::to_lower(name);
@@ -334,7 +334,7 @@ inline void ComponentParameters::getValue(std::string name, T* value) const
 
 
 template <typename T>
-inline void ComponentParameters::setValue(std::string name, T value)
+inline void ModuleParameters::setValue(std::string name, T value)
 {
   BOOST_STATIC_ASSERT( ParameterTypeInfo<T>::isAllowed );
 
@@ -384,7 +384,7 @@ namespace internal
 template <int N = boost::mpl::size<IrisParameterTypes>::value>
 struct setParameterValue
 {
-  static bool EXEC(ComponentParameters* compPar, std::string name, const Parameter& par, const std::string& newval)
+  static bool EXEC(ModuleParameters* compPar, std::string name, const Parameter& par, const std::string& newval)
   {
     using namespace std;
 
@@ -414,7 +414,7 @@ struct setParameterValue
 template <>
 struct setParameterValue<0>
 {
-  static bool EXEC(ComponentParameters*, std::string, const Parameter&, const std::string&)
+  static bool EXEC(ModuleParameters*, std::string, const Parameter&, const std::string&)
   {
     return false;
   }
@@ -484,7 +484,7 @@ inline std::string getStringParameter(const boost::any& val)
 
 } // end of internal namespace
 
-inline std::string ComponentParameters::getValue(std::string name) const
+inline std::string ModuleParameters::getValue(std::string name) const
 {
   //Convert parameter name to lower case
   boost::to_lower(name);
@@ -497,7 +497,7 @@ inline std::string ComponentParameters::getValue(std::string name) const
 // template specialisation if the value is given as a string -> perform string conversion to
 // the real parameter type, using the meta-programming loop above (in internal namespace)
 template <>
-inline void ComponentParameters::setValue< std::string >(std::string name, std::string value)
+inline void ModuleParameters::setValue< std::string >(std::string name, std::string value)
 {
   //Convert parameter name to lower case
   boost::to_lower(name);
@@ -534,7 +534,7 @@ inline void ComponentParameters::setValue< std::string >(std::string name, std::
 
 // template specialisation for const char* -> call the string version
 template <>
-inline void ComponentParameters::setValue< const char* >(std::string name, const char* value)
+inline void ModuleParameters::setValue< const char* >(std::string name, const char* value)
 {
   //Convert parameter name to lower case
   boost::to_lower(name);
@@ -544,7 +544,7 @@ inline void ComponentParameters::setValue< const char* >(std::string name, const
 
 
 template <typename T>
-inline void ComponentParameters::registerParameterHelper(std::string name, std::string description,
+inline void ModuleParameters::registerParameterHelper(std::string name, std::string description,
     std::string defaultValue, bool isDynamic, T& parameter)
 {
   // make sure the parameter type is supported (at compile time)
@@ -560,7 +560,7 @@ inline void ComponentParameters::registerParameterHelper(std::string name, std::
 }
 
 template<typename T>
-inline void ComponentParameters::registerParameter(std::string name, std::string description,
+inline void ModuleParameters::registerParameter(std::string name, std::string description,
     std::string defaultValue, bool isDynamic, T& parameter)
 {
   Interval<T> allowedInterval;
@@ -594,7 +594,7 @@ inline void ComponentParameters::registerParameter(std::string name, std::string
  * \param parameter  The parameter itself. A pointer to it will be stored.
  */
 template <>
-inline void ComponentParameters::registerParameter(std::string name, std::string description,
+inline void ModuleParameters::registerParameter(std::string name, std::string description,
     std::string defaultValue, bool isDynamic, std::string& parameter)
 {
   //Convert parameter name to lower case
@@ -607,7 +607,7 @@ inline void ComponentParameters::registerParameter(std::string name, std::string
 }
 
 template<typename T>
-inline void ComponentParameters::registerParameter(std::string name, std::string description,
+inline void ModuleParameters::registerParameter(std::string name, std::string description,
     std::string defaultValue, bool isDynamic, T& parameter, Interval<T> allowedInterval)
 {
   if (allowedInterval.minimum > allowedInterval.maximum)
@@ -628,7 +628,7 @@ inline void ComponentParameters::registerParameter(std::string name, std::string
 }
 
 template<typename T>
-inline void ComponentParameters::registerParameter(std::string name, std::string description,
+inline void ModuleParameters::registerParameter(std::string name, std::string description,
     std::string defaultValue, bool isDynamic, T& parameter, std::list<T> allowedValues)
 {
   if (allowedValues.empty())
@@ -649,7 +649,7 @@ inline void ComponentParameters::registerParameter(std::string name, std::string
 }
 
 
-inline ComponentParameters& ComponentParameters::assignParameters(const ComponentParameters& other)
+inline ModuleParameters& ModuleParameters::assignParameters(const ModuleParameters& other)
 {
   for (std::map<std::string, Parameter>::iterator i = parameterMap_.begin();
      i != parameterMap_.end();
@@ -662,4 +662,4 @@ inline ComponentParameters& ComponentParameters::assignParameters(const Componen
 
 } // iris namespace
 
-#endif // IRISAPI_COMPONENTPARAMETERS_H_
+#endif // IRISAPI_MODULEPARAMETERS_H_
