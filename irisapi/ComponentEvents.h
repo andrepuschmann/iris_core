@@ -59,7 +59,7 @@ struct EventDescription
 
 /** An interface to the events of a component
  *
- * The ComponentEvents class permits components to register events of different types. 
+ * The ComponentEvents class permits components to register events of different types.
  * These events can then be triggered by the component together with relevent data.
  */
 class ComponentEvents : boost::noncopyable
@@ -113,22 +113,22 @@ inline void ComponentEvents::activateEventInternal(std::string compName, std::st
   std::map<std::string, EventDescription>::const_iterator it = events_.find(name);
   if (it == events_.end())
     throw EventNotFoundException("Event " + name + " not found");
-  
-  if(it->second.typeId == TypeInfo<T>::identifier)
-  {
-    //std::vector<boost::any> d;
-    //d.push_back(boost::any(data));
-    //d_engine->activateEvent(name, d);
-    Event e;
-    e.data.push_back(boost::any(data));
-    e.eventName = name;
-    e.componentName = compName;
-    e.typeId = TypeInfo<T>::identifier;
-    engine_->activateEvent(e);
-    return;
-  }else{
-    throw InvalidDataTypeException("Event data type did not match registered type for event " + name); 
-  }
+
+  /*
+   * FIXME:
+   * - disable typeId check to allow complex types beyond TypeInfo.h
+   * - type checking could be done using a boost::any_cast
+   */
+  //std::vector<boost::any> d;
+  //d.push_back(boost::any(data));
+  //d_engine->activateEvent(name, d);
+  Event e;
+  e.data.push_back(boost::any(data));
+  e.eventName = name;
+  e.componentName = compName;
+  e.typeId = TypeInfo<T>::identifier;
+  engine_->activateEvent(e);
+  return;
 }
 
 template<typename T>
@@ -145,23 +145,19 @@ inline void ComponentEvents::activateEventInternal(std::string compName, std::st
   if (it == events_.end())
     throw EventNotFoundException("Event " + name + " not found");
 
-  if(it->second.typeId == TypeInfo<T>::identifier)
-  {
-    //std::vector<boost::any> d;
-    //d.resize(data.size());
-    //std::copy(data.begin(), data.end(), d.begin());
-    //d_engine->activateEvent(name, d);
-    Event e;
-    e.data.resize(data.size());
-    std::copy(data.begin(), data.end(), e.data.begin());
-    e.eventName = name;
-    e.componentName = compName;
-    e.typeId = TypeInfo<T>::identifier;
-    engine_->activateEvent(e);
-    return;
-  }else{
-    throw InvalidDataTypeException("Event data type did not match registered type for event " + name); 
-  }
+  // disable type checking as well, see above for comments
+  //std::vector<boost::any> d;
+  //d.resize(data.size());
+  //std::copy(data.begin(), data.end(), d.begin());
+  //d_engine->activateEvent(name, d);
+  Event e;
+  e.data.resize(data.size());
+  std::copy(data.begin(), data.end(), e.data.begin());
+  e.eventName = name;
+  e.componentName = compName;
+  e.typeId = TypeInfo<T>::identifier;
+  engine_->activateEvent(e);
+  return;
 }
 
 } // namespace iris
