@@ -338,6 +338,17 @@ Element writeController( ControllerDescription &conDesc)
     Element e("controller");
     e.SetAttribute("class", conDesc.type);
 
+    //Add all the parameters
+    vector<ParameterDescription> params = conDesc.parameters;
+    vector<ParameterDescription>::iterator paramIt;
+    for(paramIt=params.begin(); paramIt!=params.end(); paramIt++)
+    {
+        Element currentParam("parameter");
+        currentParam.SetAttribute("name", paramIt->name);
+        currentParam.SetAttribute("value", paramIt->value);
+        e.InsertEndChild(currentParam);
+    }
+
     return e;
 }
 
