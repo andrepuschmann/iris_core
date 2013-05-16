@@ -196,6 +196,7 @@ inline std::string Logger::ToColor(LogLevel level)
                                          "\033[33m" /* yellow */,
                                          "\033[31m" /* red */,
                                          "\033[31m\033[1m" /* red, bold */};
+  return buffer[level];
 }
 
 /// Find the level associated with a given string
