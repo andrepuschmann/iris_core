@@ -115,8 +115,11 @@ ControllerDescription readController(Element &controllerElem)
         if(c->Type() == TiXmlNode::ELEMENT)
         {
             string s = c->Value();
-            LOG(LFATAL) << "Illegal element in xml file: " << s;
-            throw XmlParsingException("Illegal element in xml file: " + s);
+            if(s != "parameter")
+            {
+                LOG(LFATAL) << "Illegal element in xml file: " << s;
+                throw XmlParsingException("Illegal element in xml file: " + s);
+            }
         }
     }
 
