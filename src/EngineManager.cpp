@@ -205,6 +205,41 @@ namespace iris
         return radioRep_.getParameterValue(paramName, componentName);
     }
 
+    std::string EngineManager::getParameterName(std::string componentName, int paramIndex, std::string &paramValue)
+    {
+        return radioRep_.getParameterName(componentName, paramIndex, paramValue);
+    }
+
+    std::string EngineManager::getEngineName(std::string componentName, int *engineIndex, int *compIndex)
+    {
+        return radioRep_.getEngineName(componentName, engineIndex, compIndex);
+    }
+
+    int EngineManager::getNrEngines()
+    {
+        return radioRep_.getNrEngines();
+    }
+
+    int EngineManager::getNrComponents()
+    {
+        return radioRep_.getNrComponents();
+    }
+
+    std::string EngineManager::getEngineNameFromIndex(int index)
+    {
+        return radioRep_.getEngineNameFromIndex(index);
+    }
+
+    std::string EngineManager::getComponentName(int index)
+    {
+        return radioRep_.getComponentName(index);
+    }
+
+    int  EngineManager::getNrParameters(std::string componentName)
+    {
+        return radioRep_.getNrParameters(componentName);
+    }
+
     void EngineManager::activateEvent(Event &e)
     {
         //Pass the event to the controller manager

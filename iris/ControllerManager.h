@@ -162,6 +162,32 @@ public:
    */
   std::string getParameterValue(std::string paramName, std::string componentName);
 
+  /** Get a components' parameter name
+   *
+   * @param componentName   The name of the component containing the parameter.
+   * @param paramIndex      The paramter index
+   * @return paramValue     The parameter value returned by reference
+   */
+  std::string getParameterName(std::string componentName, int paramIndex, std::string &paramValue);
+
+  /// Get the name of a engine as string
+  std::string getEngineName(std::string componentName, int *engineIndex, int *compIndex);
+
+  /// returns the number of engines in the current radio
+  int getNrEngines();
+
+  /// returns the number of components in the current radio
+  int getNrComponents();
+
+  /// returns the the engine name for a given index
+  std::string getEngineNameFromIndex(int index);
+
+  /// returns the component name for a given component index
+  std::string getComponentName(int index);
+
+  /// returns the number of parameters in a given component
+  int getNrParameters(std::string componentName);
+
   /** Subscribe to an event (Called by controllers)
    *
    * @param eventName       The event name.

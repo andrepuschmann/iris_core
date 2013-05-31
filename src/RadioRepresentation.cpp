@@ -409,4 +409,128 @@ namespace iris
         return engineGraph_;
     }
 
+    //! returns the number of components in the current radio
+    int	RadioRepresentation::getNrComponents()
+    {
+        RadioGraph radGraph = getRadioGraph();
+        boost::mutex::scoped_lock lock(mutex_);
+        int comps;
+        VertexIterator i, iend;
+        tie(i, iend) = vertices(radGraph);
+        comps = iend - i;
+        return comps;
+    }
+
+    //! returns the the engine name for a given index
+    std::string RadioRepresentation::getEngineNameFromIndex(int index)
+    {
+        EngineGraph engGraph = getEngineGraph();
+        std::string engine = "";
+        VertexIterator i, iend;
+        for(tie(i, iend) = vertices(engGraph); i != iend; ++i)
+        {
+            int ver = *i;
+            if(ver == index)
+                engine = engGraph[index].name;
+        }
+        return engine;
+    }
+
+    //! returns the component name for a given component index
+    std::string RadioRepresentation::getComponentName(int index)
+    {
+        RadioGraph radGraph= getRadioGraph();
+        std::string component = "";
+        VertexIterator i, iend;
+        for(tie(i, iend) = vertices(radGraph); i != iend; ++i)
+        {
+            int ver = *i;
+            if(ver == index)
+                component = radGraph[index].name;
+        }
+        return component;
+    }
+
+    //! returns the number of parameters in a given component, input should be the component name
+    int  RadioRepresentation::getNrParameters(std::string componentName)
+    {
+        RadioGraph radGraph= getRadioGraph();
+        VertexIterator i, iend;
+        int NrParams = 0;
+        vector<ParameterDescription>::iterator paramIt;
+        for(tie(i, iend) = vertices(radGraph); i != iend; ++i)
+        {
+            int ver = *i;
+            if(radGraph[ver].name == componentName)
+                NrParams = radGraph[ver].parameters.end() - radGraph[ver].parameters.begin();
+        }
+        return NrParams;
+    }
+
+    //! to get a components' parameter name, the inputs are componentName and paramIndex, it will return the paramName, in addition paramValue is returned by reference
+    std::string RadioRepresentation::getParameterName(std::string componentName, int paramIndex, std::string &paramValue)
+    {
+        RadioGraph radGraph = getRadioGraph();
+        VertexIterator i, iend;
+        std::string  paramName = "";
+        vector<ParameterDescription>::iterator paramIt;
+        for(tie(i, iend) = vertices(radGraph); i != iend; ++i)
+        {
+            int ver = *i;
+            if(radGraph[ver].name == componentName)
+            {
+                int k = 0;
+                vector<ParameterDescription>::iterator paramIt;
+                for(paramIt = radGraph[ver].parameters.begin(); paramIt != radGraph[ver].parameters.end(); ++paramIt)
+                {
+                    if(k == paramIndex)
+                    {
+                        paramName += paramIt->name;
+                        paramValue = paramIt->value;
+                    }
+                    k++;
+                }
+            }
+        }
+        return paramName;
+    }
+
+    //! returns the engine name for a given component, also the engine index and component index within this engine can be returned;
+    std::string RadioRepresentation::getEngineName(std::string componentName, int *engineIndex, int *compIndex)
+    {
+        EngineDescription engD;
+        vector<EngineDescription>::iterator engIt;
+        std::string engineName = "";
+        int compI=0,engI=0;
+        for(engIt = engines_.begin(); engIt != engines_.end(); ++engIt)
+        {
+            compI=0;
+            vector<ComponentDescription>::iterator compIt;
+            for(compIt = engIt->components.begin(); compIt != engIt->components.end(); ++compIt)
+            {
+                if(compIt->name == componentName)
+                {
+                    engineName = engIt->name;
+                    *compIndex = compI;
+                    *engineIndex= engI;
+                    break;
+                }
+                compI++;
+            }
+            engI++;
+        }
+        return engineName;
+    }
+
+    //! returns the number of engines in the current radio
+    int  RadioRepresentation::getNrEngines()
+    {
+        EngineGraph engGraph = getEngineGraph();
+        boost::mutex::scoped_lock lock(mutex_);
+        int engines;
+        VertexIterator i, iend;
+        tie(i, iend) = vertices(engGraph);
+        engines = iend - i;
+        return engines;
+    }
 }

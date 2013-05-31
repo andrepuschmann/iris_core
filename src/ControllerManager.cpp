@@ -291,5 +291,45 @@ namespace iris
         eventMap_[eventName + componentName].push_back(cont);
     }
 
+    //! to get a components' parameter name, the inputs are componentName and paramIndex, it will return the paramName, in addition paramValue is returned by reference
+    std::string ControllerManager::getParameterName(std::string componentName, int paramIndex, std::string &paramValue)
+    {
+        return engineManager_->getParameterName(componentName, paramIndex, paramValue);
+    }
+
+    std::string ControllerManager::getEngineName(std::string componentName, int *engineIndex, int *compIndex)
+    {
+        return engineManager_->getEngineName(componentName, engineIndex, compIndex);
+    }
+
+    //! returns the number of engines in the current radio
+    int ControllerManager::getNrEngines()
+    {
+        return engineManager_->getNrEngines();
+    }
+
+    //! returns the number of components in the current radio
+    int ControllerManager::getNrComponents()
+    {
+        return engineManager_->getNrComponents();
+    }
+
+    //! returns the the engine name for a given index
+    std::string ControllerManager::getEngineNameFromIndex(int index)
+    {
+        return engineManager_->getEngineNameFromIndex(index);
+    }
+
+    //! returns the component name for a given component index
+    std::string ControllerManager::getComponentName(int index)
+    {
+        return engineManager_->getComponentName(index);
+    }
+
+    //! returns the number of parameters in a given component, input should be the component name
+    int  ControllerManager::getNrParameters(std::string componentName)
+    {
+        return engineManager_->getNrParameters(componentName);
+    }
 
 } /* namespace iris */

@@ -302,6 +302,41 @@ public:
   inline void activateEvent(std::string name, std::vector<T> &data)
     throw (EventNotFoundException, InvalidDataTypeException);
 
+  std::string getEngineName(std::string componentName, int *engineIndex, int *compIndex)
+  {
+      return controllerManager_->getEngineName(componentName, engineIndex, compIndex);
+  }
+
+  int getNrEngines()
+  {
+      return controllerManager_->getNrEngines();
+  }
+
+  int  getNrComponents()
+  {
+      return controllerManager_->getNrComponents();
+  }
+
+  std::string getEngineNameFromIndex(int index)
+  {
+      return controllerManager_->getEngineNameFromIndex(index);
+  }
+
+  std::string getComponentName(int index)
+  {
+      return controllerManager_->getComponentName(index);
+  }
+
+  int  getNrParameters(std::string componentName)
+  {
+      return controllerManager_->getNrParameters(componentName);
+  }
+
+  std::string getParameterName(std::string componentName, int paramIndex, std::string &paramValue)
+  {
+      return controllerManager_->getParameterName(componentName, paramIndex, paramValue);
+  }
+
   std::string getName() const
   {
     return name_;
