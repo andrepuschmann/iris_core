@@ -253,7 +253,7 @@ namespace iris
     //! Inform controllers that an event has been activated
     void ControllerManager::activateEvent(Event &e)
     {
-        vector<Controller*> controllers = eventMap_[e.eventName + e.componentName];
+        vector<Controller*> controllers = eventMap_[e.eventName];
         vector<Controller*>::iterator contIt;
         for(contIt=controllers.begin();contIt!=controllers.end();++contIt)
         {
@@ -273,6 +273,23 @@ namespace iris
     //! Post a command to a component
     void ControllerManager::postCommand(Command command)
     {
+        // first, check if this command is intended to a controller
+        if (command.componentName.find("controller") != std::string::npos) {
+            // now find the right controller
+            vector< LoadedController >::iterator libIt;
+            for(libIt=loadedControllers_.begin();libIt!=loadedControllers_.end();++libIt)
+            {
+                std::string stripped(command.componentName);
+                stripped.erase(stripped.size() - 10); // remove trailing "controller" from name
+                if(libIt->name == stripped)
+                {
+                    libIt->contPtr->postLocalCommand(command);
+                    return;
+                }
+            }
+        }
+
+        // if this was not a controller command, hand it over to the engine manager
         if(engineManager_ == NULL)
             return;
 
@@ -288,7 +305,7 @@ namespace iris
     //! Subscribe to an event
     void ControllerManager::subscribeToEvent(std::string eventName, std::string componentName, Controller* cont)
     {
-        eventMap_[eventName + componentName].push_back(cont);
+        eventMap_[eventName].push_back(cont);
     }
 
     //! to get a components' parameter name, the inputs are componentName and paramIndex, it will return the paramName, in addition paramValue is returned by reference

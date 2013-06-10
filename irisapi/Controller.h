@@ -51,6 +51,7 @@
 #include <irisapi/Logging.h>
 #include <irisapi/MessageQueue.h>
 #include <irisapi/ControllerCallbackInterface.h>
+#include <irisapi/CommandPrison.h>
 
 /** Macro for Iris boilerplate code in each controller.
  *  \param ControllerClass Class of the controller class to be exported by the library
@@ -142,6 +143,19 @@ public:
       return;
 
     controllerManager_->postCommand(command);
+  }
+
+  /// Called by controller manager to post a command for this controller
+  void postLocalCommand(Command command)
+  {
+      this->prison_.release(command);
+  }
+
+
+  /// Wait for a named command
+  Command waitForCommand(std::string command)
+  {
+    return prison_.trap(command);
   }
 
   /// Called by a derived controller to get the current value of a parameter.
@@ -388,7 +402,7 @@ private:
   bool loaded_;
   mutable boost::mutex mutex_;
   boost::condition_variable conditionVar_;
-
+  CommandPrison prison_;      ///< Used to wait for commands issued by another controller.
 };
 
 // Get the name of this component and pass everything on to ComponentEvents
