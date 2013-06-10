@@ -209,7 +209,7 @@ public:
     conditionVar_.notify_one();
 
     if (workThread_) workThread_->interrupt();
-    workThread_->interrupt();
+    eventThread_->interrupt();
   }
 
   /// Called by ControllerManager to unload the controller thread
