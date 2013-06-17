@@ -66,7 +66,7 @@ struct StackDataSet
   std::vector<boost::any> metadata; ///< Metadata associated with StackDataset
   double timeStamp;           ///< Timestamp for this data.
   std::string lastComponent;  ///< ??
-  
+
   /// Constructor initializes our variables
   StackDataSet(double t=0)
     : timeStamp(t)
@@ -109,7 +109,14 @@ public:
   boost::mutex::scoped_lock(mutex_);
   return (buffer_.size() >= maxBufferSize_);
   }
-  
+
+  /// Is the buffer full?
+  size_t size() const
+  {
+  boost::mutex::scoped_lock(mutex_);
+  return buffer_.size();
+  }
+
   /** Get a StackDataSet from the queue
   *
   *  \return A boost::shared_ptr to a StackDataSet
