@@ -127,9 +127,18 @@ public:
   *
   *   \return    Pointer to this component's buffer
   */
-  virtual StackDataBuffer* getBuffer()
+  virtual StackDataBuffer* getBufferForAbove()
   {
-    return &buffer_;
+    return &bufferForAbove_;
+  }
+
+  /** Get the buffer for this component
+  *
+  *   \return    Pointer to this component's buffer
+  */
+  virtual StackDataBuffer* getBufferForBelow()
+  {
+    return &bufferForBelow_;
   }
 
   /** Add reconfigurations to the queue
@@ -154,14 +163,17 @@ public:
   virtual void startComponent()
   {
     //Start the main component thread
-    thread_.reset( new boost::thread( boost::bind( &StackComponent::threadLoop, this ) ) );
+    threadForAbove_.reset( new boost::thread( boost::bind( &StackComponent::threadLoopForAbove, this ) ) );
+    threadForBelow_.reset( new boost::thread( boost::bind( &StackComponent::threadLoopForBelow, this ) ) );
   }
 
   /// Stop the thread for this stack component.
   virtual void stopComponent()
   {
-    thread_->interrupt();
-    thread_->join();
+    threadForAbove_->interrupt();
+    threadForAbove_->join();
+    threadForBelow_->interrupt();
+    threadForBelow_->join();
   }
 
   /** Register the default ports for this component.
@@ -271,7 +283,7 @@ protected:
 private:
 
   /// The main thread loop for this stack component
-  virtual void threadLoop()
+  virtual void threadLoopForAbove()
   {
     //The main loop of this thread
     try{
@@ -280,7 +292,7 @@ private:
         boost::this_thread::interruption_point();
 
         //Get a DataSet
-        boost::shared_ptr<StackDataSet> p = buffer_.popDataSet();
+        boost::shared_ptr<StackDataSet> p = bufferForAbove_.popDataSet();
 
         //Check message queue for ParametricReconfigs
         ParametricReconfig currentReconfig;
@@ -292,18 +304,42 @@ private:
           LOG(LINFO) << "Reconfigured parameter " << currentReconfig.parameterName << " : " << currentReconfig.parameterValue;
         }
 
-        //Call the appropriate function for the DataSet
-        switch(p->source)
+        processMessageFromAbove(p);
+      }
+    }
+    catch(IrisException& ex)
+    {
+      LOG(LFATAL) << "Error in stack component: " << ex.what() << " - Component thread exiting.";
+    }
+    catch(boost::thread_interrupted&)
+    {
+      LOG(LINFO) << "Thread in stack component " << getName() << " interrupted";
+    }
+  }
+
+  /// The main thread loop for this stack component
+  virtual void threadLoopForBelow()
+  {
+    //The main loop of this thread
+    try{
+      while(true)
+      {
+        boost::this_thread::interruption_point();
+
+        //Get a DataSet
+        boost::shared_ptr<StackDataSet> p = bufferForBelow_.popDataSet();
+
+        //Check message queue for ParametricReconfigs
+        ParametricReconfig currentReconfig;
+        while(reconfigQueue_.tryPop(currentReconfig))
         {
-        case ABOVE:
-          processMessageFromAbove(p);
-          break;
-        case BELOW:
-          processMessageFromBelow(p);
-          break;
-        default:
-          break;
+          boost::mutex::scoped_lock lock(parameterMutex_);
+          setValue(currentReconfig.parameterName, currentReconfig.parameterValue);
+          parameterHasChanged(currentReconfig.parameterName);
+          LOG(LINFO) << "Reconfigured parameter " << currentReconfig.parameterName << " : " << currentReconfig.parameterValue;
         }
+
+        processMessageFromBelow(p);
       }
     }
     catch(IrisException& ex)
@@ -319,12 +355,13 @@ private:
   std::map<std::string, StackLink> aboveBuffers_;  ///< Pointers to neighbours above.
   std::map<std::string, StackLink> belowBuffers_;  ///< Pointers to neighbours below.
 
-  boost::scoped_ptr< boost::thread > thread_;         ///< This component's thread.
+  boost::scoped_ptr< boost::thread > threadForAbove_;         ///< This component's thread.
+  boost::scoped_ptr< boost::thread > threadForBelow_;
   MessageQueue< ParametricReconfig > reconfigQueue_;  ///< Reconfigs for this component.
 
   CommandPrison prison_;      ///< Used to wait for commands issued by a controller.
-  StackDataBuffer buffer_;    ///< Buffer containing data messages for this component.
-
+  StackDataBuffer bufferForAbove_;    ///< Buffer containing data messages for this component.
+  StackDataBuffer bufferForBelow_;
 };
 
 } /* namespace iris */

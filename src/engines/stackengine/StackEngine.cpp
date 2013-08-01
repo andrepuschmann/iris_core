@@ -214,8 +214,8 @@ namespace iris
                         " specified in link."); 
                 }
 
-                above->addBufferBelow(i->sourcePort, i->sinkPort, below->getBuffer());
-                below->addBufferAbove(i->sinkPort, i->sourcePort, above->getBuffer());
+                above->addBufferBelow(i->sourcePort, i->sinkPort, below->getBufferForAbove());
+                below->addBufferAbove(i->sinkPort, i->sourcePort, above->getBufferForBelow());
             }
         }
     }
@@ -279,7 +279,7 @@ namespace iris
             //Create a translator and link up
             b::shared_ptr< StackInTranslator > t(new StackInTranslator());
             t->setInputBuffer(dynamic_cast<ReadBufferBase*>(buf.get()));
-            t->setBufferAbove(comp->getBuffer());
+            t->setBufferAbove(comp->getBufferForBelow());
             inTranslators_.push_back(t);
         }
         else
