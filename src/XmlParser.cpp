@@ -67,8 +67,14 @@ LinkDescription readLink(Element &linkElem)
 
     LinkDescription theLink;
     string source, sink;
-    sink = linkElem.GetAttribute("sink");
-    source = linkElem.GetAttribute("source");
+    if(linkElem.HasAttribute("sink"))
+        sink = linkElem.GetAttribute("sink");
+    else
+        sink = linkElem.GetAttribute("below");
+    if(linkElem.HasAttribute("source"))
+        source = linkElem.GetAttribute("source");
+    else
+        source = linkElem.GetAttribute("above");
 
     //Create tokenizers
     typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
