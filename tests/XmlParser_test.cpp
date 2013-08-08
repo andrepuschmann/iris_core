@@ -70,7 +70,9 @@ BOOST_AUTO_TEST_CASE(XmlParserCleanParse)
     string xmlConfig("\
 <?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\" ?>\
 <softwareradio>\
-<controller class=\"testcontroller\" />\
+<controller class=\"testcontroller\">\
+<parameter name=\"testparam\" value=\"2\" />\
+</controller>\
 <engine name=\"phyengine1\" class=\"phyengine\">\
 <component name=\"src1\" class=\"sourcephycomponent\">\
 <port name=\"output1\" class=\"output\" />\

@@ -43,6 +43,7 @@
 #include <boost/thread/condition.hpp>
 #include <boost/algorithm/string.hpp>
 
+#include <irisapi/ModuleParameters.h>
 #include <irisapi/TypeInfo.h>
 #include <irisapi/Event.h>
 #include <irisapi/Exceptions.h>
@@ -88,6 +89,7 @@ namespace iris
  * of the running radio.
  */
 class Controller
+  : public ModuleParameters
 {
 public:
 
