@@ -60,7 +60,7 @@ namespace iris
         vector<ControllerDescription>::iterator contIt;
         for(contIt=conts.begin(); contIt!=conts.end(); ++contIt)
         {
-            controllerManager_.loadController(contIt->type);
+            controllerManager_.loadController(*contIt);
         }
 
         engineGraph_ = rad.getEngineGraph();
