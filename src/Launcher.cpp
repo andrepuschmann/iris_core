@@ -33,6 +33,7 @@
  */
 
 #include "IrisStateMachine.h"
+#include "QtWrapper.h"
 
 #include <iostream>
 #include <fstream>
@@ -43,10 +44,6 @@
 #include <boost/thread/thread.hpp>
 #include <boost/progress.hpp>
 #include <boost/bind.hpp>
-
-#ifdef HAVE_QT
-#include <qapplication.h>
-#endif
 
 #define VERSION "1.0.1"
 
@@ -100,13 +97,14 @@ private:
     bool isRunning_;
 };
 
-void threadMain(int argc, char* argv[], int& status)
+void threadMain(int argc, char* argv[], int& status, QtWrapper* qt)
 {
     try
     {
         Launcher l;
         l.parseOptions(argc, argv);
         l.menuLoop();
+        qt->quit();
     }
     catch (po::error& err)
     {
@@ -134,20 +132,13 @@ void threadMain(int argc, char* argv[], int& status)
 //! binary entry point
 int main(int argc, char* argv[])
 {
-#ifdef HAVE_QT
-    QApplication a(argc, argv);
-#endif
-
-    int status;
-    boost::scoped_ptr< boost::thread > launchThread;
-    launchThread.reset( new boost::thread( &threadMain, argc, argv, status ) );
-
-#ifdef HAVE_QT
-    a.exec();
-#endif
-
-    launchThread->join();
-    return status;
+  QtWrapper qt;
+  int status;
+  boost::scoped_ptr< boost::thread > launchThread;
+  launchThread.reset( new boost::thread( &threadMain, argc, argv, status, &qt ) );
+  qt.run();
+  launchThread->join();
+  return status;
 }
 
 

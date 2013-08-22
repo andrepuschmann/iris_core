@@ -40,14 +40,64 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/src/ticpp/include)
 # Build the libraries from source files
 ########################################################################
 SET(iris_core_sources
-    XmlParser.cpp
+    ${PROJECT_SOURCE_DIR}/irisapi/Version.h
+    ${PROJECT_SOURCE_DIR}/irisapi/Command.h
+    ${PROJECT_SOURCE_DIR}/irisapi/CommandPrison.h
+    ${PROJECT_SOURCE_DIR}/irisapi/ComponentBase.h
+    ${PROJECT_SOURCE_DIR}/irisapi/ComponentCallbackInterface.h
+    ${PROJECT_SOURCE_DIR}/irisapi/ComponentEvents.h
+    ${PROJECT_SOURCE_DIR}/irisapi/ComponentInformation.h
+    ${PROJECT_SOURCE_DIR}/irisapi/ComponentPorts.h
+    ${PROJECT_SOURCE_DIR}/irisapi/ModuleParameters.h
+    ${PROJECT_SOURCE_DIR}/irisapi/Controller.h
+    ${PROJECT_SOURCE_DIR}/irisapi/ControllerCallbackInterface.h
+    ${PROJECT_SOURCE_DIR}/irisapi/DataBufferInterfaces.h
+    ${PROJECT_SOURCE_DIR}/irisapi/StackDataBuffer.h
+    ${PROJECT_SOURCE_DIR}/irisapi/Event.h
+    ${PROJECT_SOURCE_DIR}/irisapi/Exceptions.h
+    ${PROJECT_SOURCE_DIR}/irisapi/Interval.h
+    ${PROJECT_SOURCE_DIR}/irisapi/LibraryDefs.h
+    ${PROJECT_SOURCE_DIR}/irisapi/LinkDescription.h
+    ${PROJECT_SOURCE_DIR}/irisapi/MessageQueue.h
+    ${PROJECT_SOURCE_DIR}/irisapi/TypeInfo.h
+    ${PROJECT_SOURCE_DIR}/irisapi/TypeVectors.h
+    ${PROJECT_SOURCE_DIR}/irisapi/ParameterTypeInfo.h
+    ${PROJECT_SOURCE_DIR}/irisapi/PhyComponent.h
+    ${PROJECT_SOURCE_DIR}/irisapi/StackComponent.h
+    ${PROJECT_SOURCE_DIR}/irisapi/TemplatePhyComponent.h
+    ${PROJECT_SOURCE_DIR}/irisapi/ReconfigurationDescriptions.h
+    ${PROJECT_SOURCE_DIR}/irisapi/Logging.h
+
+    ${PROJECT_SOURCE_DIR}/iris/XmlParser.h
+    ${PROJECT_SOURCE_DIR}/iris/SharedLibrary.h
+    ${PROJECT_SOURCE_DIR}/iris/MemoryManager.h
+    ${PROJECT_SOURCE_DIR}/iris/DataBuffer.h
+    ${PROJECT_SOURCE_DIR}/iris/ControllerManager.h
+    ${PROJECT_SOURCE_DIR}/iris/ControllerManagerCallbackInterface.h
+    ${PROJECT_SOURCE_DIR}/iris/RadioRepresentation.h
+    ${PROJECT_SOURCE_DIR}/iris/EngineManager.h
+    ${PROJECT_SOURCE_DIR}/iris/EngineInterface.h
+    ${PROJECT_SOURCE_DIR}/iris/EngineCallbackInterface.h
+    ${PROJECT_SOURCE_DIR}/iris/ReconfigurationManager.h
+    ${PROJECT_SOURCE_DIR}/iris/System.h
+    ${PROJECT_SOURCE_DIR}/iris/PhyEngine.h
+    ${PROJECT_SOURCE_DIR}/iris/StackEngine.h
+    ${PROJECT_SOURCE_DIR}/iris/Iris.h
+
+    QtWrapper.h
     MemoryManager.cpp
+    XmlParser.cpp
     ControllerManager.cpp
     RadioRepresentation.cpp
     EngineManager.cpp
     ReconfigurationManager.cpp
     System.cpp
 )
+
+SET(qt_sources)
+IF(QT4_FOUND AND QWT_FOUND)
+    QT4_WRAP_CPP(qt_sources QtWrapper.h)
+ENDIF(QT4_FOUND AND QWT_FOUND)
 
 # Static library (linked by testcode, shared lib and iris executable)
 ADD_LIBRARY(iris_lib STATIC ${iris_core_sources})
@@ -64,7 +114,7 @@ INSTALL(TARGETS iris_core
 )
 
 # Console executable 
-ADD_EXECUTABLE (iris Launcher.cpp IrisStateMachine.cpp Iris.cpp)
+ADD_EXECUTABLE (iris Launcher.cpp IrisStateMachine.cpp Iris.cpp ${qt_sources})
 IF(QT4_FOUND AND QWT_FOUND)
     TARGET_LINK_LIBRARIES (iris iris_lib ${QT_LIBRARIES} ${QWT_LIBRARIES})
 ELSE(QT4_FOUND AND QWT_FOUND)

@@ -30,10 +30,10 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR})
 ########################################################################
 SET(phyengine_sources
     PhyComponentManager.cpp
+    PhyComponentManager.h
     PhyDataBuffer.h
     PhyComponentManager.h
     PhyEngine.cpp
-
 )
 ADD_LIBRARY(phyengine STATIC ${phyengine_sources})
 IRIS_SET_PIC(phyengine)
