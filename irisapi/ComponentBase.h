@@ -121,6 +121,7 @@ public:
   {
     assignParameters(other);
     assignEvents(other);
+    assignPorts(other);
 
     return *this;
   }
