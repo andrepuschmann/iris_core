@@ -104,7 +104,7 @@ void threadMain(int argc, char* argv[], int& status, QtWrapper* qt)
         Launcher l;
         l.parseOptions(argc, argv);
         l.menuLoop();
-        qt->quit();
+        status = EXIT_SUCCESS;
     }
     catch (po::error& err)
     {
@@ -125,7 +125,7 @@ void threadMain(int argc, char* argv[], int& status, QtWrapper* qt)
         status = EXIT_FAILURE;
     }
 
-    status = EXIT_SUCCESS;
+    qt->quit();
 }
 
 
