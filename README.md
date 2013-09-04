@@ -26,3 +26,5 @@ The installation guide can be found here: http://www.softwareradiosystems.com/re
 ## License
 
 Iris is licensed under LGPL v3. For more information see LICENSE.
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/565a545f5d61e93dd441e8ee1eea0a25 "githalytics.com")](http://githalytics.com/softwareradiosystems/iris_core)
