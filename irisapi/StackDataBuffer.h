@@ -94,6 +94,20 @@ public:
 
   virtual ~StackDataBuffer(){};
 
+  /// Return current size
+  unsigned size()
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    return buffer_.size();
+  }
+
+  /// Return maximum size
+  unsigned capacity()
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    return maxBufferSize_;
+  }
+
   /// Is there any data in this buffer?
   bool hasData() const
   {
@@ -145,7 +159,6 @@ public:
 private:
   /// The queue of StackDataSet pointers
   std::queue< boost::shared_ptr<StackDataSet> > buffer_;
-
 
   unsigned maxBufferSize_;        ///< Max number of items in the queue.
   mutable boost::mutex mutex_;    ///< Provide thread safety.
