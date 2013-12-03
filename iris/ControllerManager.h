@@ -42,6 +42,7 @@
 
 #include "iris/SharedLibrary.h"
 #include "iris/ControllerManagerCallbackInterface.h"
+#include "iris/RadioRepresentation.h"
 #include "irisapi/Event.h"
 #include "irisapi/Controller.h"
 
@@ -112,7 +113,7 @@ public:
    *
    *   \param  name   Name of Controller to be loaded
    */
-  void loadController(std::string name);
+  void loadController(ControllerDescription desc);
 
   /// Start all Controllers
   void startControllers();

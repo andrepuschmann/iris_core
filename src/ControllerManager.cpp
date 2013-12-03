@@ -109,15 +109,15 @@ namespace iris
         }
     }
 
-    void ControllerManager::loadController(std::string name)
+    void ControllerManager::loadController(ControllerDescription desc)
     {
         //Check if the library has already been loaded
         vector< LoadedController >::iterator libIt;
         for(libIt=loadedControllers_.begin();libIt!=loadedControllers_.end();++libIt)
         {
-            if(libIt->name == name)
+            if(libIt->name == desc.type)
             {
-                LOG(LERROR) << "Controller " + name + " has already been loaded.";
+                LOG(LERROR) << "Controller " + desc.type + " has already been loaded.";
                 return;
             }
         }
@@ -129,7 +129,7 @@ namespace iris
             vector< ControllerLibrary >::iterator compIt;
             for(compIt=repIt->controllerLibs.begin();compIt!=repIt->controllerLibs.end();++compIt)
             {
-                if(compIt->name == name)
+                if(compIt->name == desc.type)
                 {
                     //Load the controller library and add to vector of loaded libraries
                     compIt->libPtr.reset(new SharedLibrary(compIt->path));
@@ -146,7 +146,7 @@ namespace iris
                     if(coreVer != moduleVer)
                     {    
                         stringstream message;
-                        message << "API version mismatch between core and controller " << name << \
+                        message << "API version mismatch between core and controller " << desc.type << \
                             ". Core API version = " << coreVer << ". Module API version = " << moduleVer << ".";
                         throw ApiVersionException(message.str());
                     }
@@ -158,12 +158,19 @@ namespace iris
                     cont->setLoggingPolicy(Logger::getPolicy());
                     cont->setCallbackInterface(this);
 
+                    //Set the parameter values here
+                    vector<ParameterDescription>::iterator i = desc.parameters.begin();
+                    for(;i != desc.parameters.end(); ++i)
+                    {
+                      cont->setValue(i->name, i->value);
+                    }
+
                     //Call load on the controller
                     cont->load();
 
                     //Add to loadedControllers_
                     LoadedController l(compIt->name, cont);
-                    loadedControllers_.push_back(l);    
+                    loadedControllers_.push_back(l);
 
                     return;
                 }
@@ -171,7 +178,7 @@ namespace iris
         }
         
         //Only get here if we didn't find the library
-        throw ResourceNotFoundException("Could not find controller " + name + " in repositories.");
+        throw ResourceNotFoundException("Could not find controller " + desc.type + " in repositories.");
       
     }
 

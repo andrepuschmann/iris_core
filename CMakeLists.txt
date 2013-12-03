@@ -131,6 +131,23 @@ MESSAGE(STATUS "Boost library directories: ${Boost_LIBRARY_DIRS}")
 MESSAGE(STATUS "Boost libraries: ${Boost_LIBRARIES}")
 
 ########################################################################
+# Setup Qt and Qwt
+########################################################################
+FIND_PACKAGE(Qt4)
+IF(QT4_FOUND)
+    INCLUDE(${QT_USE_FILE})
+ENDIF(QT4_FOUND)
+
+FIND_PACKAGE(Qwt)
+IF(QT4_FOUND AND QWT_FOUND)
+    INCLUDE_DIRECTORIES(${QWT_INCLUDE_DIRS})
+ENDIF(QT4_FOUND AND QWT_FOUND)
+
+IF(QT4_FOUND AND QWT_FOUND)
+    ADD_DEFINITIONS( -DHAVE_QT )
+ENDIF(QT4_FOUND AND QWT_FOUND)
+
+########################################################################
 # Create uninstall targets
 ########################################################################
 CONFIGURE_FILE(

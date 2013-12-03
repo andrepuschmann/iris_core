@@ -33,12 +33,17 @@
  */
 
 #include "IrisStateMachine.h"
+#include "QtWrapper.h"
 
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <boost/program_options.hpp>
 #include <boost/program_options/parsers.hpp>
+#include <boost/scoped_ptr.hpp>
+#include <boost/thread/thread.hpp>
+#include <boost/progress.hpp>
+#include <boost/bind.hpp>
 
 #define VERSION "1.0.1"
 
@@ -92,36 +97,48 @@ private:
     bool isRunning_;
 };
 
-
-//! binary entry point
-int main(int argc, char* argv[])
+void threadMain(int argc, char* argv[], int& status, QtWrapper* qt)
 {
     try
     {
         Launcher l;
         l.parseOptions(argc, argv);
         l.menuLoop();
+        status = EXIT_SUCCESS;
     }
     catch (po::error& err)
     {
         cerr << "Launcher: Program options error: " << err.what() << endl;
         Launcher::pauseConsole();
-        return EXIT_FAILURE;
+        status = EXIT_FAILURE;
     }
     catch (LauncherException& ex)
     {
         cerr << "Launcher: Error: " << ex.what() << endl;
         Launcher::pauseConsole();
-        return EXIT_FAILURE;
+        status = EXIT_FAILURE;
     }
     catch (...)
     {
         cerr << "Launcher: Unexpected error - exiting" << endl;
         Launcher::pauseConsole();
-        return EXIT_FAILURE;
+        status = EXIT_FAILURE;
     }
 
-    return EXIT_SUCCESS;
+    qt->quit();
+}
+
+
+//! binary entry point
+int main(int argc, char* argv[])
+{
+  QtWrapper qt;
+  int status;
+  boost::scoped_ptr< boost::thread > launchThread;
+  launchThread.reset( new boost::thread( &threadMain, argc, argv, status, &qt ) );
+  qt.run();
+  launchThread->join();
+  return status;
 }
 
 
@@ -139,8 +156,8 @@ Launcher::~Launcher()
 
 void Launcher::pauseConsole()
 {
-   cout << "Press any key to continue..." << endl;
-   cin.get();
+    cout << "Press any key to continue..." << endl;
+    cin.get();
 }
 
 void Launcher::parseOptions(int argc, char* argv[])

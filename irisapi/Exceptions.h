@@ -99,6 +99,15 @@ public:
   {};
 };
 
+/// General exception when data is invalid
+class InvalidDataException : public IrisException
+{
+public:
+  InvalidDataException(const std::string &message) throw()
+    :IrisException(message)
+  {};
+};
+
 /// Exception thrown when memory allocation fails.
 class OutOfMemoryException : public IrisException
 {

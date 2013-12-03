@@ -59,6 +59,8 @@ enum Source { ABOVE, BELOW };
 struct StackDataSet
 {
   Source source;              ///< Where did this come from? (Above/Below)
+  std::string sourcePortName; ///< Name of the port this was sent from.
+  std::string destPortName;   ///< Name of the port this arrived on.
   std::deque<uint8_t> data;   ///< The actual data.
   double timeStamp;           ///< Timestamp for this data.
   std::string lastComponent;  ///< ??
@@ -91,6 +93,20 @@ public:
   {};
 
   virtual ~StackDataBuffer(){};
+
+  /// Return current size
+  unsigned size()
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    return buffer_.size();
+  }
+
+  /// Return maximum size
+  unsigned capacity()
+  {
+    boost::mutex::scoped_lock lock(mutex_);
+    return maxBufferSize_;
+  }
 
   /// Is there any data in this buffer?
   bool hasData() const
@@ -143,7 +159,6 @@ public:
 private:
   /// The queue of StackDataSet pointers
   std::queue< boost::shared_ptr<StackDataSet> > buffer_;
-
 
   unsigned maxBufferSize_;        ///< Max number of items in the queue.
   mutable boost::mutex mutex_;    ///< Provide thread safety.
