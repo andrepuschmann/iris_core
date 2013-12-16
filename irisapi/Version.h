@@ -50,7 +50,7 @@ class Version
 public:
   static const char* getApiVersion()
   {
-    return "0.0.19";
+    return "1.1.0";
   };
 };
 

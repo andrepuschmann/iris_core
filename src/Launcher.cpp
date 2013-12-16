@@ -45,7 +45,7 @@
 #include <boost/progress.hpp>
 #include <boost/bind.hpp>
 
-#define VERSION "1.0.1"
+#define VERSION "1.1.0"
 
 using namespace std;
 namespace po = boost::program_options;
