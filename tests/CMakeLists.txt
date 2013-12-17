@@ -55,6 +55,7 @@ SET(test_sources
     DataBuffer_test.cpp
     DataTypes_test.cpp
     EngineManager_test.cpp
+    Interval_test.cpp
     Logging_test.cpp
     MemoryManager_test.cpp
     PhyEngine_test.cpp
