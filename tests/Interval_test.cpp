@@ -56,12 +56,15 @@ BOOST_AUTO_TEST_CASE(IntervalBasic)
   Interval<int> i1;
   Interval<int> i2(0,9);
   Interval<int> i3(0,9,2);
-  Interval<float> i4;
-  Interval<float> i5(0.0,0.9);
-  Interval<float> i6(0.0,0.9,0.2);
-  Interval<double> i7;
-  Interval<double> i8(0.0,0.9);
-  Interval<double> i9(0.0,0.9,0.2);
+  Interval<uint8_t> i4;
+  Interval<uint8_t> i5(0,9);
+  Interval<uint8_t> i6(0,9,2);
+  Interval<float> i7;
+  Interval<float> i8(0.0f,0.9f);
+  Interval<float> i9(0.0f,0.9f,0.2f);
+  Interval<double> i10;
+  Interval<double> i11(0.0,0.9);
+  Interval<double> i12(0.0,0.9,0.2);
 
   BOOST_REQUIRE(i1.isIn(0));
   BOOST_REQUIRE(i2.isIn(0));
@@ -72,15 +75,15 @@ BOOST_AUTO_TEST_CASE(IntervalBasic)
   BOOST_REQUIRE(i3.isIn(9));
   BOOST_REQUIRE(i3.isIn(2));
   BOOST_REQUIRE(!i3.isIn(1));
-  BOOST_REQUIRE(i4.isIn(0.1));
-  BOOST_REQUIRE(i5.isIn(0.0));
-  BOOST_REQUIRE(i5.isIn(0.9));
-  BOOST_REQUIRE(i5.isIn(0.5));
-  BOOST_REQUIRE(!i5.isIn(1.0));
-  BOOST_REQUIRE(i6.isIn(0.0));
-  BOOST_REQUIRE(i6.isIn(0.9));
-  BOOST_REQUIRE(i6.isIn(0.2));
-  BOOST_REQUIRE(!i6.isIn(0.1));
+  BOOST_REQUIRE(i4.isIn(0));
+  BOOST_REQUIRE(i5.isIn(0));
+  BOOST_REQUIRE(i5.isIn(9));
+  BOOST_REQUIRE(i5.isIn(5));
+  BOOST_REQUIRE(!i5.isIn(10));
+  BOOST_REQUIRE(i6.isIn(0));
+  BOOST_REQUIRE(i6.isIn(9));
+  BOOST_REQUIRE(i6.isIn(2));
+  BOOST_REQUIRE(!i6.isIn(1));
   BOOST_REQUIRE(i7.isIn(0.1));
   BOOST_REQUIRE(i8.isIn(0.0));
   BOOST_REQUIRE(i8.isIn(0.9));
@@ -90,6 +93,15 @@ BOOST_AUTO_TEST_CASE(IntervalBasic)
   BOOST_REQUIRE(i9.isIn(0.9));
   BOOST_REQUIRE(i9.isIn(0.2));
   BOOST_REQUIRE(!i9.isIn(0.1));
+  BOOST_REQUIRE(i10.isIn(0.1));
+  BOOST_REQUIRE(i11.isIn(0.0));
+  BOOST_REQUIRE(i11.isIn(0.9));
+  BOOST_REQUIRE(i11.isIn(0.5));
+  BOOST_REQUIRE(!i11.isIn(1.0));
+  BOOST_REQUIRE(i12.isIn(0.0));
+  BOOST_REQUIRE(i12.isIn(0.9));
+  BOOST_REQUIRE(i12.isIn(0.2));
+  BOOST_REQUIRE(!i12.isIn(0.1));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
