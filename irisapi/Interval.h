@@ -104,8 +104,11 @@ struct Interval
     if(num < minimum || num > maximum)
       in = false;
     if(step != T(0))
-      if(fmod((num-minimum),step) != 0 && num != maximum)
+    {
+      double r = fmod((double)(num-minimum), (double)step);
+      if(r != 0 && num != maximum)
         in = false;
+    }
     return in;
   }
 
