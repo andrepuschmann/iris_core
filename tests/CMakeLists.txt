@@ -42,6 +42,11 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 # Build executables, register as tests, and install
 ########################################################################
 # Build each test and link to libraries
+SET(test_headers
+    TestComponent.h
+    TestController.h
+    TestLibrary.h
+)
 SET(test_sources
     CommandPrison_test.cpp
     Component_test.cpp
@@ -50,6 +55,7 @@ SET(test_sources
     DataBuffer_test.cpp
     DataTypes_test.cpp
     EngineManager_test.cpp
+    Interval_test.cpp
     Logging_test.cpp
     MemoryManager_test.cpp
     PhyEngine_test.cpp
@@ -67,7 +73,7 @@ ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK -DBOOST_TEST_MAIN)
 #for each source: build an executable, register it as a test, and install
 FOREACH(test_source ${test_sources})
     GET_FILENAME_COMPONENT(test_name ${test_source} NAME_WE)
-    ADD_EXECUTABLE(${test_name} ${test_source})
+    ADD_EXECUTABLE(${test_name} ${test_source} ${test_headers})
     TARGET_LINK_LIBRARIES(${test_name} iris_lib)
     ADD_TEST(${test_name} ${test_name})
     INSTALL(TARGETS ${test_name} RUNTIME DESTINATION ${DATA_DIR}/tests)

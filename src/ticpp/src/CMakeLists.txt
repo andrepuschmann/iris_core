@@ -29,9 +29,13 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/src/ticpp/include)
 # Build the library from source files
 ########################################################################
 SET(ticpp_sources
+    ../include/ticpprc.h
+    ../include/ticpp.h
     ticpp.cpp
+    ../include/tinyxml.h
     tinyxml.cpp
     tinyxmlparser.cpp
+    ../include/tinystr.h
     tinystr.cpp
     tinyxmlerror.cpp
 )

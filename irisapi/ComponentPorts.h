@@ -81,6 +81,18 @@ public:
   std::vector<Port> getOutputPorts() const
   {return outputPorts;};
 
+  /** Copy ports from other into this
+   *
+   * @param other The ComponentPorts object to copy from
+   * @return A reference to this
+   */
+  ComponentPorts& assignPorts(const ComponentPorts& other)
+  {
+    inputPorts = other.getInputPorts();
+    outputPorts = other.getOutputPorts();
+    return *this;
+  }
+
 protected:
   /** Register an input port of a child class with a single type.
    *

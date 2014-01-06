@@ -50,6 +50,26 @@
 namespace iris
 {
 
+/** The StackLink struct is used by a StackComponent to hold a pointer to
+ * the StackDataBuffer of a neighbour component, along with the associated
+ * port names.
+ */
+struct StackLink
+{
+  std::string myPort;           ///< Name of this component's port.
+  std::string neighbourPort;    ///< Destination port name.
+  StackDataBuffer* buffer;      ///< Neighbour component buffer.
+
+  StackLink(std::string mP = "",
+            std::string nP = "",
+            StackDataBuffer* b = NULL)
+      :myPort(mP)
+      ,neighbourPort(nP)
+      ,buffer(b)
+  {}
+
+};
+
 /** The StackComponent class provides common functionality for all stack components.
  *
  * StackComponents run their own thread of execution which loops, checking
@@ -72,30 +92,36 @@ public:
   */
   StackComponent(std::string name, std::string type, std::string description, std::string author, std::string version )
     :ComponentBase(name, type, description, author, version)
-  {};
+  {}
 
   /// Destructor
   virtual ~StackComponent() {}
 
   /** Add a buffer above this component
   *
-  *  \param portName    Name of the port to add the buffer to
-  *   \param above    Buffers for components above
+  *  \param myPort          Name of the port on this component.
+  *  \param neighbourPort   Name of the port on neighbour component.
+  *  \param above           Neighbour component buffer.
   */
-  virtual void addBufferAbove(std::string portName, StackDataBuffer* above)
+  virtual void addBufferAbove(std::string myPort,
+                              std::string neighbourPort,
+                              StackDataBuffer* above)
   {
-    aboveBuffers_[portName] = above;
-  };
+    aboveBuffers_[myPort] = StackLink(myPort, neighbourPort, above);
+  }
 
   /** Add a buffer below this component
   *
-  *  \param portName    Name of the port to add the buffer to
-  *   \param below    Buffers for components below
+  *  \param myPort          Name of the port on this component.
+  *  \param neighbourPort   Name of the port on neighbour component.
+  *  \param below           Neighbour component buffer.
   */
-  virtual void addBufferBelow(std::string portName, StackDataBuffer* below)
+  virtual void addBufferBelow(std::string myPort,
+                              std::string neighbourPort,
+                              StackDataBuffer* below)
   {
-    belowBuffers_[portName] = below;
-  };
+    belowBuffers_[myPort] = StackLink(myPort, neighbourPort, below);
+  }
 
   /** Get the buffer for this component
   *
@@ -104,7 +130,7 @@ public:
   virtual StackDataBuffer* getBuffer()
   {
     return &buffer_;
-  };
+  }
 
   /** Add reconfigurations to the queue
   *
@@ -113,7 +139,7 @@ public:
   void addReconfiguration(ParametricReconfig reconfig)
   {
     reconfigQueue_.push(reconfig);
-  };
+  }
 
   /** Post a command to this component
   *
@@ -122,21 +148,21 @@ public:
   void postCommand(Command command)
   {
     prison_.release(command);
-  };
+  }
 
   /// Create and start the thread for this stack component.
   virtual void startComponent()
   {
     //Start the main component thread
     thread_.reset( new boost::thread( boost::bind( &StackComponent::threadLoop, this ) ) );
-  };
+  }
 
   /// Stop the thread for this stack component.
   virtual void stopComponent()
   {
     thread_->interrupt();
     thread_->join();
-  };
+  }
 
   /** Register the default ports for this component.
    *
@@ -150,7 +176,7 @@ public:
 
     registerInputPort("topport1", types);
     registerInputPort("bottomport1", types);
-  };
+  }
 
   /// \name Should be implemented in derived classes
   //@{
@@ -161,8 +187,8 @@ public:
 
   /// \name May be implemented in derived classes if required
   //@{
-  virtual void start(){};
-  virtual void stop(){};
+  virtual void start(){}
+  virtual void stop(){}
   //@}
 
 protected:
@@ -173,13 +199,16 @@ protected:
     if(!belowBuffers_.empty())
     {
       set->source = ABOVE;
-      belowBuffers_.begin()->second->pushDataSet(set);
+      std::map<std::string, StackLink>::iterator it = belowBuffers_.begin();
+      set->sourcePortName = it->first;
+      set->destPortName = it->second.neighbourPort;
+      it->second.buffer->pushDataSet(set);
     }
     else
     {
       LOG(LDEBUG) << "sendDownwards() failed. No buffers below.";
     }
-  };
+  }
 
   /// Pass a message up the stack using the first port
   virtual void sendUpwards(boost::shared_ptr<StackDataSet> set)
@@ -187,13 +216,16 @@ protected:
     if(!aboveBuffers_.empty())
     {
       set->source = BELOW;
-      aboveBuffers_.begin()->second->pushDataSet(set);
+      std::map<std::string, StackLink>::iterator it = aboveBuffers_.begin();
+      set->sourcePortName = it->first;
+      set->destPortName = it->second.neighbourPort;
+      it->second.buffer->pushDataSet(set);
     }
     else
     {
       LOG(LDEBUG) << "sendUpwards() failed. No buffers above.";
     }
-  };
+  }
 
   /// Pass a message down the stack using a named port
   virtual void sendDownwards(std::string portName, boost::shared_ptr<StackDataSet> set)
@@ -201,13 +233,15 @@ protected:
     if(belowBuffers_.find(portName) != belowBuffers_.end())
     {
       set->source = ABOVE;
-      belowBuffers_[portName]->pushDataSet(set);
+      set->sourcePortName = portName;
+      set->destPortName = belowBuffers_[portName].neighbourPort;
+      belowBuffers_[portName].buffer->pushDataSet(set);
     }
     else
     {
       LOG(LDEBUG) << "sendDownwards() failed. No buffer below called " << portName;
     }
-  };
+  }
 
   /// Pass a message up the stack using a named port
   virtual void sendUpwards(std::string portName, boost::shared_ptr<StackDataSet> set)
@@ -215,13 +249,15 @@ protected:
     if(aboveBuffers_.find(portName) != aboveBuffers_.end())
     {
       set->source = BELOW;
-      aboveBuffers_[portName]->pushDataSet(set);
+      set->sourcePortName = portName;
+      set->destPortName = aboveBuffers_[portName].neighbourPort;
+      aboveBuffers_[portName].buffer->pushDataSet(set);
     }
     else
     {
       LOG(LDEBUG) << "sendUpwards() failed. No buffer above called " << portName;
     }
-  };
+  }
 
   /// Wait for a named command
   Command waitForCommand(std::string command)
@@ -280,8 +316,8 @@ private:
     }
   }
 
-  std::map<std::string, StackDataBuffer*> aboveBuffers_;  ///< Pointers to neighbours above.
-  std::map<std::string, StackDataBuffer*> belowBuffers_;  ///< Pointers to neighbours below.
+  std::map<std::string, StackLink> aboveBuffers_;  ///< Pointers to neighbours above.
+  std::map<std::string, StackLink> belowBuffers_;  ///< Pointers to neighbours below.
 
   boost::scoped_ptr< boost::thread > thread_;         ///< This component's thread.
   MessageQueue< ParametricReconfig > reconfigQueue_;  ///< Reconfigs for this component.

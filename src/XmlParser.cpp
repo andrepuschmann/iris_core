@@ -67,8 +67,14 @@ LinkDescription readLink(Element &linkElem)
 
     LinkDescription theLink;
     string source, sink;
-    sink = linkElem.GetAttribute("sink");
-    source = linkElem.GetAttribute("source");
+    if(linkElem.HasAttribute("sink"))
+        sink = linkElem.GetAttribute("sink");
+    else
+        sink = linkElem.GetAttribute("below");
+    if(linkElem.HasAttribute("source"))
+        source = linkElem.GetAttribute("source");
+    else
+        source = linkElem.GetAttribute("above");
 
     //Create tokenizers
     typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
@@ -106,8 +112,11 @@ ControllerDescription readController(Element &controllerElem)
         if(c->Type() == TiXmlNode::ELEMENT)
         {
             string s = c->Value();
-            LOG(LFATAL) << "Illegal element in xml file: " << s;
-            throw XmlParsingException("Illegal element in xml file: " + s);
+            if(s != "parameter")
+            {
+              LOG(LFATAL) << "Illegal element in xml file: " << s;
+              throw XmlParsingException("Illegal element in xml file: " + s);
+            }
         }
     }
 
@@ -116,6 +125,19 @@ ControllerDescription readController(Element &controllerElem)
     //Parse the component type
     theController.type = controllerElem.GetAttribute("class");
     boost::to_lower(theController.type);
+
+    //Parse all the parameters and add to the controller description
+    Iterator< Element > child("parameter");
+    for ( child = child.begin(&controllerElem); child != child.end(); child++ )
+    {
+      ParameterDescription param;
+      param.name = child->GetAttribute("name");
+      param.value = child->GetAttribute("value");
+      boost::to_lower(param.name);
+      boost::to_lower(param.value);
+      theController.parameters.push_back(param);
+    }
+
     LOG(LINFO) << "Parsed controller: " << theController.type;
 
     return theController;
@@ -316,6 +338,17 @@ Element writeController( ControllerDescription &conDesc)
 {
     Element e("controller");
     e.SetAttribute("class", conDesc.type);
+
+    //Add all the parameters
+    vector<ParameterDescription> params = conDesc.parameters;
+    vector<ParameterDescription>::iterator paramIt;
+    for(paramIt=params.begin(); paramIt!=params.end(); paramIt++)
+    {
+      Element currentParam("parameter");
+      currentParam.SetAttribute("name", paramIt->name);
+      currentParam.SetAttribute("value", paramIt->value);
+      e.InsertEndChild(currentParam);
+    }
 
     return e;
 }

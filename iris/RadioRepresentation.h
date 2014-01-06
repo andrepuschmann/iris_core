@@ -50,11 +50,13 @@ namespace iris
 class DataBufferBase;
 struct ReconfigSet;
 struct ParametricReconfig;
+struct ParameterDescription;
 
 /// Holds a controller type.
 struct ControllerDescription
 {
   std::string type;
+  std::vector<ParameterDescription> parameters;
 };
 
 /// Holds information about a port.

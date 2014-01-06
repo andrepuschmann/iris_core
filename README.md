@@ -14,8 +14,12 @@ The installation guide can be found here: http://www.softwareradiosystems.com/re
 
 ## Requirements
 
+Required:
 * CMake 2.6 or later - http://www.cmake.org/
 * Boost 1.46 or later - http://www.boost.org/
+
+Optional:
+* * Qt 4.8 - http://qt-project.org/ (For graphical widgets)
 
 ## Where To Get Help
 

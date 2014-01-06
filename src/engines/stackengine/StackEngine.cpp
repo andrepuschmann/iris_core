@@ -169,7 +169,7 @@ namespace iris
 
         if(!bFound)
         {
-            LOG(LERROR) << "Parametric reconfiguration failed: could not find component: " << command.componentName;
+            LOG(LERROR) << "Posting command " << command.commandName << " failed: could not find component: " << command.componentName;
         }
     }
 
@@ -214,8 +214,8 @@ namespace iris
                         " specified in link."); 
                 }
 
-                above->addBufferBelow(i->sourcePort, below->getBuffer());
-                below->addBufferAbove(i->sinkPort, above->getBuffer());
+                above->addBufferBelow(i->sourcePort, i->sinkPort, below->getBuffer());
+                below->addBufferAbove(i->sinkPort, i->sourcePort, above->getBuffer());
             }
         }
     }
@@ -302,7 +302,7 @@ namespace iris
             //Create a translator and link up
             b::shared_ptr< StackOutTranslator > t(new StackOutTranslator());
             t->setOutputBuffer(dynamic_cast<WriteBufferBase*>(buf.get()));
-            comp->addBufferBelow(l.sourcePort,t->getBuffer());
+            comp->addBufferBelow(l.sourcePort, l.sinkPort, t->getBuffer());
             outTranslators_.push_back(t);
         }
     }

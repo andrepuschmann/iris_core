@@ -28,7 +28,8 @@
  *
  * \section DESCRIPTION
  *
- *  Represents an interval: [Interval<T>().min, Interval<T>().max]
+ *  Represents an interval: [Interval<T>().min, Interval<T>().max] with
+ *  optional Interval<T>().step value.
  */
 
 #ifndef IRISAPI_INTERVAL_H_
@@ -43,7 +44,9 @@
 namespace iris
 {
 
-/// Represents an interval: [Interval<T>().min, Interval<T>().max]
+/** Represents an interval: [Interval<T>().min, Interval<T>().max] with
+ *  optinoal Interval<T>().step value.
+ */
 template <typename T>
 struct Interval
 {
@@ -52,40 +55,61 @@ struct Interval
 
   T minimum;    ///< The lower bound of the interval
   T maximum;    ///< The upper bound of the interval
+  T step;       ///< The step value for the interval
 
   /** Default constructor, initialises the values with min and max from
    * std::numeric_limits. In case of floats, the min is set to -max.
    */
   Interval()
     : minimum(boost::numeric::bounds<T>::lowest()),
-      maximum(boost::numeric::bounds<T>::highest())
-  {
-  };
+      maximum(boost::numeric::bounds<T>::highest()),
+      step(T(0))
+  {}
 
   /// Constructor giving the min and max explicitly
-  Interval(T min, T max) : minimum(min), maximum(max) {  }
+  Interval(T min, T max, T st = T(0))
+    : minimum(min),
+      maximum(max),
+      step(st)
+  {}
 
   /// Copy constructor
-  Interval(const Interval& other) : minimum(other.minimum), maximum(other.maximum) {}
+  Interval(const Interval& other)
+    : minimum(other.minimum),
+      maximum(other.maximum),
+      step(other.step)
+  {}
 
   /// Assignment
   Interval operator=(const Interval& other)
   {
     minimum = other.minimum;
     maximum = other.maximum;
+    step = other.step;
     return *this;
   }
 
   /// compare to another Interval
   bool operator==(const Interval& other) const
   {
-    return minimum==other.minimum && maximum == other.maximum;
+    return minimum==other.minimum &&
+        maximum == other.maximum &&
+        step == other.step;
   }
 
   /// check if number is in interval
   bool isIn(const T& num) const
   {
-    return (num >= minimum) && (num <= maximum);
+    bool in = true;
+    if(num < minimum || num > maximum)
+      in = false;
+    if(step != T(0))
+    {
+      double r = fmod((double)(num-minimum), (double)step);
+      if(r != 0 && num != maximum)
+        in = false;
+    }
+    return in;
   }
 
 };
@@ -98,7 +122,10 @@ inline Interval<bool>::Interval() : minimum(false), maximum(true) {}
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const Interval<T> i)
 {
-  os << "[" << i.minimum << ", " << i.maximum << "]";
+  if(i.step == T(0))
+    os << "[" << i.minimum << ", " << i.maximum << "]";
+  else
+    os << "[" << i.minimum << " : " << i.step << " : " << i.maximum << "]";
   return os;
 }
 
