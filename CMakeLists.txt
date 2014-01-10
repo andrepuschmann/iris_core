@@ -162,9 +162,9 @@ ADD_CUSTOM_TARGET(uninstall
 # Macro to add -fPIC property to static libs 
 ########################################################################
 MACRO(IRIS_SET_PIC)
-	IF( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
+    IF( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CMAKE_SYSTEM_PROCESSOR MATCHES "^arm" )
         SET_TARGET_PROPERTIES(${ARGV} PROPERTIES COMPILE_FLAGS -fPIC)
-    ENDIF( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
+    ENDIF( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CMAKE_SYSTEM_PROCESSOR MATCHES "^arm" )
 ENDMACRO(IRIS_SET_PIC)
 
 ########################################################################
