@@ -86,6 +86,7 @@ void StackInTranslator::threadLoop()
             set->data.resize(inData->data.size());
             std::copy(inData->data.begin(), inData->data.end(), set->data.begin());
             set->timeStamp = inData->timeStamp;
+            set->metadata = inData->metadata;
 
             //Send up to the StackComponent
             sendUpwards(set);

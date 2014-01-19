@@ -16,12 +16,12 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Iris is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * A copy of the GNU Lesser General Public License can be found in
  * the LICENSE file in the top-level directory of this distribution
  * and at http://www.gnu.org/licenses/.
@@ -137,14 +137,14 @@ namespace iris
                     //Pull a Controller class out of the library
                     CREATECONTROLLERFUNCTION createFunction = (CREATECONTROLLERFUNCTION)compIt->libPtr->getSymbol("CreateController");
                     DESTROYCONTROLLERFUNCTION destroyFunction = (DESTROYCONTROLLERFUNCTION)compIt->libPtr->getSymbol("ReleaseController");
-                    GETAPIVERSIONFUNCTION getApiFunction = (GETAPIVERSIONFUNCTION)compIt->libPtr->getSymbol("GetApiVersion"); 
+                    GETAPIVERSIONFUNCTION getApiFunction = (GETAPIVERSIONFUNCTION)compIt->libPtr->getSymbol("GetApiVersion");
 
                     //Check API version numbers match
                     string coreVer, moduleVer;
                     coreVer = Version::getApiVersion();
                     moduleVer = getApiFunction();
                     if(coreVer != moduleVer)
-                    {    
+                    {
                         stringstream message;
                         message << "API version mismatch between core and controller " << desc.type << \
                             ". Core API version = " << coreVer << ". Module API version = " << moduleVer << ".";
@@ -159,10 +159,10 @@ namespace iris
                     cont->setCallbackInterface(this);
 
                     //Set the parameter values here
-                    vector<ParameterDescription>::iterator i = desc.parameters.begin();
-                    for(;i != desc.parameters.end(); ++i)
+                    for(vector<ParameterDescription>::iterator i = desc.parameters.begin();
+                        i != desc.parameters.end(); ++i)
                     {
-                      cont->setValue(i->name, i->value);
+                        cont->setValue(i->name, i->value);
                     }
 
                     //Call load on the controller
@@ -176,10 +176,9 @@ namespace iris
                 }
             }
         }
-        
+
         //Only get here if we didn't find the library
         throw ResourceNotFoundException("Could not find controller " + desc.type + " in repositories.");
-      
     }
 
     bool ControllerManager::controllerExists(std::string name)
@@ -253,7 +252,7 @@ namespace iris
     //! Inform controllers that an event has been activated
     void ControllerManager::activateEvent(Event &e)
     {
-        vector<Controller*> controllers = eventMap_[e.eventName + e.componentName];
+        vector<Controller*> controllers = eventMap_[e.eventName];
         vector<Controller*>::iterator contIt;
         for(contIt=controllers.begin();contIt!=controllers.end();++contIt)
         {
@@ -273,6 +272,23 @@ namespace iris
     //! Post a command to a component
     void ControllerManager::postCommand(Command command)
     {
+        // first, check if this command is intended to a controller
+        if (command.componentName.find("controller") != std::string::npos) {
+            // now find the right controller
+            vector< LoadedController >::iterator libIt;
+            for(libIt=loadedControllers_.begin();libIt!=loadedControllers_.end();++libIt)
+            {
+                std::string stripped(command.componentName);
+                stripped.erase(stripped.size() - 10); // remove trailing "controller" from name
+                if(libIt->name == stripped)
+                {
+                    libIt->contPtr->postLocalCommand(command);
+                    return;
+                }
+            }
+        }
+
+        // if this was not a controller command, hand it over to the engine manager
         if(engineManager_ == NULL)
             return;
 
@@ -288,8 +304,48 @@ namespace iris
     //! Subscribe to an event
     void ControllerManager::subscribeToEvent(std::string eventName, std::string componentName, Controller* cont)
     {
-        eventMap_[eventName + componentName].push_back(cont); 
+        eventMap_[eventName].push_back(cont);
     }
 
+    //! to get a components' parameter name, the inputs are componentName and paramIndex, it will return the paramName, in addition paramValue is returned by reference
+    std::string ControllerManager::getParameterName(std::string componentName, int paramIndex, std::string &paramValue)
+    {
+        return engineManager_->getParameterName(componentName, paramIndex, paramValue);
+    }
+
+    std::string ControllerManager::getEngineName(std::string componentName, int *engineIndex, int *compIndex)
+    {
+        return engineManager_->getEngineName(componentName, engineIndex, compIndex);
+    }
+
+    //! returns the number of engines in the current radio
+    int ControllerManager::getNrEngines()
+    {
+        return engineManager_->getNrEngines();
+    }
+
+    //! returns the number of components in the current radio
+    int ControllerManager::getNrComponents()
+    {
+        return engineManager_->getNrComponents();
+    }
+
+    //! returns the the engine name for a given index
+    std::string ControllerManager::getEngineNameFromIndex(int index)
+    {
+        return engineManager_->getEngineNameFromIndex(index);
+    }
+
+    //! returns the component name for a given component index
+    std::string ControllerManager::getComponentName(int index)
+    {
+        return engineManager_->getComponentName(index);
+    }
+
+    //! returns the number of parameters in a given component, input should be the component name
+    int  ControllerManager::getNrParameters(std::string componentName)
+    {
+        return engineManager_->getNrParameters(componentName);
+    }
 
 } /* namespace iris */

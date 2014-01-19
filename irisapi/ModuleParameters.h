@@ -309,7 +309,7 @@ private:
   /// Map holding all registered parameters. The key is the parameter name.
   std::map<std::string, Parameter> parameterMap_;
 
-}; // class ModuleParameter
+}; // class ModuleParameters
 
 
 /*************************************************

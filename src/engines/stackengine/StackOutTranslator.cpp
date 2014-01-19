@@ -88,6 +88,7 @@ namespace iris
                 std::copy(p->data.begin(), p->data.end(), outData->data.begin());
                 outData->timeStamp = p->timeStamp;
                 outData->sampleRate = 0;
+                outData->metadata = p->metadata;
 
                 //Release the DataSet
                 outputBuffer_->releaseWriteData(outData);

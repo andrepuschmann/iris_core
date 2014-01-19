@@ -16,12 +16,12 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Iris is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * A copy of the GNU Lesser General Public License can be found in
  * the LICENSE file in the top-level directory of this distribution
  * and at http://www.gnu.org/licenses/.
@@ -97,7 +97,7 @@ struct ComponentDescription
   {
     return (name == comp.name && type == comp.type && engineName == comp.engineName);
   }
-};
+};  
 
 /** The graph used to represent the radio structure of components and links.
  *
@@ -220,6 +220,20 @@ public:
   static bool findComponent(std::string name, const RadioGraph& graph, Vertex& ver);
   /// Find an engine in an EngineGraph
   static bool findEngine(std::string name, const EngineGraph& graph, EngVertex& ver);
+  /// returns the engine name for a given component, also the engine index and component index within this engine can be returned;
+  std::string getEngineName(std::string componentName, int *engineIndex, int *compIndex);
+  /// returns the number of engines in the current radio
+  int getNrEngines();
+  /// returns the number of components in the current radio
+  int getNrComponents();
+  /// returns the the engine name for a given index
+  std::string getEngineNameFromIndex(int index);
+  /// returns the component name for a given component index
+  std::string getComponentName(int index);
+  /// returns the number of parameters in a given component, input should be the component name
+  int  getNrParameters(std::string componentName);
+  /// to get a components' parameter name, the inputs are componentName and paramIndex, it will return the paramName, in addition paramValue is returned by reference
+  std::string getParameterName(std::string componentName, int paramIndex, std::string &paramValue);
 
 private:
   /// Reconfigure a parameter within the representation

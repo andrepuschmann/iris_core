@@ -36,6 +36,7 @@
 
 #include <irisapi/ComponentBase.h>
 #include <irisapi/DataBufferInterfaces.h>
+#include <irisapi/CommandPrison.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 
@@ -210,12 +211,19 @@ protected:
     return dynamic_cast< ReadBuffer<T>* >(buf);
   };
 
+  /// Wait for a named command
+  Command waitForCommand(std::string command)
+  {
+    return prison_.trap(command);
+  }
+
   std::vector<ReadBufferBase*> inputBuffers;    ///< Inputs to this component.
   std::vector<WriteBufferBase*> outputBuffers;  ///< Outputs from this component.
 
 private:
   boost::posix_time::time_duration totalTime_; ///< Time taken in process() so far.
   int numRuns_;                                ///< Number of process() calls so far.
+  CommandPrison prison_;                       ///< Used to wait for commands issued by a controller.
 
   std::map<std::string, ReadBufferBase*> namedInputBuffers_;
   std::map<std::string, WriteBufferBase*> namedOutputBuffers_;

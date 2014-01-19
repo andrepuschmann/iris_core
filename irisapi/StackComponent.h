@@ -138,7 +138,10 @@ public:
   */
   void addReconfiguration(ParametricReconfig reconfig)
   {
-    reconfigQueue_.push(reconfig);
+    boost::mutex::scoped_lock lock(parameterMutex_);
+    setValue(reconfig.parameterName, reconfig.parameterValue);
+    parameterHasChanged(reconfig.parameterName);
+    LOG(LINFO) << "Reconfigured parameter " << reconfig.parameterName << " : " << reconfig.parameterValue;
   }
 
   /** Post a command to this component
@@ -282,25 +285,21 @@ private:
         //Get a DataSet
         boost::shared_ptr<StackDataSet> p = buffer_.popDataSet();
 
-        //Check message queue for ParametricReconfigs
-        ParametricReconfig currentReconfig;
-        while(reconfigQueue_.tryPop(currentReconfig))
-        {
-          boost::mutex::scoped_lock lock(parameterMutex_);
-          setValue(currentReconfig.parameterName, currentReconfig.parameterValue);
-          parameterHasChanged(currentReconfig.parameterName);
-          LOG(LINFO) << "Reconfigured parameter " << currentReconfig.parameterName << " : " << currentReconfig.parameterValue;
-        }
-
         //Call the appropriate function for the DataSet
         switch(p->source)
         {
         case ABOVE:
+        {
+          boost::mutex::scoped_lock lock(parameterMutex_);
           processMessageFromAbove(p);
           break;
+        }
         case BELOW:
+        {
+          boost::mutex::scoped_lock lock(parameterMutex_);
           processMessageFromBelow(p);
           break;
+        }
         default:
           break;
         }
@@ -320,7 +319,6 @@ private:
   std::map<std::string, StackLink> belowBuffers_;  ///< Pointers to neighbours below.
 
   boost::scoped_ptr< boost::thread > thread_;         ///< This component's thread.
-  MessageQueue< ParametricReconfig > reconfigQueue_;  ///< Reconfigs for this component.
 
   CommandPrison prison_;      ///< Used to wait for commands issued by a controller.
   StackDataBuffer buffer_;    ///< Buffer containing data messages for this component.

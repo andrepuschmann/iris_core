@@ -120,6 +120,7 @@ public:
     boost::mutex::scoped_lock lock(mutex_);
     boost::shared_ptr< Cage > cage(new Cage);
     cages_.insert(CagePair(c,cage));
+    trapWaitCondition_.notify_all();
     return cage->trap(lock);
   }
 
@@ -129,15 +130,26 @@ public:
    */
   void release(Command c)
   {
-    boost::mutex::scoped_lock lock(mutex_);
-    std::pair<CageMM::iterator, CageMM::iterator> found;
-    CageMM::iterator it;
-    found = cages_.equal_range(c.commandName);
-    for (it=found.first; it!=found.second; ++it)
-    {
-      it->second->release(c);
-    }
-    cages_.erase(found.first, found.second);
+      boost::mutex::scoped_lock lock(mutex_);
+      bool foundItem = false;
+      do
+      {
+          std::pair<CageMM::iterator, CageMM::iterator> found;
+          CageMM::iterator it;
+          found = cages_.equal_range(c.commandName);
+          for (it=found.first; it!=found.second; ++it)
+          {
+              it->second->release(c);
+              foundItem = true;
+          }
+          cages_.erase(found.first, found.second);
+          if (!c.trapWait)
+              break;
+
+          if (!foundItem && c.trapWait)
+              trapWaitCondition_.wait(lock);
+      }
+      while (!foundItem);
   }
 
   /// Get the number of threads currently held in this CommandPrison.
@@ -153,6 +165,7 @@ private:
 
   mutable boost::mutex mutex_;  ///< Mutex protecting this CommandPrison.
   CageMM cages_;                ///< The cages within this CommandPrison.
+  boost::condition_variable trapWaitCondition_; ///< Wait condition variable for CommandPrision.
 
 };
 
