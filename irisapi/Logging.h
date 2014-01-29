@@ -57,6 +57,9 @@ inline std::string NowTime();
 /// The log levels available for logging
 enum LogLevel {LDEBUG, LINFO, LWARNING, LERROR, LFATAL};
 
+/// Convert a log level to a color
+inline std::string ToColor(LogLevel level);
+
 /** The logging policy. This class determines the output streams of the logging element.
 *
 *   Logger objects use a policy to determine the output streams.
@@ -83,14 +86,15 @@ public:
     return &thePolicy;
   }
 
-  void output(const std::string& msg)
+  void output(const std::string& msg, const LogLevel level)
   {
     boost::mutex::scoped_lock lock(mutex_);
 
     // Output to console
     if(consoleStream)
     {
-      fprintf(consoleStream, "%s", msg.c_str());
+      std::string tmp = ToColor(level) + msg + "\033[0m";
+      fprintf(consoleStream, "%s", tmp.c_str());
       fflush(consoleStream);
     }
 
@@ -136,12 +140,12 @@ public:
   std::ostringstream& Get(LogLevel level = LINFO);
 
   static std::string ToString(LogLevel level);
-  static std::string ToColor(LogLevel level);
   static LogLevel FromString(const std::string& level);
   static LoggingPolicy*& getPolicy();
 
 protected:
   std::ostringstream os;
+  LogLevel level;
 };
 
 /// Constructor sets LoggingPolicy if required
@@ -161,7 +165,9 @@ inline std::ostringstream& Logger::Get(LogLevel level)
   tmp += "]";
   tmp += std::string(sizeof("WARNING")+1 - tmp.size(), ' ');
 
-  os << ToColor(level) << tmp << " ";
+  os << tmp << " ";
+  
+  this->level = level;
 
   return os;
 }
@@ -169,9 +175,8 @@ inline std::ostringstream& Logger::Get(LogLevel level)
 /// Destructor flushes the log stream
 inline Logger::~Logger()
 {
-  std::string default_color = "\033[0m";
-  os << default_color << std::endl;
-  getPolicy()->output(os.str());
+  os << std::endl;
+  getPolicy()->output(os.str(), level);
 }
 
 /// Get ref to pointer to the current LoggingPolicy
@@ -185,17 +190,6 @@ inline LoggingPolicy*& Logger::getPolicy()
 inline std::string Logger::ToString(LogLevel level)
 {
   static const char* const buffer[] = {"DEBUG", "INFO", "WARNING", "ERROR", "FATAL"};
-  return buffer[level];
-}
-
-//! Get the escape sequence to set console color for a given level
-inline std::string Logger::ToColor(LogLevel level)
-{
-  static const char* const buffer[] = {"\033[36m" /* cyan */,
-                                         "\033[0m" /* default */,
-                                         "\033[33m" /* yellow */,
-                                         "\033[31m" /* red */,
-                                         "\033[31m\033[1m" /* red, bold */};
   return buffer[level];
 }
 
@@ -238,6 +232,17 @@ inline std::string NowTime()
 {
   using namespace boost::posix_time;
   return to_simple_string(microsec_clock::local_time());
+}
+
+/// Get the escape sequence to set console color for a given level
+inline std::string ToColor(LogLevel level)
+{
+  static const char* const buffer[] = {"\033[36m" /* DEBUG is cyan */,
+                                         "\033[0m" /* INFO is default */,
+                                         "\033[33m" /* WARNING is yellow */,
+                                         "\033[31m" /* ERROR is red */,
+                                         "\033[31m\033[1m" /* FATAL is red, bold */};
+  return buffer[level];
 }
 
 } // namespace iris
