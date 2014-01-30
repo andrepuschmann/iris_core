@@ -44,12 +44,14 @@ Active::Active(my_context ctx) : my_base(ctx)
     std::string sdfRadioRepository = context<IrisStateMachine>().getSdfRadioRepository();
     std::string contRadioRepository = context<IrisStateMachine>().getContRadioRepository();
     std::string logLevel = context<IrisStateMachine>().getLogLevel();
+    std::string loggingFile = context<IrisStateMachine>().getLoggingFile();
     IRISInitSystem();
     IRISSetStackRepository(stackRadioRepository);
     IRISSetPhyRepository(phyRadioRepository);
     IRISSetSdfRepository(sdfRadioRepository);
     IRISSetContRepository(contRadioRepository);
     IRISSetLogLevel(logLevel);
+    IRISSetLoggingFile(loggingFile);
 }
 
 Loaded::Loaded(my_context ctx)
