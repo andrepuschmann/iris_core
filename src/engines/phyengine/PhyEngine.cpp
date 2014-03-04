@@ -319,7 +319,7 @@ namespace iris
             {
                 (*compIt)->setValue(reconfig.parameterName, reconfig.parameterValue);
                 (*compIt)->parameterHasChanged(reconfig.parameterName);
-                LOG(LINFO) << "Reconfigured parameter " << reconfig.parameterName << " : " << reconfig.parameterValue;
+                LOG(LDEBUG) << "Reconfigured parameter " << reconfig.parameterName << " : " << reconfig.parameterValue;
                 bFound = true;
             }
         }
@@ -332,8 +332,24 @@ namespace iris
 
     void PhyEngine::postCommand(Command command)
     {
-        LOG(LERROR) << "PhyComponents do not support commands - failed to post command " <<
-                command.commandName << " to " << command.componentName;
+        bool bFound = false;
+
+        //Find component and post command
+        vector< b::shared_ptr<PhyComponent> >::iterator compIt;
+        for(compIt = components_.begin(); compIt != components_.end(); ++compIt)
+        {
+            if((*compIt)->getName() == command.componentName)
+            {
+                (*compIt)->postCommand(command);
+                bFound = true;
+            }
+        }
+
+        if(!bFound)
+        {
+            LOG(LERROR) << "Posting command failed: could not find component: " << command.componentName;
+        }
+
     }
 
     void PhyEngine::activateEvent(Event &e)

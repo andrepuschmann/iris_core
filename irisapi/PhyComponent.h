@@ -124,6 +124,12 @@ public:
     numRuns_++;
   };
 
+  /// Post a command to this component
+  void postCommand(Command command)
+  {
+      prison_.release(command);
+  };
+
   /// \name To be implemented in derived classes.
   //@{
   virtual void calculateOutputTypes(std::map<std::string, int>& inputTypes,
