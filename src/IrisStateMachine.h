@@ -16,12 +16,12 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Iris is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * A copy of the GNU Lesser General Public License can be found in
  * the LICENSE file in the top-level directory of this distribution
  * and at http://www.gnu.org/licenses/.
@@ -128,8 +128,12 @@ struct IrisStateMachine : boost::statechart::state_machine< IrisStateMachine, Ac
   std::string getContRadioRepository() const { return contRadioRepository_; }
   //! set log level
   void setLogLevel(std::string level) { logLevel_ = level; }
+  //! set logging file
+  void setLoggingFile(std::string file) { loggingFile_ = file; }
   //! return log level
   std::string getLogLevel() const { return logLevel_; }
+  //! return logging file
+  std::string getLoggingFile() const { return loggingFile_; }
   //! Reconfigure the radio
   void reconfigureRadio();
 private:
@@ -145,6 +149,8 @@ private:
   std::string contRadioRepository_;
   //! stores the log level
   std::string logLevel_;
+  //! stores to logging file
+  std::string loggingFile_;
 };
 
 //! Active is the parent of all other states, destruction means termination
