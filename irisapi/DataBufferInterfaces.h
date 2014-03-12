@@ -37,6 +37,7 @@
 #include <boost/utility.hpp>
 #include <vector>
 #include <irisapi/LinkDescription.h>
+#include "Metadata.h"
 
 namespace iris
 {
@@ -49,13 +50,12 @@ namespace iris
 template <typename T>
 struct DataSet{
   std::vector< T, std::allocator<T> > data;  //We can change this to another container or
-                        //use a custom allocator if we want
-  double sampleRate;
-  double timeStamp;
+                                             //use a custom allocator if we want
+  MetadataMap metadata;
 
   //! Constructor initializes our variables
   DataSet(int l=10, double s=0, double t=0)
-    :data(l), sampleRate(s), timeStamp(t){}
+    :data(l), metadata(s, t){}
 };
 
 /** The DataBufferBase class allows us to store vectors of DataBuffers of different types

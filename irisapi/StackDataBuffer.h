@@ -43,6 +43,7 @@
 
 #include "irisapi/Exceptions.h"
 #include "irisapi/TypeInfo.h"
+#include "Metadata.h"
 
 namespace iris
 {
@@ -62,12 +63,12 @@ struct StackDataSet
   std::string sourcePortName; ///< Name of the port this was sent from.
   std::string destPortName;   ///< Name of the port this arrived on.
   std::deque<uint8_t> data;   ///< The actual data.
-  double timeStamp;           ///< Timestamp for this data.
+  MetadataMap metadata;       ///< Metadata.
   std::string lastComponent;  ///< ??
   
   /// Constructor initializes our variables
   StackDataSet(double t=0)
-    : timeStamp(t)
+    : metadata(0.0, t)
   {}
 };
 
