@@ -16,12 +16,12 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Iris is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * A copy of the GNU Lesser General Public License can be found in
  * the LICENSE file in the top-level directory of this distribution
  * and at http://www.gnu.org/licenses/.
@@ -88,7 +88,7 @@ namespace iris
     void StackEngine::unloadEngine()
     {
         //Destroy all InTranslators
-        inTranslators_.clear();   
+        inTranslators_.clear();
         //Destory all OutTranslators
         outTranslators_.clear();
         //Destroy all components and clear the vector
@@ -181,7 +181,7 @@ namespace iris
     void StackEngine::buildEngineGraph(EngineDescription& eng)
     {
         //Create the components
-        for(vector<ComponentDescription>::iterator i = eng.components.begin(); 
+        for(vector<ComponentDescription>::iterator i = eng.components.begin();
             i != eng.components.end(); i++)
         {
             b::shared_ptr<StackComponent> comp = compManager_->loadComponent(*i);
@@ -190,7 +190,7 @@ namespace iris
         }
 
          //Create the links
-        for(vector<LinkDescription>::iterator i = eng.links.begin(); 
+        for(vector<LinkDescription>::iterator i = eng.links.begin();
             i != eng.links.end(); i++)
         {
             if(i->sinkEngine != i->sourceEngine)
@@ -206,16 +206,16 @@ namespace iris
                 if(above == NULL)
                 {
                     throw ResourceNotFoundException("Could not find StackComponent " + i->sourceComponent +
-                        " specified in link."); 
+                        " specified in link.");
                 }
                 if(below == NULL)
                 {
                     throw ResourceNotFoundException("Could not find StackComponent " + i->sinkComponent +
-                        " specified in link."); 
+                        " specified in link.");
                 }
 
-                above->addBufferBelow(i->sourcePort, i->sinkPort, below->getBufferForAbove());
-                below->addBufferAbove(i->sinkPort, i->sourcePort, above->getBufferForBelow());
+                above->addBufferBelow(i->sourcePort, i->sinkPort, below->getBuffer(i->sinkPort));
+                below->addBufferAbove(i->sinkPort, i->sourcePort, above->getBuffer(i->sourcePort));
             }
         }
     }
@@ -264,7 +264,7 @@ namespace iris
             if(comp == NULL)
             {
                 throw ResourceNotFoundException("Could not find StackComponent " + l.sinkComponent +
-                        " specified in link."); 
+                        " specified in link.");
             }
             //Find the DataBuffer for the link
             b::shared_ptr< DataBufferBase > buf;
@@ -279,7 +279,7 @@ namespace iris
             //Create a translator and link up
             b::shared_ptr< StackInTranslator > t(new StackInTranslator());
             t->setInputBuffer(dynamic_cast<ReadBufferBase*>(buf.get()));
-            t->setBufferAbove(comp->getBufferForBelow());
+            t->setBufferAbove(comp->getBuffer(l.sinkPort));
             inTranslators_.push_back(t);
         }
         else
@@ -291,7 +291,7 @@ namespace iris
             if(comp == NULL)
             {
                 throw ResourceNotFoundException("Could not find StackComponent " + l.sourceComponent +
-                        " specified in link."); 
+                        " specified in link.");
             }
 
             //Create a DataBuffer for the link

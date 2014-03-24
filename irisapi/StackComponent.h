@@ -36,6 +36,8 @@
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/ptr_container/ptr_vector.hpp>
+#include <boost/ptr_container/ptr_map.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/progress.hpp>
 #include <boost/bind.hpp>
@@ -127,18 +129,9 @@ public:
   *
   *   \return    Pointer to this component's buffer
   */
-  virtual StackDataBuffer* getBufferForAbove()
+  virtual StackDataBuffer* getBuffer(std::string port)
   {
-    return &bufferForAbove_;
-  }
-
-  /** Get the buffer for this component
-  *
-  *   \return    Pointer to this component's buffer
-  */
-  virtual StackDataBuffer* getBufferForBelow()
-  {
-    return &bufferForBelow_;
+    return &buffers_[port];
   }
 
   /** Add reconfigurations to the queue
@@ -162,18 +155,25 @@ public:
   /// Create and start the thread for this stack component.
   virtual void startComponent()
   {
-    //Start the main component thread
-    threadForAbove_.reset( new boost::thread( boost::bind( &StackComponent::threadLoopForAbove, this ) ) );
-    threadForBelow_.reset( new boost::thread( boost::bind( &StackComponent::threadLoopForBelow, this ) ) );
+    std::vector<Port> inPorts = getInputPorts();
+    std::vector<Port>::iterator it;
+    for (it = inPorts.begin(); it != inPorts.end(); ++it) {
+      std::string name((*it).portName);
+      // determine whether this is a port on top or below a component
+      Source source = ((name.find("top") != std::string::npos) ? ABOVE : BELOW);
+      // create thread for this input port
+      threads_.push_back( new boost::thread( boost::bind( &StackComponent::threadLoop, this, name, source, boost::ref(buffers_[name]) ) ) );
+    }
   }
 
   /// Stop the thread for this stack component.
   virtual void stopComponent()
   {
-    threadForAbove_->interrupt();
-    threadForAbove_->join();
-    threadForBelow_->interrupt();
-    threadForBelow_->join();
+    boost::ptr_vector<boost::thread>::iterator it;
+    for (it = threads_.begin(); it != threads_.end(); ++it) {
+      it->interrupt();
+      it->join();
+    }
   }
 
   /** Register the default ports for this component.
@@ -281,18 +281,16 @@ protected:
   mutable boost::mutex parameterMutex_;
 
 private:
-
-  /// The main thread loop for this stack component
-  virtual void threadLoopForAbove()
+  /// The thread loop for a input port of this stack component
+  virtual void threadLoop(std::string portName, Source source, StackDataBuffer &buffer)
   {
-    //The main loop of this thread
     try{
       while(true)
       {
         boost::this_thread::interruption_point();
 
         //Get a DataSet
-        boost::shared_ptr<StackDataSet> p = bufferForAbove_.popDataSet();
+        boost::shared_ptr<StackDataSet> p = buffer.popDataSet();
 
         //Check message queue for ParametricReconfigs
         ParametricReconfig currentReconfig;
@@ -304,64 +302,29 @@ private:
           LOG(LINFO) << "Reconfigured parameter " << currentReconfig.parameterName << " : " << currentReconfig.parameterValue;
         }
 
-        processMessageFromAbove(p);
-      }
-    }
-    catch(IrisException& ex)
-    {
-      LOG(LFATAL) << "Error in stack component: " << ex.what() << " - Component thread exiting.";
-    }
-    catch(boost::thread_interrupted&)
-    {
-      LOG(LINFO) << "Thread in stack component " << getName() << " interrupted";
-    }
-  }
-
-  /// The main thread loop for this stack component
-  virtual void threadLoopForBelow()
-  {
-    //The main loop of this thread
-    try{
-      while(true)
-      {
-        boost::this_thread::interruption_point();
-
-        //Get a DataSet
-        boost::shared_ptr<StackDataSet> p = bufferForBelow_.popDataSet();
-
-        //Check message queue for ParametricReconfigs
-        ParametricReconfig currentReconfig;
-        while(reconfigQueue_.tryPop(currentReconfig))
-        {
-          boost::mutex::scoped_lock lock(parameterMutex_);
-          setValue(currentReconfig.parameterName, currentReconfig.parameterValue);
-          parameterHasChanged(currentReconfig.parameterName);
-          LOG(LINFO) << "Reconfigured parameter " << currentReconfig.parameterName << " : " << currentReconfig.parameterValue;
+        if (source == ABOVE) {
+            processMessageFromAbove(p);
+        } else {
+            processMessageFromBelow(p);
         }
-
-        processMessageFromBelow(p);
       }
     }
     catch(IrisException& ex)
     {
-      LOG(LFATAL) << "Error in stack component: " << ex.what() << " - Component thread exiting.";
+      LOG(LFATAL) << "Error in stack component: " << ex.what() << " - Exiting thread for " << portName;
     }
     catch(boost::thread_interrupted&)
     {
-      LOG(LINFO) << "Thread in stack component " << getName() << " interrupted";
+      LOG(LINFO) << "Thread for " << portName << " in stack component " << getName() << " interrupted";
     }
   }
 
-  std::map<std::string, StackLink> aboveBuffers_;  ///< Pointers to neighbours above.
-  std::map<std::string, StackLink> belowBuffers_;  ///< Pointers to neighbours below.
-
-  boost::scoped_ptr< boost::thread > threadForAbove_;         ///< This component's thread.
-  boost::scoped_ptr< boost::thread > threadForBelow_;
-  MessageQueue< ParametricReconfig > reconfigQueue_;  ///< Reconfigs for this component.
-
-  CommandPrison prison_;      ///< Used to wait for commands issued by a controller.
-  StackDataBuffer bufferForAbove_;    ///< Buffer containing data messages for this component.
-  StackDataBuffer bufferForBelow_;
+  std::map<std::string, StackLink> aboveBuffers_;         ///< Pointers to neighbours above.
+  std::map<std::string, StackLink> belowBuffers_;         ///< Pointers to neighbours below.
+  boost::ptr_vector<boost::thread> threads_;              ///< This component's threads.
+  MessageQueue< ParametricReconfig > reconfigQueue_;      ///< Reconfigs for this component.
+  CommandPrison prison_;                                  ///< Used to wait for commands issued by a controller.
+  boost::ptr_map<std::string, StackDataBuffer > buffers_; ///< Buffers containing data messages for this component.
 };
 
 } /* namespace iris */
