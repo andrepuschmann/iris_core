@@ -164,6 +164,9 @@ public:
       // create thread for this input port
       threads_.push_back( new boost::thread( boost::bind( &StackComponent::threadLoop, this, name, source, boost::ref(buffers_[name]) ) ) );
     }
+
+    // start reconfiguration thread
+    threads_.push_back( new boost::thread( boost::bind( &StackComponent::reconfigThread, this ) ) );
   }
 
   /// Stop the thread for this stack component.
@@ -292,21 +295,14 @@ private:
         //Get a DataSet
         boost::shared_ptr<StackDataSet> p = buffer.popDataSet();
 
-        //Check message queue for ParametricReconfigs
-        ParametricReconfig currentReconfig;
-        while(reconfigQueue_.tryPop(currentReconfig))
-        {
-          boost::mutex::scoped_lock lock(parameterMutex_);
-          setValue(currentReconfig.parameterName, currentReconfig.parameterValue);
-          parameterHasChanged(currentReconfig.parameterName);
-          LOG(LINFO) << "Reconfigured parameter " << currentReconfig.parameterName << " : " << currentReconfig.parameterValue;
-        }
-
+        // ensure parameter remain the same while processing a message
+        boost::mutex::scoped_lock lock(parameterMutex_);
         if (source == ABOVE) {
             processMessageFromAbove(p);
         } else {
             processMessageFromBelow(p);
         }
+        lock.unlock();
       }
     }
     catch(IrisException& ex)
@@ -316,6 +312,34 @@ private:
     catch(boost::thread_interrupted&)
     {
       LOG(LINFO) << "Thread for " << portName << " in stack component " << getName() << " interrupted";
+    }
+  }
+
+  virtual void reconfigThread()
+  {
+    try{
+      while(true)
+      {
+        boost::this_thread::interruption_point();
+
+        //Check message queue for ParametricReconfigs
+        ParametricReconfig currentReconfig;
+        reconfigQueue_.waitAndPop(currentReconfig);
+        {
+          boost::mutex::scoped_lock lock(parameterMutex_);
+          setValue(currentReconfig.parameterName, currentReconfig.parameterValue);
+          parameterHasChanged(currentReconfig.parameterName);
+          LOG(LINFO) << "Reconfigured parameter " << currentReconfig.parameterName << " : " << currentReconfig.parameterValue;
+        }
+      }
+    }
+    catch(IrisException& ex)
+    {
+      LOG(LFATAL) << "Error in stack component: " << ex.what() << " - Exiting reconfiguration thread.";
+    }
+    catch(boost::thread_interrupted&)
+    {
+      LOG(LINFO) << "Thread for parameter reconfiguration for stack component " << getName() << " interrupted";
     }
   }
 
