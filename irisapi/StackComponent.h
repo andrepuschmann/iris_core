@@ -295,14 +295,11 @@ private:
         //Get a DataSet
         boost::shared_ptr<StackDataSet> p = buffer.popDataSet();
 
-        // ensure parameter remain the same while processing a message
-        boost::mutex::scoped_lock lock(parameterMutex_);
         if (source == ABOVE) {
             processMessageFromAbove(p);
         } else {
             processMessageFromBelow(p);
         }
-        lock.unlock();
       }
     }
     catch(IrisException& ex)
