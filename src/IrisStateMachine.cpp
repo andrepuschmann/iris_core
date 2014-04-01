@@ -50,8 +50,8 @@ Active::Active(my_context ctx) : my_base(ctx)
     IRISSetPhyRepository(phyRadioRepository);
     IRISSetSdfRepository(sdfRadioRepository);
     IRISSetContRepository(contRadioRepository);
-    IRISSetLogLevel(logLevel);
     IRISSetLoggingFile(loggingFile);
+    IRISSetLogLevel(logLevel);
 }
 
 Loaded::Loaded(my_context ctx)
