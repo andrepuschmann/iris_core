@@ -16,12 +16,12 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Iris is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * A copy of the GNU Lesser General Public License can be found in
  * the LICENSE file in the top-level directory of this distribution
  * and at http://www.gnu.org/licenses/.
@@ -50,12 +50,6 @@ namespace iris
         :status_(RADIOUNLOADED),
         pFile_(NULL)
     {
-        //Set up logging
-        pFile_ = fopen("iris2.log", "a+");
-        if(pFile_ != NULL)
-            LoggingPolicy::getPolicyInstance()->setFileStream(pFile_);
-
-        LoggingPolicy::getPolicyInstance()->ReportingLevel() = LDEBUG;
     }
 
     System::~System()
@@ -107,6 +101,22 @@ namespace iris
         {
             LoggingPolicy::getPolicyInstance()->ReportingLevel() = LFATAL;
         }
+    }
+
+    void System::setLoggingFile(std::string file)
+    {
+        //Set up logging
+        if (file != "null") {
+            pFile_ = fopen(file.c_str(), "a+");
+            if(pFile_ != NULL)
+                LoggingPolicy::getPolicyInstance()->setFileStream(pFile_);
+        }
+        else
+        {
+            LoggingPolicy::getPolicyInstance()->setFileStream(NULL);
+        }
+
+        LoggingPolicy::getPolicyInstance()->ReportingLevel() = LDEBUG;
     }
 
     bool System::loadRadio(std::string radioConfig)
