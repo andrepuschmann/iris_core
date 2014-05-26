@@ -68,7 +68,7 @@ struct StackDataSet
   
   /// Constructor initializes our variables
   StackDataSet(double t=0)
-    : metadata(0.0, t)
+    : metadata(double(0), t)
   {}
 };
 
