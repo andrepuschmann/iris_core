@@ -38,6 +38,23 @@
 #include <boost/utility.hpp>
 #include <boost/thread/mutex.hpp>
 
+//! Exception which can be thrown by this class
+class MetadataException : public std::exception
+{
+private:
+    std::string message_;
+public:
+    MetadataException(const std::string &message) throw()
+        :exception(), message_(message)
+    {};
+    virtual const char* what() const throw()
+    {
+        return message_.c_str();
+    };
+    virtual ~MetadataException() throw()
+    {};
+};
+
 class MetadataBase : boost::noncopyable
 {
 public:
@@ -68,7 +85,6 @@ public:
      */
     MetadataMap() {}
 
-
     /**
      * Provide a constructor with samplerate and timestamp
      */
@@ -79,21 +95,23 @@ public:
     }
 
     /**
+     * Destructor
+     */
+    ~MetadataMap() {}
+
+    /**
      * Copy constructor to initialize mutex properly
      */
     MetadataMap(const MetadataMap& other) : mutex_() {}
 
-
     /**
      * Assignment operator
      */
-    MetadataMap& operator=(const MetadataMap& other)
+    MetadataMap& operator=(const MetadataMap& orig)
     {
-        boost::mutex::scoped_lock lock(mutex_);
-        map_ = other.map_; // Actual map is copied using default operator
+        map_ = orig.map_; // Actual map is copied using default operator
         return *this;
     }
-
 
     /**
      * Set metadata.
@@ -105,9 +123,19 @@ public:
     void setMetadata(const std::string key, T e)
     {
         boost::mutex::scoped_lock lock(mutex_);
-        boost::shared_ptr<MetadataBase> b(new Metadata<T>);
-        boost::dynamic_pointer_cast< Metadata<T> >(b)->data = e;
-        map_[key] = b;
+        if (map_.find(key) != map_.end()) {
+            // try to update existing entry
+            boost::shared_ptr< Metadata<T> > tmp(boost::dynamic_pointer_cast< Metadata<T> >(map_[key]));
+            if (tmp == NULL)
+                throw MetadataException("Key already exists with different data type!");
+
+            tmp->data = e;
+        } else {
+            // add new entry
+            boost::shared_ptr<MetadataBase> b(new Metadata<T>);
+            boost::dynamic_pointer_cast< Metadata<T> >(b)->data = e;
+            map_[key] = b;
+        }
     }
 
 
@@ -116,18 +144,18 @@ public:
      *
      * @param key The key to look for
      * @param e A reference to the variable that should hold the metadata.
-     * @return True if data could be retrieved, false otherwise
      */
     template<class T>
-    bool getMetadata(const std::string key, T& e)
+    void getMetadata(const std::string key, T& e)
     {
-        if (hasMetadata(key)) {
-            boost::mutex::scoped_lock lock(mutex_);
-            boost::shared_ptr<MetadataBase> b = map_[key];
-            e = boost::dynamic_pointer_cast< Metadata<T> >(b)->data;
-            return true;
-        }
-        return false;
+        if (not hasMetadata(key))
+            throw MetadataException("Requested metadata not present.");
+
+        boost::mutex::scoped_lock lock(mutex_);
+        boost::shared_ptr< Metadata<T> > tmp(boost::dynamic_pointer_cast< Metadata<T> >(map_[key]));
+        if (tmp == NULL)
+            throw MetadataException("Failed to cast metadata to desired type.");
+        e = tmp->data;
     }
 
 
