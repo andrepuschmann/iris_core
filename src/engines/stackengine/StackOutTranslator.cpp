@@ -87,7 +87,7 @@ namespace iris
                 //Fill the DataSet with info from the StackDataSet
                 std::copy(p->data.begin(), p->data.end(), outData->data.begin());
                 outData->metadata = p->metadata;
-                outData->metadata.setMetadata("sampleRate", 0);
+                outData->metadata.setMetadata("sampleRate", double(0));
 
                 //Release the DataSet
                 outputBuffer_->releaseWriteData(outData);

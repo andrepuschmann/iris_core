@@ -78,12 +78,12 @@ BOOST_AUTO_TEST_CASE(MetadataBasicTest)
     stackDataSource->metadata.setMetadata("float", f);
     BOOST_CHECK_EQUAL(stackDataSource->metadata.hasMetadata("float"), true);
 
+    // this should throw an exception
     float out2;
-    bool ret = stackDataSource->metadata.getMetadata("notthere", out2);
-    BOOST_CHECK_EQUAL(ret, false);
+    BOOST_CHECK_THROW(stackDataSource->metadata.getMetadata("notthere", out2), MetadataException);
 
-    ret = stackDataSource->metadata.getMetadata("float", out2);
-    BOOST_CHECK_EQUAL(ret, true);
+    // this should not fail
+    BOOST_CHECK_NO_THROW(stackDataSource->metadata.getMetadata("float", out2));
     BOOST_CHECK_EQUAL(out2, f);
 
     // Check if vectors are working
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE(MetadataBasicTest)
     BOOST_CHECK_EQUAL(stackDataSource->metadata.hasMetadata("intvector"), true);
 
     std::vector<int> int_vec_out;
-    ret = stackDataSource->metadata.getMetadata("intvector", int_vec_out);
+    stackDataSource->metadata.getMetadata("intvector", int_vec_out);
     BOOST_CHECK_EQUAL(int_vec_out.size(), 3);
 
     // Check if the data is equal
@@ -138,12 +138,12 @@ BOOST_AUTO_TEST_CASE(MetadataStackDataSetCopyTest)
     // Check if this looks alright (two are there by default, plus the two we added)
     BOOST_CHECK_EQUAL(stackDataDest->metadata.getMetadataCount(), 4);
 
-    float out;
+    float out = 0.0;
     stackDataDest->metadata.getMetadata("float", out);
     BOOST_CHECK_EQUAL(out, f);
 
     std::vector<int> int_vec_out;
-    bool ret = stackDataSource->metadata.getMetadata("intvector", int_vec_out);
+    stackDataSource->metadata.getMetadata("intvector", int_vec_out);
 
     delete stackDataDest;
     delete stackDataSource;
@@ -159,12 +159,43 @@ BOOST_AUTO_TEST_CASE(MetadataDataSetCopyTest)
     uint64_t tx_time = 12000223112;
     stackDataSource->metadata.setMetadata("tx_time", tx_time);
 
+    uint64_t my_tx_time = 22000223112;
     DataSet< uint8_t >* dataset = new DataSet< uint8_t >;
+    dataset->metadata.setMetadata("my_tx_time", tx_time);
+
+    // copy the metadata
     dataset->metadata = stackDataSource->metadata;
 
     uint64_t tx_time_out;
     dataset->metadata.getMetadata("tx_time", tx_time_out);
     BOOST_CHECK_EQUAL(tx_time, tx_time_out);
+
+    delete dataset;
+    delete stackDataSource;
+}
+
+
+BOOST_AUTO_TEST_CASE(MetadataDataTypeTest)
+{
+    StackDataSet* stackDataSource = NULL;
+    BOOST_CHECK_NO_THROW(stackDataSource = new StackDataSet);
+    BOOST_REQUIRE(stackDataSource != NULL);
+
+    int in = 365;
+    stackDataSource->metadata.setMetadata("integer", in);
+
+    int in2 = 100;
+    stackDataSource->metadata.setMetadata("integer", in2);
+
+    DataSet< uint8_t >* dataset = new DataSet< uint8_t >;
+    dataset->metadata.setMetadata("woh", in);
+    dataset->metadata = stackDataSource->metadata;
+
+    // copy the metadata
+    dataset->metadata = stackDataSource->metadata;
+
+    double out;
+    BOOST_CHECK_THROW(dataset->metadata.getMetadata("integer", out), MetadataException);
 
     delete dataset;
     delete stackDataSource;
