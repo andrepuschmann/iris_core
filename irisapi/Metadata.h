@@ -80,10 +80,6 @@ class MetadataMap
 {
     typedef std::map<std::string, boost::shared_ptr<MetadataBase> > MetadataContainer;
 public:
-    /**
-     * Default constructor
-     */
-    MetadataMap() {}
 
     /**
      * Provide a constructor with samplerate and timestamp
