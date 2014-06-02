@@ -143,7 +143,6 @@ public:
     isWriteLocked_ = true;
     if(buffer_[writeIndex_].data.size() != size)
       buffer_[writeIndex_].data.resize(size);
-    buffer_[writeIndex_].metadata.setMetadata("timeStamp", double(0));
     setPtr = &buffer_[writeIndex_];
   };
 
