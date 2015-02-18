@@ -55,6 +55,7 @@ public:
   virtual void postCommand(Command command) = 0;
   virtual std::string getParameterValue(std::string paramName, std::string componentName) = 0;
   virtual void subscribeToEvent(std::string eventName, std::string componentName, Controller *cont) = 0;
+  virtual void activateEvent(Event &e) = 0;
 };
 
 } /* namespace iris */
