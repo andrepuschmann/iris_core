@@ -98,6 +98,13 @@ public:
   void reconfigureRadio(ReconfigSet reconfigs);
   void postCommand(Command command);
   std::string getParameterValue(std::string paramName, std::string componentName);
+  std::string getParameterName(std::string componentName, int paramIndex, std::string &paramValue);
+  std::string getEngineName(std::string componentName, int *engineIndex, int *compIndex);
+  int getNrEngines();
+  int getNrComponents();
+  std::string getEngineNameFromIndex(int index);
+  std::string getComponentName(int index);
+  int getNrParameters(std::string componentName);
   void activateEvent(Event &e);
 };
 

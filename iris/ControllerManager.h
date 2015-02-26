@@ -16,12 +16,12 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Iris is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * A copy of the GNU Lesser General Public License can be found in
  * the LICENSE file in the top-level directory of this distribution
  * and at http://www.gnu.org/licenses/.
@@ -161,6 +161,52 @@ public:
    * @return
    */
   std::string getParameterValue(std::string paramName, std::string componentName);
+
+  /** Get a components' parameter name
+   *
+   * @param componentName   The name of the component containing the parameter.
+   * @param paramIndex      The paramter index
+   * @return paramValue     The parameter value returned by reference
+   */
+  std::string getParameterName(std::string componentName, int paramIndex, std::string &paramValue);
+
+  /** Get the name of an engine
+   *
+   * @param componentName   The name of the component that resides in the engine
+   * @param engineIndex     The engine index
+   * @param compIndex       The component index
+   * @return engineName     The engine name
+   */
+  std::string getEngineName(std::string componentName, int *engineIndex, int *compIndex);
+
+  /** Get the number of engines in the current radio
+  *
+  * @return The number of engine
+  */
+  int getNrEngines();
+
+  /** Get the number of components in the current radio
+  *
+  * @return The number of components
+  */
+  int getNrComponents();
+
+  /** Get the engine name for a given index
+  *
+  * @param index  The index of the engine
+  * @return       The name of the the engine
+  */
+  std::string getEngineNameFromIndex(int index);
+
+  /** Get the component name for a given index
+  *
+  * @param index  The index of the component
+  * @return       The name of the the component
+  */
+  std::string getComponentName(int index);
+
+  /// returns the number of parameters in a given component
+  int getNrParameters(std::string componentName);
 
   /** Subscribe to an event (Called by controllers)
    *

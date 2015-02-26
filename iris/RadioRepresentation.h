@@ -16,12 +16,12 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Iris is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * A copy of the GNU Lesser General Public License can be found in
  * the LICENSE file in the top-level directory of this distribution
  * and at http://www.gnu.org/licenses/.
@@ -220,6 +220,20 @@ public:
   static bool findComponent(std::string name, const RadioGraph& graph, Vertex& ver);
   /// Find an engine in an EngineGraph
   static bool findEngine(std::string name, const EngineGraph& graph, EngVertex& ver);
+  /// Get the engine name for a given component
+  std::string getEngineName(std::string componentName, int *engineIndex, int *compIndex);
+  /// Get the number of engines in the current radio
+  int getNrEngines();
+  /// Get the number of components in the current radio
+  int getNrComponents();
+  /// Get the engine name for a given index
+  std::string getEngineNameFromIndex(int index);
+  /// Get the component name for a given component index
+  std::string getComponentName(int index);
+  /// Get the number of parameters of a given component
+  int  getNrParameters(std::string componentName);
+  /// Get a components' parameter name
+  std::string getParameterName(std::string componentName, int paramIndex, std::string &paramValue);
 
 private:
   /// Reconfigure a parameter within the representation
