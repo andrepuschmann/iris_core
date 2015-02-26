@@ -58,16 +58,6 @@ typedef Controller* (*CREATECONTROLLERFUNCTION)();
 /// Function pointer for "ReleaseController" in controller library
 typedef void (*DESTROYCONTROLLERFUNCTION)(Controller*);
 
-/// A loaded controller object
-struct LoadedController
-{
-  std::string name;
-  boost::shared_ptr< Controller > contPtr;
-
-  LoadedController(std::string name, boost::shared_ptr< Controller > contPtr)
-    :name(name), contPtr(contPtr){}
-};
-
 /// A controller library - contains the library (used to create a controller object)
 struct ControllerLibrary
 {
@@ -78,6 +68,16 @@ struct ControllerLibrary
   /// Constructor initializes our variables
   ControllerLibrary()
     :name(""){}
+};
+
+/// A loaded controller object
+struct LoadedController
+{
+  std::string name;
+  boost::shared_ptr< Controller > contPtr;
+
+  LoadedController(std::string name, boost::shared_ptr< Controller > contPtr)
+    :name(name), contPtr(contPtr){}
 };
 
 /// A repository containing a number of controller libraries
@@ -220,6 +220,7 @@ public:
   std::string getName(){return "ControllerManager";}
 
 private:
+  std::vector< ControllerLibrary > loadedLibraries_;
   std::vector< LoadedController > loadedControllers_; ///< Our loaded controllers
   std::vector<ControllerRepository> repositories_;    ///< Our repositories
   ControllerManagerCallbackInterface* engineManager_; ///< The EngineManager which owns this

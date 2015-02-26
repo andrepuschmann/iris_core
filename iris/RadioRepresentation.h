@@ -55,6 +55,7 @@ struct ParameterDescription;
 /// Holds a controller type.
 struct ControllerDescription
 {
+  std::string name;
   std::string type;
   std::vector<ParameterDescription> parameters;
 };
