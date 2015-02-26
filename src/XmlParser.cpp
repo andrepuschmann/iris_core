@@ -122,8 +122,12 @@ ControllerDescription readController(Element &controllerElem)
 
     ControllerDescription theController;
 
-    //Parse the component type
+    //Parse the controller type and name
+    theController.name = controllerElem.GetAttribute("name");
     theController.type = controllerElem.GetAttribute("class");
+    if(theController.name.empty())
+      theController.name = theController.type;
+    boost::to_lower(theController.name);
     boost::to_lower(theController.type);
 
     //Parse all the parameters and add to the controller description
@@ -138,7 +142,7 @@ ControllerDescription readController(Element &controllerElem)
       theController.parameters.push_back(param);
     }
 
-    LOG(LINFO) << "Parsed controller: " << theController.type;
+    LOG(LINFO) << "Parsed controller: " << theController.name;
 
     return theController;
 }

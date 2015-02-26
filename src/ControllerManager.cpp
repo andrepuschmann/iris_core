@@ -111,75 +111,93 @@ namespace iris
 
     void ControllerManager::loadController(ControllerDescription desc)
     {
+        ControllerLibrary temp;
+
         //Check if the library has already been loaded
-        vector< LoadedController >::iterator libIt;
-        for(libIt=loadedControllers_.begin();libIt!=loadedControllers_.end();++libIt)
+        vector< ControllerLibrary >::iterator libIt;
+        for(libIt=loadedLibraries_.begin();libIt!=loadedLibraries_.end();++libIt)
         {
             if(libIt->name == desc.type)
-            {
-                LOG(LERROR) << "Controller " + desc.type + " has already been loaded.";
-                return;
-            }
+                temp = *(libIt);
         }
 
-        //Look for the controller in our repositories
-        vector< ControllerRepository >::iterator repIt;
-        for(repIt=repositories_.begin();repIt!=repositories_.end();++repIt)
+        //If the library hasn't already been loaded, look for it in our repositories
+        if(temp.name == "")
         {
-            vector< ControllerLibrary >::iterator compIt;
-            for(compIt=repIt->controllerLibs.begin();compIt!=repIt->controllerLibs.end();++compIt)
-            {
-                if(compIt->name == desc.type)
-                {
-                    //Load the controller library and add to vector of loaded libraries
-                    compIt->libPtr.reset(new SharedLibrary(compIt->path));
-
-                    //Pull a Controller class out of the library
-                    CREATECONTROLLERFUNCTION createFunction = (CREATECONTROLLERFUNCTION)compIt->libPtr->getSymbol("CreateController");
-                    DESTROYCONTROLLERFUNCTION destroyFunction = (DESTROYCONTROLLERFUNCTION)compIt->libPtr->getSymbol("ReleaseController");
-                    GETAPIVERSIONFUNCTION getApiFunction = (GETAPIVERSIONFUNCTION)compIt->libPtr->getSymbol("GetApiVersion"); 
-
-                    //Check API version numbers match
-                    string coreVer, moduleVer;
-                    coreVer = Version::getApiVersion();
-                    moduleVer = getApiFunction();
-                    if(coreVer != moduleVer)
-                    {    
-                        stringstream message;
-                        message << "API version mismatch between core and controller " << desc.type << \
-                            ". Core API version = " << coreVer << ". Module API version = " << moduleVer << ".";
-                        throw ApiVersionException(message.str());
+          vector< ControllerRepository >::iterator repIt;
+          for(repIt=repositories_.begin();repIt!=repositories_.end();++repIt)
+          {
+              vector< ControllerLibrary >::iterator compIt;
+              for(compIt=repIt->controllerLibs.begin();compIt!=repIt->controllerLibs.end();++compIt)
+              {
+                  if(compIt->name == desc.type)
+                  {
+                    if(temp.name == "")
+                    {   //First component found which matches
+                        temp = *compIt;
                     }
-
-                    //Create a shared_ptr and use a custom deallocator so the component is destroyed from the library
-                    boost::shared_ptr<Controller> cont(createFunction(), destroyFunction);
-
-                    //Set the LoggingPolicy and EngineManagerControllerInterface
-                    cont->setLoggingPolicy(Logger::getPolicy());
-                    cont->setCallbackInterface(this);
-
-                    //Set the parameter values here
-                    vector<ParameterDescription>::iterator i = desc.parameters.begin();
-                    for(;i != desc.parameters.end(); ++i)
-                    {
-                      cont->setValue(i->name, i->value);
+                    else if(bfs::last_write_time(compIt->path) > bfs::last_write_time(temp.path))
+                    {   //Found more than one component which matches - choose the more recent one
+                        temp = *compIt;
                     }
-
-                    //Call load on the controller
-                    cont->load();
-
-                    //Add to loadedControllers_
-                    LoadedController l(compIt->name, cont);
-                    loadedControllers_.push_back(l);
-
-                    return;
-                }
-            }
+                  }
+              }
+          }
         }
-        
-        //Only get here if we didn't find the library
-        throw ResourceNotFoundException("Could not find controller " + desc.type + " in repositories.");
-      
+
+        //Check that we found it
+        if(temp.name == "")
+        {
+          LOG(LFATAL) << "Could not find controller " << desc.name << " in repositories.";
+          throw ResourceNotFoundException("Could not find controller " + desc.type + " in repositories.");
+        }
+
+        //Load if necessary
+        if(temp.libPtr == NULL)
+        {
+          temp.libPtr.reset(new SharedLibrary(temp.path));
+          loadedLibraries_.push_back(temp);
+        }
+
+        //Pull a Controller class out of the library
+        CREATECONTROLLERFUNCTION createFunction = (CREATECONTROLLERFUNCTION)temp.libPtr->getSymbol("CreateController");
+        DESTROYCONTROLLERFUNCTION destroyFunction = (DESTROYCONTROLLERFUNCTION)temp.libPtr->getSymbol("ReleaseController");
+        GETAPIVERSIONFUNCTION getApiFunction = (GETAPIVERSIONFUNCTION)temp.libPtr->getSymbol("GetApiVersion");
+
+        //Check API version numbers match
+        string coreVer, moduleVer;
+        coreVer = Version::getApiVersion();
+        moduleVer = getApiFunction();
+        if(coreVer != moduleVer)
+        {
+            stringstream message;
+            message << "API version mismatch between core and controller " << desc.type << \
+                ". Core API version = " << coreVer << ". Module API version = " << moduleVer << ".";
+            throw ApiVersionException(message.str());
+        }
+
+        //Create a shared_ptr and use a custom deallocator so the component is destroyed from the library
+        boost::shared_ptr<Controller> cont(createFunction(), destroyFunction);
+
+        //Set the LoggingPolicy and EngineManagerControllerInterface
+        cont->setLoggingPolicy(Logger::getPolicy());
+        cont->setCallbackInterface(this);
+
+        //Set the parameter values here
+        vector<ParameterDescription>::iterator i = desc.parameters.begin();
+        for(;i != desc.parameters.end(); ++i)
+        {
+          cont->setValue(i->name, i->value);
+        }
+
+        //Call load on the controller
+        cont->load();
+
+        //Add to loadedControllers_
+        LoadedController l(temp.name, cont);
+        loadedControllers_.push_back(l);
+
+        return;
     }
 
     bool ControllerManager::controllerExists(std::string name)
