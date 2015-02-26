@@ -310,4 +310,46 @@ namespace iris
     }
 
 
+    //! Get the parameter name and value (returned by reference)
+    std::string ControllerManager::getParameterName(std::string componentName, int paramIndex, std::string &paramValue)
+    {
+        return engineManager_->getParameterName(componentName, paramIndex, paramValue);
+    }
+
+    //! Get the engine name
+    std::string ControllerManager::getEngineName(std::string componentName, int *engineIndex, int *compIndex)
+    {
+        return engineManager_->getEngineName(componentName, engineIndex, compIndex);
+    }
+
+    //! Get the number of engines in the current radio
+    int ControllerManager::getNrEngines()
+    {
+        return engineManager_->getNrEngines();
+    }
+
+    //! Get the number of components in the current radio
+    int ControllerManager::getNrComponents()
+    {
+        return engineManager_->getNrComponents();
+    }
+
+    //! Get the engine name for a given index
+    std::string ControllerManager::getEngineNameFromIndex(int index)
+    {
+        return engineManager_->getEngineNameFromIndex(index);
+    }
+
+    //! Get the component name for a given component index
+    std::string ControllerManager::getComponentName(int index)
+    {
+        return engineManager_->getComponentName(index);
+    }
+
+    //! Get the number of parameters of a given component
+    int  ControllerManager::getNrParameters(std::string componentName)
+    {
+        return engineManager_->getNrParameters(componentName);
+    }
+
 } /* namespace iris */

@@ -36,6 +36,7 @@
 
 #include "irisapi/ReconfigurationDescriptions.h"
 #include "irisapi/Command.h"
+#include "iris/RadioRepresentation.h"
 
 namespace iris
 {
@@ -54,8 +55,15 @@ public:
   virtual void reconfigureRadio(ReconfigSet reconfigs) = 0;
   virtual void postCommand(Command command) = 0;
   virtual std::string getParameterValue(std::string paramName, std::string componentName) = 0;
+  virtual std::string getParameterName(std::string componentName, int paramIndex, std::string &paramValue) = 0;
   virtual void subscribeToEvent(std::string eventName, std::string componentName, Controller *cont) = 0;
   virtual void activateEvent(Event &e) = 0;
+  virtual std::string getEngineName(std::string componentName, int *engineIndex, int *compIndex) = 0;
+  virtual int getNrEngines() = 0;
+  virtual int getNrComponents() = 0;
+  virtual std::string getEngineNameFromIndex(int index) = 0;
+  virtual std::string getComponentName(int index) = 0;
+  virtual int getNrParameters(std::string componentName) = 0;
 };
 
 } /* namespace iris */
