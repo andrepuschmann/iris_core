@@ -107,7 +107,8 @@ public:
   Controller(std::string name, std::string description, std::string author, std::string version )
     : name_(name), description_(description), author_(author), version_(version)
     ,controllerManager_(NULL)
-    ,thread_(NULL)
+    ,eventThread_(NULL)
+    ,workThread_(NULL)
     ,started_(false)
     ,loaded_(false)
   {
@@ -172,14 +173,26 @@ public:
     eventQueue_.push(e);
   }
 
+  //! Execute separate working thread - should be overwritten in the controller subclass
+  virtual void workFunction()
+  {
+    LOG(LINFO) << "Function workFuntion has not been implemented in controller " << name_;
+  }
+
   /// Called by ControllerManager to load the controller thread.
   void load()
   {
     //Load the controller thread (if it hasn't already been loaded)
-    if( thread_ == NULL)
+    if( eventThread_ == NULL)
     {
       loaded_ = true;
-      thread_.reset( new boost::thread( boost::bind( &Controller::eventLoop, this ) ) );
+      eventThread_.reset( new boost::thread( boost::bind( &Controller::eventLoop, this ) ) );
+    }
+
+    //Load worker thread
+    if ( workThread_ == NULL)
+    {
+      workThread_.reset( new boost::thread( boost::bind( &Controller::workLoop, this ) ) );
     }
   }
 
@@ -200,16 +213,24 @@ public:
     lock.unlock();
     conditionVar_.notify_one();
 
-    thread_->interrupt();
+    if (workThread_) workThread_->interrupt();
+    eventThread_->interrupt();
   }
 
   /// Called by ControllerManager to unload the controller thread
   void unload()
   {
+    //unload the work thread first
+    if (workThread_)
+    {
+      workThread_->interrupt();
+      workThread_->join();
+    }
+
     //unload the controller thread
     loaded_ = false;
-    thread_->interrupt();
-    thread_->join();
+    eventThread_->interrupt();
+    eventThread_->join();
   }
 
   /// The main loop for the Controller thread
@@ -299,6 +320,25 @@ public:
       return controllerManager_->getParameterName(componentName, paramIndex, paramValue);
   }
 
+  //! The main loop for the worker thread
+  void workLoop()
+  {
+    try {
+      try {
+        // Just call workFuntion from here
+        workFunction();
+      }
+      catch(boost::thread_interrupted)
+      {
+        LOG(LINFO) << "Work thread of controller " << name_ << " interrupted";
+      }
+    }
+    catch(IrisException& ex)
+    {
+      LOG(LERROR) << "Error in controller " << name_ << ": " << ex.what() << std::endl << "Worker thread exiting.";
+    }
+  }
+
   std::string getName() const
   {
     return name_;
@@ -343,7 +383,8 @@ private:
 
   MessageQueue< Event > eventQueue_;                ///< Queue of incoming Event objects.
   ControllerCallbackInterface* controllerManager_;  ///< Interface to the ControllerManager.
-  boost::scoped_ptr< boost::thread > thread_;       ///< This controller's thread.
+  boost::scoped_ptr< boost::thread > eventThread_;  ///< This controller's thread for handling events.
+  boost::scoped_ptr< boost::thread > workThread_;   ///< An additional thread that a controller may use.
 
   bool started_;
   bool loaded_;
