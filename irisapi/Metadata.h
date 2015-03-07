@@ -145,12 +145,12 @@ public:
     void getMetadata(const std::string key, T& e)
     {
         if (not hasMetadata(key))
-            throw MetadataException("Requested metadata not present.");
+            throw MetadataException("Requested metadata key " + key + " not present.");
 
         boost::mutex::scoped_lock lock(mutex_);
         boost::shared_ptr< Metadata<T> > tmp(boost::dynamic_pointer_cast< Metadata<T> >(map_[key]));
         if (tmp == NULL)
-            throw MetadataException("Failed to cast metadata to desired type.");
+            throw MetadataException("Failed to cast metadata key " + key + " to desired type.");
         e = tmp->data;
     }
 
