@@ -98,7 +98,10 @@ public:
     /**
      * Copy constructor to initialize mutex properly
      */
-    MetadataMap(const MetadataMap& other) : mutex_() {}
+    MetadataMap(const MetadataMap& other) : mutex_()
+    {
+        map_ = other.map_;
+    }
 
     /**
      * Assignment operator
