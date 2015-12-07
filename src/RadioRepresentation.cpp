@@ -415,7 +415,7 @@ namespace iris
         boost::mutex::scoped_lock lock(mutex_);
         int comps;
         VertexIterator i, iend;
-        tie(i, iend) = vertices(radGraph);
+        b::tie(i, iend) = vertices(radGraph);
         comps = iend - i;
         return comps;
     }
@@ -425,7 +425,7 @@ namespace iris
         EngineGraph engGraph = getEngineGraph();
         std::string engine = "";
         VertexIterator i, iend;
-        for(tie(i, iend) = vertices(engGraph); i != iend; ++i)
+        for(b::tie(i, iend) = vertices(engGraph); i != iend; ++i)
         {
             int ver = *i;
             if(ver == index)
@@ -439,7 +439,7 @@ namespace iris
         RadioGraph radGraph= getRadioGraph();
         std::string component = "";
         VertexIterator i, iend;
-        for(tie(i, iend) = vertices(radGraph); i != iend; ++i)
+        for(b::tie(i, iend) = vertices(radGraph); i != iend; ++i)
         {
             int ver = *i;
             if(ver == index)
@@ -454,7 +454,7 @@ namespace iris
         VertexIterator i, iend;
         int NrParams = 0;
         vector<ParameterDescription>::iterator paramIt;
-        for(tie(i, iend) = vertices(radGraph); i != iend; ++i)
+        for(b::tie(i, iend) = vertices(radGraph); i != iend; ++i)
         {
             int ver = *i;
             if(radGraph[ver].name == componentName)
@@ -469,7 +469,7 @@ namespace iris
         VertexIterator i, iend;
         std::string  paramName = "";
         vector<ParameterDescription>::iterator paramIt;
-        for(tie(i, iend) = vertices(radGraph); i != iend; ++i)
+        for(b::tie(i, iend) = vertices(radGraph); i != iend; ++i)
         {
             int ver = *i;
             if(radGraph[ver].name == componentName)
@@ -522,7 +522,7 @@ namespace iris
         boost::mutex::scoped_lock lock(mutex_);
         int engines;
         VertexIterator i, iend;
-        tie(i, iend) = vertices(engGraph);
+        b::tie(i, iend) = vertices(engGraph);
         engines = iend - i;
         return engines;
     }
